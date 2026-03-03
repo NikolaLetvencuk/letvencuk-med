@@ -1,9 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import chromium from 'chrome-aws-lambda';
-import puppeteerCore from 'puppeteer-core';
-let puppeteer;
+import puppeteer from 'puppeteer';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.join(__dirname, 'dist');
@@ -11,25 +9,10 @@ const distDir = path.join(__dirname, 'dist');
 async function prerender() {
   console.log('Starting pre-rendering...');
 
-  let browser;
-  // try serverless-compatible Chromium first
-  try {
-    const executablePath = await chromium.executablePath;
-    browser = await puppeteerCore.launch({
-      args: chromium.args,
-      executablePath,
-      headless: chromium.headless,
-    });
-    console.log('Launched chrome-aws-lambda browser');
-  } catch (err) {
-    // fallback to full puppeteer for local environment
-    console.warn('chrome-aws-lambda launch failed, falling back to puppeteer:', err.message);
-    puppeteer = await import('puppeteer');
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-  }
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
 
   try {
     const page = await browser.newPage();
