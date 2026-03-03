@@ -78,12 +78,6 @@ const familyMembers = [
     role: "Sin & Dostava",
     description: "Nikola je naš pouzdani glasnik. Uvek spreman da pomogne — bilo da je u pitanju dostava meda na kućnu adresu, pakovanje porudžbina ili jednostavno da bude tu kada je potrebna još jedna ruka.",
     icon: <Truck className="w-6 h-6 text-amber-600" />
-  },
-  {
-    name: "Baka Katica",
-    role: "Baka & Čuvar Polena",
-    description: "Baka Katica je srce naše porodice. Sa strpljenjem i pažnjom čisti i sortira svež polen, brine da svaki gram bude besprekoran. Njena ljubav i vrednoća osećaju se u svakom pakovanju.",
-    icon: <Flower2 className="w-6 h-6 text-amber-600" />
   }
 ];
 
