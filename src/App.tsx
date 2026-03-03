@@ -15,6 +15,7 @@ import {
   Truck,
   Flower2
 } from 'lucide-react';
+import HoneycombProducts from './components/HoneycombProducts';
 
 const BeeIcon = ({ className = "w-6 h-6" }) => (
   <svg 
@@ -659,30 +660,9 @@ export const App = () => {
       </section>
 
       {/* Proizvodi Section */}
-      <section id="proizvodi" className="py-24 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Naši proizvodi</h2>
-            <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mb-6"></div>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Od čistog meda do specijalnih prirodnih mikseva za vaš imunitet.
-              Svi naši proizvodi su 100% prirodni i bez aditiva.
-            </p>
-          </div>
-
-          <div className="space-y-20">
-            {Object.values(productCategories).map((category) => (
-              <div key={category.label}>
-                <h3 className="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-3">
-                  {category.label}
-                  <div className="flex-1 h-px bg-amber-100 ml-2"></div>
-                </h3>
-                <ProductCarousel items={category.items} onClick={setSelectedProduct} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <section id="proizvodi">
+  <HoneycombProducts />
+</section>
 
       {/* Galerija Section */}
       <section id="galerija" className="py-24 px-4 bg-gray-900 text-white">
