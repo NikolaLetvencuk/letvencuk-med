@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Phone, 
@@ -97,7 +97,7 @@ const products: Product[] = [
       { size: "400g", price: "400 RSD" },
       { size: "1kg", price: "800 RSD" }
     ],    
-    image: "public/images/suncokretov_med.webp"
+    image: "images/suncokretov_med.webp"
   },
   {
     id: 2,
@@ -232,6 +232,25 @@ const products: Product[] = [
   }
 ];
 
+const productCategories = {
+  med: {
+    label: "Med",
+    items: products.filter(p => [1,2,3,4].includes(p.id))
+  },
+  miks: {
+    label: "Miksevi",
+    items: products.filter(p => [9,10,11,12].includes(p.id))
+  },
+  aranzman: {
+    label: "Aranžmani",
+    items: products.filter(p => [13].includes(p.id))
+  },
+  ostalo: {
+    label: "Ostalo",
+    items: products.filter(p => [5,6,7,8].includes(p.id))
+  }
+};
+
 const galleryImages = [
   { url: "images/tezga_med.webp", caption: "Naša tezga na festivalu" },
   { url: "images/kontejner2.webp", caption: "Vredne pčele na paši" },
@@ -246,7 +265,17 @@ const FamilyCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const total = familyMembers.length;
-  const visibleCount = 4;
+  const [visibleCount, setVisibleCount] = useState(
+    window.innerWidth < 768 ? 1 : 4
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setVisibleCount(window.innerWidth < 768 ? 1 : 4);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const paginate = (dir: number) => {
     setDirection(dir);
@@ -274,7 +303,7 @@ const FamilyCarousel = () => {
         <ChevronLeft size={20} />
       </button>
 
-      <div className="overflow-hidden px-2">
+      <div className="overflow-hidden px-2 pb-6">
         <AnimatePresence mode="popLayout" custom={direction}>
           <motion.div
             key={currentIndex}
@@ -284,7 +313,7 @@ const FamilyCarousel = () => {
             animate="center"
             exit="exit"
             transition={{ duration: 0.35, ease: "easeInOut" }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+            className={`grid gap-8 ${visibleCount === 1 ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}
           >
             {getVisible().map((member) => (
               <div
@@ -321,6 +350,102 @@ const FamilyCarousel = () => {
           />
         ))}
       </div>
+    </div>
+  );
+};
+
+const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Product) => void }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const total = items.length;
+
+  const [visibleCount, setVisibleCount] = useState(
+    window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 4
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setVisibleCount(
+        window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 4
+      );
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const paginate = (dir: number) => {
+    setDirection(dir);
+    setCurrentIndex((prev) => (prev + dir + total) % total);
+  };
+
+  const getVisible = () =>
+    Array.from({ length: Math.min(visibleCount, total) }, (_, i) =>
+      items[(currentIndex + i) % total]
+    );
+
+  const variants = {
+    enter: (dir: number) => ({ x: dir > 0 ? 80 : -80, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir: number) => ({ x: dir > 0 ? -80 : 80, opacity: 0 }),
+  };
+
+  const gridClass =
+    visibleCount === 1 ? 'grid-cols-1' :
+    visibleCount === 2 ? 'grid-cols-2' :
+    'grid-cols-4';
+
+  return (
+    <div className="relative">
+      {total > visibleCount && (
+        <button
+          onClick={() => paginate(-1)}
+          className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 transition"
+        >
+          <ChevronLeft size={20} />
+        </button>
+      )}
+
+      <div className="overflow-hidden px-2 pb-6">
+        <AnimatePresence mode="popLayout" custom={direction}>
+          <motion.div
+            key={currentIndex}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className={`grid gap-8 ${gridClass}`}
+          >
+            {getVisible().map((product) => (
+              <ProductCard key={product.id} product={product} onClick={onClick} />
+            ))}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {total > visibleCount && (
+        <button
+          onClick={() => paginate(1)}
+          className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 transition"
+        >
+          <ChevronRight size={20} />
+        </button>
+      )}
+
+      {total > visibleCount && (
+        <div className="flex justify-center gap-2 mt-6">
+          {Array.from({ length: total }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => { setDirection(i > currentIndex ? 1 : -1); setCurrentIndex(i); }}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                i === currentIndex ? 'bg-amber-500 w-6' : 'bg-amber-200 hover:bg-amber-300'
+              }`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -378,7 +503,7 @@ interface ProductCardProps {
 const ProductCard = ({ product, onClick }: ProductCardProps) => (
   <motion.div 
     whileHover={{ y: -5 }}
-    className="bg-white rounded-2xl overflow-hidden shadow-lg border border-amber-50 flex flex-col h-full"
+  className="bg-white rounded-2xl overflow-hidden shadow-lg border border-amber-50 flex flex-col h-full mb-4"
   >
     <div className="relative h-48 overflow-hidden">
       <img src={product.image} alt={product.name} className="w-full h-full object-cover transform hover:scale-110 transition duration-500" />
@@ -546,18 +671,20 @@ export const App = () => {
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Naši proizvodi</h2>
             <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mb-6"></div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Od čistog meda do specijalnih prirodnih mikseva za vaš imunitet. 
+              Od čistog meda do specijalnih prirodnih mikseva za vaš imunitet.
               Svi naši proizvodi su 100% prirodni i bez aditiva.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {products.map((product) => (
-              <ProductCard 
-                key={product.id} 
-                product={product} 
-                onClick={setSelectedProduct} 
-              />
+          <div className="space-y-20">
+            {Object.values(productCategories).map((category) => (
+              <div key={category.label}>
+                <h3 className="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-3">
+                  {category.label}
+                  <div className="flex-1 h-px bg-amber-100 ml-2"></div>
+                </h3>
+                <ProductCarousel items={category.items} onClick={setSelectedProduct} />
+              </div>
             ))}
           </div>
         </div>
