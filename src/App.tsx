@@ -81,7 +81,7 @@ const products: Product[] = [
       { size: "400g", price: "400 RSD" },
       { size: "1kg", price: "800 RSD" }
     ],    
-    image: "public/images/suncokretov_med.webp"
+    image: "images/suncokretov_med.webp"
   },
   {
     id: 2,
