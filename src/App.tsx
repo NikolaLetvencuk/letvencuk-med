@@ -162,7 +162,7 @@ const products: Product[] = [
   },
   {
     id: 9,
-    name: "Mix: Polen-Propolis-Med",
+    name: "Mix: Polen-propolis-med",
     description: "Klasičan imuno-mix za svakodnevnu upotrebu.",
     longDescription: "Savršeno izbalansiran odnos meda, polena i propolisa. Jedna kašika ujutru je sve što vam treba za energičan početak dana i jak imunitet.",
     prices: [
@@ -173,7 +173,7 @@ const products: Product[] = [
   },
   {
     id: 10,
-    name: "Mix: Med-Polen-Propolis-Kopriva",
+    name: "Mix: Med-polen-propolis-kopriva",
     description: "Idealan za krvnu sliku i gvožđe.",
     longDescription: "Ovaj miks smo obogatili semenom koprive, što ga čini izuzetnim saveznikom u borbi protiv anemije. Pomaže kod umora i vraća vitalnost organizmu.",
     prices: [
@@ -184,7 +184,7 @@ const products: Product[] = [
   },
   {
     id: 11,
-    name: "Mix: Med-Polen-Propolis-Golica",
+    name: "Mix: Med-polen-propolis-golica",
     description: "Podrška za prostatu i muško zdravlje.",
     longDescription: "Dodatak mlevenog semena golice (bundevino seme) čini ovaj miks specifičnim. Bogat je cinkom i mineralima važnim za zdravlje prostate i opšte muško zdravlje.",
     prices: [
@@ -195,7 +195,7 @@ const products: Product[] = [
   },
   {
     id: 12,
-    name: "Mix: Limun-Đumbir-Med",
+    name: "Mix: Limun-đumbir-med",
     description: "Osvežavajući mix protiv prehlade i virusa.",
     longDescription: "Kombinacija limuna, đumbira, meda, polena i propolisa. Ljuti đumbir i kiselkasti limun u medu stvaraju moćan eliksir za grlo i disajne puteve.",
     prices: [
@@ -206,7 +206,7 @@ const products: Product[] = [
   },
   {
     id: 13,
-    name: "Poklon Aranžmani",
+    name: "Poklon aranžmani",
     description: "Personalizovane korpice za sve prilike.",
     longDescription: "Pravimo aranžmane po vašoj želji! Bilo da je u pitanju Slava, rođendan, Božić ili Uskrs, mi spajamo naše proizvode u prelepe dekorisane korpice sa natpisima po vašoj želji.",
     prices: [
@@ -398,7 +398,7 @@ export const App = () => {
               Tradicija od poverenja
             </span>
             <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-6 leading-tight">
-              Pčelarsko Gazdinstvo <br />
+              Pčelarsko gazdinstvo <br />
               <span className="bg-gradient-to-r from-amber-700 to-amber-500 bg-clip-text text-transparent">
                 Letvenčuk
               </span>
@@ -412,13 +412,13 @@ export const App = () => {
                 href="#proizvodi" 
                 className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-full text-lg font-bold transition transform hover:scale-105 shadow-xl shadow-amber-200"
               >
-                Istraži Proizvode
+                Istraži proizvode
               </a>
               <a 
                 href="#kontakt" 
                 className="bg-white border-2 border-amber-600 text-amber-600 px-8 py-4 rounded-full text-lg font-bold transition hover:bg-amber-50 transform hover:scale-105"
               >
-                Kontaktiraj Nas
+                Kontaktiraj nas
               </a>
             </div>
           </motion.div>
@@ -429,7 +429,7 @@ export const App = () => {
       <section id="porodica" className="py-24 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Upoznajte Našu Porodicu</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Upoznajte našu porodicu</h2>
             <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mb-6"></div>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Naše pčelarenje je porodični posao u kojem svako ima svoju ulogu. 
@@ -463,7 +463,7 @@ export const App = () => {
       <section id="proizvodi" className="py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Naši Proizvodi</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Naši proizvodi</h2>
             <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mb-6"></div>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Od čistog meda do specijalnih prirodnih mikseva za vaš imunitet. 
@@ -487,7 +487,7 @@ export const App = () => {
       <section id="galerija" className="py-24 px-4 bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Život Na Pčelinjaku</h2>
+            <h2 className="text-4xl font-bold mb-4">Život na pčelinjaku</h2>
             <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mb-6"></div>
             <p className="text-gray-400 max-w-2xl mx-auto">
               Deo naše atmosfere sa pčelinjaka, festivala i mesta gde naš med pronalazi svoj novi dom.
@@ -517,7 +517,7 @@ export const App = () => {
           <div className="bg-white rounded-[3rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row border border-amber-100">
             {/* Kontakt Informacije */}
             <div className="lg:w-2/5 bg-amber-600 p-12 text-white">
-              <h2 className="text-4xl font-bold mb-8">Kontaktirajte Nas</h2>
+              <h2 className="text-4xl font-bold mb-8">Kontaktirajte nas</h2>
               <p className="text-amber-100 mb-12 text-lg">
                 Imate pitanja ili želite da naručite naše proizvode? 
                 Tu smo za vas svakog dana.
@@ -615,7 +615,7 @@ export const App = () => {
                   type="submit"
                   className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-5 rounded-xl transition transform hover:scale-[1.02] flex items-center justify-center gap-3 shadow-xl shadow-amber-100"
                 >
-                  <Send size={20} /> Pošalji Pitanje
+                  <Send size={20} /> Pošalji pitanje
                 </button>
                 <p className="text-xs text-gray-500 text-center mt-4">
                   Vaša poruka će biti poslata na: nik.letvencuk@gmail.com
@@ -636,7 +636,7 @@ export const App = () => {
             </span>
           </div>
           <p className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} Pčelarsko Gazdinstvo Letvenčuk. Sva prava zadržana.
+            © {new Date().getFullYear()} Pčelarsko gazdinstvo Letvenčuk. Sva prava zadržana.
           </p>
           <div className="flex justify-center gap-6 mt-6">
             <a href="#" className="text-gray-400 hover:text-amber-600 transition">Početna</a>
