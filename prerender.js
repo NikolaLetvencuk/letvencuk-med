@@ -1,7 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import puppeteer from 'puppeteer';
+
+// dynamic import later depending on environment
+let puppeteer;
+let puppeteerCore;
+let chromeAws;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.join(__dirname, 'dist');
@@ -9,10 +13,28 @@ const distDir = path.join(__dirname, 'dist');
 async function prerender() {
   console.log('Starting pre-rendering...');
 
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  });
+  let browser;
+  // attempt serverless-friendly launch using chrome-aws-lambda and puppeteer-core
+  try {
+    chromeAws = await import('chrome-aws-lambda');
+    const pcmod = await import('puppeteer-core');
+    puppeteerCore = pcmod.default ?? pcmod;
+    const executablePath = await chromeAws.executablePath;
+    browser = await puppeteerCore.launch({
+      args: chromeAws.args,
+      executablePath,
+      headless: chromeAws.headless,
+    });
+    console.log('Launched chromium via chrome-aws-lambda');
+  } catch (e) {
+    console.warn('Serverless launch failed, falling back to regular puppeteer:', e.message);
+    const pmod = await import('puppeteer');
+    puppeteer = pmod.default ?? pmod;
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+  }
 
   try {
     const page = await browser.newPage();
