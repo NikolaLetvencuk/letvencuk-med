@@ -9,7 +9,11 @@ import {
   Users, 
   X,
   Send,
-  ArrowRight
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Truck,
+  Flower2
 } from 'lucide-react';
 
 const BeeIcon = ({ className = "w-6 h-6" }) => (
@@ -68,6 +72,18 @@ const familyMembers = [
     role: "Ćerka & Mlada nada",
     description: "Nađa je mamin glavni asistent na festivalima. Svojom energijom i ljubaznošću pomaže u prezentaciji proizvoda i komunikaciji sa našim dragim kupcima.",
     icon: <CheckCircle2 className="w-6 h-6 text-amber-600" />
+  },
+  {
+    name: "Nikola",
+    role: "Sin & Dostava",
+    description: "Nikola je naš pouzdani glasnik. Uvek spreman da pomogne — bilo da je u pitanju dostava meda na kućnu adresu, pakovanje porudžbina ili jednostavno da bude tu kada je potrebna još jedna ruka.",
+    icon: <Truck className="w-6 h-6 text-amber-600" />
+  },
+  {
+    name: "Baka Katica",
+    role: "Baka & Čuvar Polena",
+    description: "Baka Katica je srce naše porodice. Sa strpljenjem i pažnjom čisti i sortira svež polen, brine da svaki gram bude besprekoran. Njena ljubav i vrednoća osećaju se u svakom pakovanju.",
+    icon: <Flower2 className="w-6 h-6 text-amber-600" />
   }
 ];
 
@@ -81,7 +97,7 @@ const products: Product[] = [
       { size: "400g", price: "400 RSD" },
       { size: "1kg", price: "800 RSD" }
     ],    
-    image: "images/suncokretov_med.webp"
+    image: "public/images/suncokretov_med.webp"
   },
   {
     id: 2,
@@ -226,6 +242,88 @@ const galleryImages = [
 ];
 
 // --- Components ---
+const FamilyCarousel = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const total = familyMembers.length;
+  const visibleCount = 4;
+
+  const paginate = (dir: number) => {
+    setDirection(dir);
+    setCurrentIndex((prev) => (prev + dir + total) % total);
+  };
+
+  const getVisible = () => {
+    return Array.from({ length: visibleCount }, (_, i) =>
+      familyMembers[(currentIndex + i) % total]
+    );
+  };
+
+  const variants = {
+    enter: (dir: number) => ({ x: dir > 0 ? 80 : -80, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir: number) => ({ x: dir > 0 ? -80 : 80, opacity: 0 }),
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => paginate(-1)}
+        className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 hover:border-amber-400 transition"
+      >
+        <ChevronLeft size={20} />
+      </button>
+
+      <div className="overflow-hidden px-2">
+        <AnimatePresence mode="popLayout" custom={direction}>
+          <motion.div
+            key={currentIndex}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+          >
+            {getVisible().map((member) => (
+              <div
+                key={member.name}
+                className="h-[340px] overflow-y-hidden p-8 rounded-3xl bg-amber-50/50 border border-amber-100 text-center hover:bg-white hover:shadow-xl transition group"
+              >
+                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm group-hover:scale-110 transition">
+                  {member.icon}
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-1">{member.name}</h3>
+                <p className="text-amber-600 text-sm font-semibold mb-4">{member.role}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">{member.description}</p>
+              </div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <button
+        onClick={() => paginate(1)}
+        className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 hover:border-amber-400 transition"
+      >
+        <ChevronRight size={20} />
+      </button>
+
+      <div className="flex justify-center gap-2 mt-8">
+        {Array.from({ length: total }).map((_, i) => (
+          <button
+            key={i}
+            onClick={() => { setDirection(i > currentIndex ? 1 : -1); setCurrentIndex(i); }}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              i === currentIndex ? 'bg-amber-500 w-6' : 'bg-amber-200 hover:bg-amber-300'
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -437,25 +535,7 @@ export const App = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {familyMembers.map((member, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="p-8 rounded-3xl bg-amber-50/50 border border-amber-100 text-center hover:bg-white hover:shadow-xl transition group"
-              >
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm group-hover:scale-110 transition">
-                  {member.icon}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1">{member.name}</h3>
-                <p className="text-amber-600 text-sm font-semibold mb-4">{member.role}</p>
-                <p className="text-gray-600 text-sm leading-relaxed">{member.description}</p>
-              </motion.div>
-            ))}
-          </div>
+         <FamilyCarousel />
         </div>
       </section>
 
@@ -643,6 +723,35 @@ export const App = () => {
             <a href="#proizvodi" className="text-gray-400 hover:text-amber-600 transition">Proizvodi</a>
             <a href="#kontakt" className="text-gray-400 hover:text-amber-600 transition">Kontakt</a>
           </div>
+          <div className="flex justify-center gap-5 mt-8">
+  
+    <a href="https://www.instagram.com/med.letvencuk/"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-10 h-10 flex items-center justify-center rounded-full bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition"
+    aria-label="Instagram"
+  >
+    <Instagram size={18} />
+  </a>
+  
+  <a href="https://wa.me/381607262539"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-10 h-10 flex items-center justify-center rounded-full bg-amber-50 text-amber-600 hover:bg-green-500 hover:text-white transition"
+    aria-label="WhatsApp"
+  >
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  </a>
+  
+  <a href="tel:+381600726253"
+    className="w-10 h-10 flex items-center justify-center rounded-full bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition"
+    aria-label="Pozovi"
+  >
+    <Phone size={18} />
+  </a>
+</div>
         </div>
       </footer>
 
