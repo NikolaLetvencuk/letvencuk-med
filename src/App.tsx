@@ -29,12 +29,17 @@ const BeeIcon = ({ className = "w-6 h-6" }) => (
   </svg>
 );
 
+interface PriceOption {
+  size: string;      
+  price: string;     
+}
+
 interface Product {
   id: number;
   name: string;
   description: string;
   longDescription: string;
-  price: string;
+  prices: PriceOption[];  
   image: string;
 }
 
@@ -55,7 +60,7 @@ const familyMembers = [
   {
     name: "Ivan",
     role: "Deda & Desna ruka",
-    description: "Iskustvo koje se ne kupuje. Ivan pomaže tati na pčelinjaku, uvek je tu kada je potrebna dodatna ruka i mudrost u radu sa košnicama.",
+    description: "Iskustvo koje se ne kupuje. Ivan pomaže Mihajlu na pčelinjaku, uvek je tu kada je potrebna dodatna ruka i mudrost u radu sa košnicama.",
     icon: <Users className="w-6 h-6 text-amber-600" />
   },
   {
@@ -72,7 +77,10 @@ const products: Product[] = [
     name: "Livadski med",
     description: "Bogat ukus prolećnih i letnjih livada. Sadrži nektar raznovrsnog lekovitog bilja.",
     longDescription: "Naš livadski med je prava riznica zdravlja. Sakupljan na čistim pašnjacima, on predstavlja mešavinu nektara desetina različitih cvetova, što mu daje jedinstvenu aromu i visoku nutritivnu vrednost. Idealan je za jačanje imuniteta i svakodnevnu upotrebu.",
-    price: "800 RSD",
+    prices: [
+      { size: "400g", price: "400 RSD" },
+      { size: "1kg", price: "800 RSD" }
+    ],    
     image: "public/images/suncokretov_med.webp"
   },
   {
@@ -80,7 +88,10 @@ const products: Product[] = [
     name: "Bagremov med",
     description: "Svetla boja i blag, prijatan ukus. Najtraženiji med zbog svoje nežne arome.",
     longDescription: "Bagremov med je poznat po svojoj prozirnosti i činjenici da ostaje u tečnom stanju veoma dugo. Zbog svog blagog ukusa, omiljen je deci. Deluje umirujuće na organizam i preporučuje se kod nesanice i stresa.",
-    price: "1500 RSD",
+    prices: [
+      { size: "400g", price: "600 RSD" },      
+      { size: "1kg", price: "1200 RSD" }
+    ],    
     image: "images/bagremov_med.webp"
   },
   {
@@ -88,7 +99,10 @@ const products: Product[] = [
     name: "Suncokretov med",
     description: "Prepoznatljive žute boje, brzo se kristališe u prelepe sitne kristale.",
     longDescription: "Suncokretov med je izuzetno zdrav zbog visokog sadržaja polena i minerala. Ima specifičan ukus i brzo se kristališe, što je siguran znak njegove čistoće i kvaliteta. Odličan je za srce i disajne puteve.",
-    price: "800 RSD",
+    prices: [
+      { size: "400g", price: "400 RSD" },
+      { size: "1kg", price: "800 RSD" }
+    ],    
     image: "images/suncokretov_med.webp"
   },
   {
@@ -96,7 +110,10 @@ const products: Product[] = [
     name: "Med od uljane repice",
     description: "Kremast med bele boje, izuzetno bogat polenom.",
     longDescription: "Med od uljane repice je prvi prolećni med. Zbog svoje sitnozrnaste kristalizacije, tekstura mu je poput putera. Izuzetno je blagotvoran za čišćenje jetre i regulisanje holesterola.",
-    price: "800 RSD",
+    prices: [
+      { size: "400g", price: "400 RSD" },
+      { size: "1kg", price: "800 RSD" }
+    ],
     image: "images/med_od_uljane_repice.webp"
   },
   {
@@ -104,7 +121,11 @@ const products: Product[] = [
     name: "Propolis kapi",
     description: "Prirodni antibiotik iz pčelinje košnice. Jaka zaštita za vaš organizam.",
     longDescription: "Naš propolis je 30% rastvor čistog pčelinjeg propolisa u alkoholu. Deluje protiv virusa, bakterija i gljivica. Nezaobilazan u kućnoj apoteci za dezinfekciju grla i jačanje odbrambene moći organizma.",
-    price: "0 RSD",
+    prices: [
+      { size: "kapi 10ml", price: "200 RSD" },
+      { size: "kapi 20ml", price: "400 RSD" },
+      { size: "sprej 50ml", price: "450 RSD" }
+    ],
     image: "images/propolisi.webp"
   },
   {
@@ -112,31 +133,42 @@ const products: Product[] = [
     name: "Pčelinji Polen",
     description: "Super-hrana direktno iz cveta. Bomba vitamina i minerala.",
     longDescription: "Polen sakupljen od strane naših pčela je izvor svih esencijalnih amino-kiselina. Preporučuje se sportistima, đacima i svima koji su pod pojačanim fizičkim i mentalnim naporom.",
-    price: "0 RSD",
-    image: ""
+    prices: [
+      { size: "100g", price: "200 RSD" },
+      { size: "200g", price: "400 RSD" }
+    ],
+    image: "images/polen.jpeg"
   },
   {
     id: 7,
     name: "Pčelinji Vosak",
     description: "Potpuno prirodan vosak za izradu sveća ili kozmetike.",
     longDescription: "Čist pčelinji vosak iz naših košnica. Bez ikakvih dodataka, miriše na med i pčele. Idealan za izradu prirodnih melema ili mirisnih sveća.",
-    price: "0 RSD",
-    image: ""
+    prices: [
+      { size: "komad", price: "200 RSD" }
+    ],    
+    image: "images/vosak.jpeg"
   },
   {
     id: 8,
     name: "Medovača",
     description: "Domaća rakija oplemenjena našim najboljim medom.",
     longDescription: "Naša medovača se pravi po starom porodičnom receptu. Spoj vrhunske voćne rakije i meda daje piće koje klizi niz grlo i ostavlja topao trag zdravlja.",
-    price: "1000000 RSD",
-    image: ""
+    prices: [
+      { size: "0.2l", price: "400 RSD" },
+      { size: "0.5l", price: "800 RSD" }
+    ],    
+    image: "images/medovaca.jpeg"
   },
   {
     id: 9,
     name: "Mix: Polen-Propolis-Med",
     description: "Klasičan imuno-mix za svakodnevnu upotrebu.",
     longDescription: "Savršeno izbalansiran odnos meda, polena i propolisa. Jedna kašika ujutru je sve što vam treba za energičan početak dana i jak imunitet.",
-    price: "0 RSD",
+    prices: [
+      { size: "400g", price: "700 RSD" },
+      { size: "1kg", price: "1500 RSD" }
+    ],    
     image: "images/miks_med_polen_propolis.jpg"
   },
   {
@@ -144,7 +176,10 @@ const products: Product[] = [
     name: "Mix: Med-Polen-Propolis-Kopriva",
     description: "Idealan za krvnu sliku i gvožđe.",
     longDescription: "Ovaj miks smo obogatili semenom koprive, što ga čini izuzetnim saveznikom u borbi protiv anemije. Pomaže kod umora i vraća vitalnost organizmu.",
-    price: "0 RSD",
+    prices: [
+      { size: "400g", price: "700 RSD" },
+      { size: "1kg", price: "1500 RSD" }
+    ],    
     image: "images/miks_kopriva.jpg"
   },
   {
@@ -152,7 +187,10 @@ const products: Product[] = [
     name: "Mix: Med-Polen-Propolis-Golica",
     description: "Podrška za prostatu i muško zdravlje.",
     longDescription: "Dodatak mlevenog semena golice (bundevino seme) čini ovaj miks specifičnim. Bogat je cinkom i mineralima važnim za zdravlje prostate i opšte muško zdravlje.",
-    price: "0 RSD",
+    prices: [
+      { size: "400g", price: "700 RSD" },
+      { size: "1kg", price: "1500 RSD" }
+    ],    
     image: "images/miks_med_polen_propolis_golica.jpg"
   },
   {
@@ -160,7 +198,10 @@ const products: Product[] = [
     name: "Mix: Limun-Đumbir-Med",
     description: "Osvežavajući mix protiv prehlade i virusa.",
     longDescription: "Kombinacija limuna, đumbira, meda, polena i propolisa. Ljuti đumbir i kiselkasti limun u medu stvaraju moćan eliksir za grlo i disajne puteve.",
-    price: "0 RSD",
+    prices: [
+      { size: "400g", price: "700 RSD" },
+      { size: "1kg", price: "1500 RSD" }
+    ],    
     image: "images/med_limun_djumbir_miks.webp"
   },
   {
@@ -168,7 +209,9 @@ const products: Product[] = [
     name: "Poklon Aranžmani",
     description: "Personalizovane korpice za sve prilike.",
     longDescription: "Pravimo aranžmane po vašoj želji! Bilo da je u pitanju Slava, rođendan, Božić ili Uskrs, mi spajamo naše proizvode u prelepe dekorisane korpice sa natpisima po vašoj želji.",
-    price: "Po dogovoru",
+    prices: [
+      { size: "", price: "po dogovoru" }
+    ],    
     image: "images/aranzman.jpg"
   }
 ];
@@ -242,7 +285,10 @@ const ProductCard = ({ product, onClick }: ProductCardProps) => (
     <div className="relative h-48 overflow-hidden">
       <img src={product.image} alt={product.name} className="w-full h-full object-cover transform hover:scale-110 transition duration-500" />
       <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-        {product.price}
+        {product.prices.length > 1 
+          ? `od ${product.prices[0].price}` 
+          : product.prices[0].price
+        }
       </div>
     </div>
     <div className="p-6 flex flex-col flex-grow">
@@ -286,8 +332,21 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => (
         </div>
         <div className="md:w-1/2 p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">{product.name}</h2>
-          <p className="text-amber-600 font-bold text-xl mb-4">{product.price}</p>
-          <p className="text-gray-600 mb-6 leading-relaxed">
+          <div className="mb-6">
+            <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Dostupne opcije:</p>
+            <div className="flex flex-wrap gap-2">
+              {[...product.prices].map((priceOption, index) => (
+                <div 
+                  key={index}
+                  className="bg-amber-50 border-2 border-amber-200 rounded-xl px-4 py-2 flex items-center gap-2"
+                >
+                  <span className="text-amber-800 font-bold">{priceOption.size}</span>
+                  <span className="text-gray-400">•</span>
+                  <span className="text-amber-600 font-bold">{priceOption.price}</span>
+                </div>
+              ))}
+            </div>
+          </div>          <p className="text-gray-600 mb-6 leading-relaxed">
             {product.longDescription}
           </p>
           <div className="flex flex-col gap-3">
