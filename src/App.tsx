@@ -100,7 +100,7 @@ const products: Product[] = [
     longDescription: "Bagremov med je poznat po svojoj prozirnosti i činjenici da ostaje u tečnom stanju veoma dugo. Zbog svog blagog ukusa, omiljen je deci. Deluje umirujuće na organizam i preporučuje se kod nesanice i stresa.",
     prices: [
       { size: "400g", price: "600 RSD" },      
-      { size: "1kg", price: "1200 RSD" }
+      { size: "1kg", price: "1500 RSD" }
     ],    
     image: "images/bagremov_med.webp"
   },
