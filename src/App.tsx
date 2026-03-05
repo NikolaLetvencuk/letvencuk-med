@@ -52,7 +52,7 @@ const familyMembers = [
   {
     name: "Mihajlo",
     role: "Otac & Glavni Pčelar",
-    description: "Stub našeg gazdinstva. Mihajlo je zadužen za sve na pčelinjaku – od brige o zdravlju pčela do vrcanja meda. Njegovo znanje i iskustvo su temelj svega što radimo.",
+    description: "Stub našeg gazdinstva. Mihajlo je zadužen za sve na pčelinjaku - od brige o zdravlju pčela do vrcanja meda. Njegovo znanje i iskustvo su temelj svega što radimo.",
     icon: <BeeIcon className="w-6 h-6 text-amber-600" />
   },
   {
@@ -76,7 +76,7 @@ const familyMembers = [
   {
     name: "Nikola",
     role: "Sin & Dostava",
-    description: "Nikola je naš pouzdani glasnik. Uvek spreman da pomogne — bilo da je u pitanju dostava meda na kućnu adresu, pakovanje porudžbina ili jednostavno da bude tu kada je potrebna još jedna ruka.",
+    description: "Nikola je naš pouzdani glasnik. Uvek spreman da pomogne  bilo da je u pitanju dostava meda na kućnu adresu, pakovanje porudžbina ili jednostavno da bude tu kada je potrebna još jedna ruka.",
     icon: <Truck className="w-6 h-6 text-amber-600" />
   }
 ];
@@ -254,22 +254,40 @@ const galleryImages = [
   { url: "images/gajbice_lepa_slika.jpg", caption: "Gajbice spremne za isporuku" }
 ];
 
+const scrollToId = (id: string) => {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  const navHeight = 80; // približna visina fiksnog navbara
+  const top = el.getBoundingClientRect().top + window.scrollY - navHeight;
+
+  window.scrollTo({
+    top,
+    behavior: 'smooth',
+  });
+};
+
 // --- Components ---
 const FamilyCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const total = familyMembers.length;
-  const [visibleCount, setVisibleCount] = useState(
-    window.innerWidth < 768 ? 1 : 4
-  );
+  const getVisibleCount = () => {
+  const w = window.innerWidth;
+  if (w < 768) return 1;           
+  if (w <= 1200) return 3; 
+  return 4;                        
+};
 
-  useEffect(() => {
-    const handleResize = () => {
-      setVisibleCount(window.innerWidth < 768 ? 1 : 4);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+const [visibleCount, setVisibleCount] = useState(getVisibleCount);
+
+useEffect(() => {
+  const handleResize = () => {
+    setVisibleCount(getVisibleCount());
+  };
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
 
   const paginate = (dir: number) => {
     setDirection(dir);
@@ -307,12 +325,18 @@ const FamilyCarousel = () => {
             animate="center"
             exit="exit"
             transition={{ duration: 0.35, ease: "easeInOut" }}
-            className={`grid gap-8 ${visibleCount === 1 ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}
+            className={`grid gap-8 ${
+              visibleCount === 1
+                ? 'grid-cols-1'
+                : visibleCount === 3
+                ? 'grid-cols-3'
+                : 'grid-cols-4'
+            }`}
           >
             {getVisible().map((member) => (
               <div
                 key={member.name}
-                className="h-[340px] overflow-y-hidden p-8 rounded-3xl bg-amber-50/50 border border-amber-100 text-center hover:bg-white hover:shadow-xl transition group"
+                className="p-8 rounded-3xl bg-amber-50/50 border border-amber-100 text-center hover:bg-white hover:shadow-xl transition group"
               >
                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm group-hover:scale-110 transition">
                   {member.icon}
@@ -447,6 +471,11 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
+  const handleNavClick = (sectionId: string) => {
+    setIsOpen(false);
+    scrollToId(sectionId);
+  };
+
   return (
     <nav className="fixed w-full bg-white/90 backdrop-blur-md z-50 border-b border-amber-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -457,15 +486,34 @@ const Navbar = () => {
               LETVENČUK
             </span>
           </div>
+
+          {/* desktop linkovi */}
           <div className="hidden md:flex space-x-8">
-            <a href="#proizvodi" className="text-gray-700 hover:text-amber-600 transition font-medium">Proizvodi</a>
-            <a href="#porodica" className="text-gray-700 hover:text-amber-600 transition font-medium">O Nama</a>
-            <a href="#galerija" className="text-gray-700 hover:text-amber-600 transition font-medium">Galerija</a>
-            <a href="#kontakt" className="text-gray-700 hover:text-amber-600 transition font-medium">Kontakt</a>
+            <button
+              onClick={() => handleNavClick('porodica')}
+              className="text-gray-700 hover:text-amber-600 transition font-medium"
+            >
+              O Nama
+            </button>
+            <button
+              onClick={() => handleNavClick('proizvodi')}
+              className="text-gray-700 hover:text-amber-600 transition font-medium"
+            >
+              Proizvodi
+            </button>            
+            <button
+              onClick={() => handleNavClick('galerija')}
+              className="text-gray-700 hover:text-amber-600 transition font-medium"
+            >
+              Galerija
+            </button>
+            <button
+              onClick={() => handleNavClick('kontakt')}
+              className="text-gray-700 hover:text-amber-600 transition font-medium"
+            >
+              Kontakt
+            </button>
           </div>
-          <button className="md:hidden text-amber-600" onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X size={28} /> : <div className="flex flex-col gap-1.5"><div className="w-8 h-0.5 bg-amber-600"></div><div className="w-8 h-0.5 bg-amber-600"></div><div className="w-8 h-0.5 bg-amber-600"></div></div>}
-          </button>
         </div>
       </div>
       <AnimatePresence>
@@ -591,7 +639,7 @@ export const App = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   return (
-    <div className="min-h-screen bg-amber-50/30 selection:bg-amber-200">
+    <div id="top" className="min-h-screen bg-amber-50/30 selection:bg-amber-200">
       <Navbar />
 
       {/* Hero Section */}
@@ -625,18 +673,18 @@ export const App = () => {
               Od klasičnog meda do moćnih imuno-mikseva, sve pravimo sa puno ljubavi i pažnje.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
-                href="#proizvodi" 
+              <button
+                onClick={() => scrollToId('proizvodi')}
                 className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-full text-lg font-bold transition transform hover:scale-105 shadow-xl shadow-amber-200"
               >
                 Istraži proizvode
-              </a>
-              <a 
-                href="#kontakt" 
+              </button>
+              <button
+                onClick={() => scrollToId('kontakt')}
                 className="bg-white border-2 border-amber-600 text-amber-600 px-8 py-4 rounded-full text-lg font-bold transition hover:bg-amber-50 transform hover:scale-105"
               >
                 Kontaktiraj nas
-              </a>
+              </button>
             </div>
           </motion.div>
         </div>        
@@ -840,9 +888,24 @@ export const App = () => {
             © {new Date().getFullYear()} Pčelarsko gazdinstvo Letvenčuk. Sva prava zadržana.
           </p>
           <div className="flex justify-center gap-6 mt-6">
-            <a href="#" className="text-gray-400 hover:text-amber-600 transition">Početna</a>
-            <a href="#proizvodi" className="text-gray-400 hover:text-amber-600 transition">Proizvodi</a>
-            <a href="#kontakt" className="text-gray-400 hover:text-amber-600 transition">Kontakt</a>
+            <button
+              onClick={() => scrollToId('top')} // ako dodaš id na vrh (npr. na body wrapper) ili samo window.scrollTo(0,..)
+              className="text-gray-400 hover:text-amber-600 transition"
+            >
+              Početna
+            </button>
+            <button
+              onClick={() => scrollToId('proizvodi')}
+              className="text-gray-400 hover:text-amber-600 transition"
+            >
+              Proizvodi
+            </button>
+            <button
+              onClick={() => scrollToId('kontakt')}
+              className="text-gray-400 hover:text-amber-600 transition"
+            >
+              Kontakt
+            </button>
           </div>
           <div className="flex justify-center gap-5 mt-8">
   
