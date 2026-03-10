@@ -372,28 +372,39 @@ useEffect(() => {
   );
 };
 
-const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Product) => void }) => {
+const ProductCarousel = ({
+  items,
+  onClick,
+}: {
+  items: Product[];
+  onClick: (p: Product) => void;
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const total = items.length;
 
-  const [visibleCount, setVisibleCount] = useState(
-    window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 4
+  // broj "kolona" saća u viewportu
+  const [cols, setCols] = useState(
+    window.innerWidth < 640 ? 3 : window.innerWidth < 1024 ? 4 : 5
   );
 
   useEffect(() => {
     const handleResize = () => {
-      setVisibleCount(
-        window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 4
+      setCols(
+        window.innerWidth < 640 ? 3 : window.innerWidth < 1024 ? 4 : 5
       );
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Koliko heksagona prikazujemo odjednom (približno 2 reda)
+  const visibleCount = cols * 2;
+
   const paginate = (dir: number) => {
     setDirection(dir);
-    setCurrentIndex((prev) => (prev + dir + total) % total);
+    // pomeraj po jednoj "koloni" (cols)
+    setCurrentIndex((prev) => (prev + dir * cols + total) % total);
   };
 
   const getVisible = () =>
@@ -407,10 +418,15 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
     exit: (dir: number) => ({ x: dir > 0 ? -80 : 80, opacity: 0 }),
   };
 
-  const gridClass =
-    visibleCount === 1 ? 'grid-cols-1' :
-    visibleCount === 2 ? 'grid-cols-2' :
-    'grid-cols-4';
+  const visibleItems = getVisible();
+
+  // Dimenzije heksagona – usklađene sa ProductCard
+  const hexWidth = 280;  // px (oko sm širine)
+  const hexHeight = 230; // px (oko sm visine)
+
+  // Horizontalni i vertikalni razmak da se ivice ne dodiruju, ali da budu blizu
+  const xStep = hexWidth * 0.78;   // 80% širine – preklapanje
+  const yStep = hexHeight * 0.58; // ~polovina visine + malo razmaka
 
   return (
     <div className="relative">
@@ -423,7 +439,7 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
         </button>
       )}
 
-      <div className="overflow-hidden px-2 pb-6">
+      <div className="overflow-hidden pb-10">
         <AnimatePresence mode="popLayout" custom={direction}>
           <motion.div
             key={currentIndex}
@@ -432,36 +448,55 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 0.35, ease: "easeInOut" }}
-            className={`grid gap-8 ${gridClass}`}
+            transition={{ duration: 0.35, ease: 'easeInOut' }}
+            className="relative mx-auto"
+            style={{
+              width: cols * xStep + hexWidth, // okvirna širina kontejnera
+              height: yStep * 3 + hexHeight,  // okvirna visina (2–3 reda)
+            }}
           >
-            {getVisible().map((product) => (
-              <ProductCard key={product.id} product={product} onClick={onClick} />
-            ))}
+            {visibleItems.map((product, index) => {
+              // kolona i red u "hex" koordinatama
+              const col = index % cols;
+              const row = Math.floor(index / cols);
+
+              // za pravi hex grid:
+              // svaki drugi stupac (ili red) se pomera za pola visine
+              const offsetY = (col % 2) * (hexHeight * 0.5);
+
+              const x = col * xStep;
+              const y = row * yStep + offsetY;
+
+              return (
+                <div
+                  key={product.id}
+                  className="absolute"
+                  style={{
+                    transform: `translate(${x}px, ${y}px)`,
+                  }}
+                >
+                  <ProductHexPair product={product} onClick={onClick} />
+                </div>
+              );
+            })}
           </motion.div>
         </AnimatePresence>
       </div>
 
       {total > visibleCount && (
-        <button
-          onClick={() => paginate(1)}
-          className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 transition"
-        >
-          <ChevronRight size={20} />
-        </button>
-      )}
-
-      {total > visibleCount && (
-        <div className="flex justify-center gap-2 mt-6">
-          {Array.from({ length: total }).map((_, i) => (
-            <button
-              key={i}
-              onClick={() => { setDirection(i > currentIndex ? 1 : -1); setCurrentIndex(i); }}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                i === currentIndex ? 'bg-amber-500 w-6' : 'bg-amber-200 hover:bg-amber-300'
-              }`}
-            />
-          ))}
+        <div className="flex items-center justify-center gap-4 mt-2">
+          <button
+            onClick={() => paginate(-1)}
+            className="w-9 h-9 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 transition"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <button
+            onClick={() => paginate(1)}
+            className="w-9 h-9 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 transition"
+          >
+            <ChevronRight size={18} />
+          </button>
         </div>
       )}
     </div>
@@ -542,31 +577,142 @@ interface ProductCardProps {
   onClick: (p: Product) => void;
 }
 
-const ProductCard = ({ product, onClick }: ProductCardProps) => (
-  <motion.div 
-    whileHover={{ y: -5 }}
-  className="bg-white rounded-2xl overflow-hidden shadow-lg border border-amber-50 flex flex-col h-full mb-4"
-  >
-    <div className="relative h-48 overflow-hidden">
-      <img src={product.image} alt={product.name} className="w-full h-full object-cover transform hover:scale-110 transition duration-500" />
-      <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-        {product.prices.length > 1 
-          ? `od ${product.prices[0].price}` 
-          : product.prices[0].price
-        }
-      </div>
-    </div>
-    <div className="p-6 flex flex-col flex-grow">
-      <h3 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h3>
-      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
-      <button 
+const ProductHexPair = ({
+  product,
+  onClick,
+}: {
+  product: Product;
+  onClick: (p: Product) => void;
+}) => {
+  // dimenzije jednog heksagona – usklađeno sa ProductCard
+  const hexWidth = 230;   // treba da prati md:w-[230px]
+  const hexHeight = 230;  // treba da prati md:h-[250px]
+
+  // koliko se donji "podvlači" pod gornji – manji overlap = veći razmak
+  const overlap = 0.0;   // 5% visine, znači vidljiv mali razmak
+  const verticalOffset = hexHeight * (1 - overlap);
+
+  return (
+    <motion.div
+      className="relative"
+      style={{
+        width: hexWidth,
+        height: hexHeight + verticalOffset, // ukupna visina para
+      }}
+      whileHover={{ scale: 1.06, y: -4 }}   // ceo par se uveća na hover
+      transition={{ type: 'spring', stiffness: 220, damping: 18 }}
+    >
+      {/* Gornji heksagon – info kartica */}
+      <button
+        type="button"
         onClick={() => onClick(product)}
-        className="mt-auto flex items-center gap-2 text-amber-600 font-semibold hover:text-amber-700 transition group"
+        className="absolute left-1/2 -translate-x-1/2
+                   w-[190px] h-[200px] sm:w-[210px] sm:h-[230px] md:w-[230px] md:h-[250px]
+                   bg-amber-50 border border-amber-200 shadow-md
+                   overflow-hidden cursor-pointer group"
+        style={{
+          top: 0,
+          clipPath:
+            'polygon(25% 10%, 75% 10%, 100% 50%, 75% 90%, 25% 90%, 0% 50%)',
+        }}
       >
-        Saznajte više <ArrowRight size={16} className="group-hover:translate-x-1 transition" />
+        <div className="absolute inset-0">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-full object-cover opacity-60 transition-transform duration-500 group-hover:scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-amber-50/95 via-amber-50/98 to-amber-100/95 group-hover:from-amber-50/90 group-hover:to-amber-100/90 transition" />
+        </div>
+
+        <div className="relative z-10 flex flex-col items-center justify-center h-full px-3 text-center">
+          <div className="text-[11px] sm:text-xs font-bold tracking-wider uppercase text-amber-700 mb-1">
+            {product.prices.length > 1
+              ? `od ${product.prices[0].price}`
+              : product.prices[0].price}
+          </div>
+
+          <h3 className="text-sm sm:text-base font-extrabold text-amber-900 mb-1 line-clamp-2">
+            {product.name}
+          </h3>
+
+          <p className="text-[11px] sm:text-xs text-amber-900/85 leading-snug line-clamp-3">
+            {product.description}
+          </p>
+
+          <span className="mt-2 text-[11px] sm:text-xs font-semibold text-amber-700 opacity-0 group-hover:opacity-100 transition">
+            Saznajte više →
+          </span>
+        </div>
       </button>
+
+      {/* Donji heksagon – samo slika, sa malim razmakom u odnosu na gornji */}
+      <button
+        type="button"
+        onClick={() => onClick(product)}
+        className="absolute left-1/2 -translate-x-1/2
+                  w-[190px] h-[200px] sm:w-[210px] sm:h-[230px] md:w-[230px] md:h-[250px]
+                  overflow-hidden shadow-md border border-amber-200 bg-amber-50 cursor-pointer"
+        style={{
+          top: verticalOffset,
+          clipPath:
+            'polygon(25% 10%, 75% 10%, 100% 50%, 75% 90%, 25% 90%, 0% 50%)',
+        }}
+      >
+        <img
+          src={product.image}
+          alt={product.name}
+          className="w-full h-full object-cover"
+        />
+      </button>    
+    </motion.div>
+  );
+};
+
+const ProductCard = ({ product, onClick }: ProductCardProps) => (
+  <motion.button
+    type="button"
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.97 }}
+    onClick={() => onClick(product)}
+    className="relative group 
+               w-[190px] h-[200px] sm:w-[210px] sm:h-[230px] md:w-[230px] md:h-[250px]
+               bg-amber-50 border border-amber-200 shadow-md
+               overflow-hidden cursor-pointer"
+    style={{
+      clipPath:
+        'polygon(25% 10%, 75% 10%, 100% 50%, 75% 90%, 25% 90%, 0% 50%)',
+    }}
+  >
+    <div className="absolute inset-0">
+      <img
+        src={product.image}
+        alt={product.name}
+        className="w-full h-full object-cover opacity-60 transition-transform duration-500 group-hover:scale-110"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-amber-50/95 via-amber-50/98 to-amber-100/95 group-hover:from-amber-50/90 group-hover:to-amber-100/90 transition" />
     </div>
-  </motion.div>
+
+    <div className="relative z-10 flex flex-col items-center justify-center h-full px-3 text-center">
+      <div className="text-[11px] sm:text-xs font-bold tracking-wider uppercase text-amber-700 mb-1">
+        {product.prices.length > 1
+          ? `od ${product.prices[0].price}`
+          : product.prices[0].price}
+      </div>
+
+      <h3 className="text-sm sm:text-base font-extrabold text-amber-900 mb-1 line-clamp-2">
+        {product.name}
+      </h3>
+
+      <p className="text-[11px] sm:text-xs text-amber-900/85 leading-snug line-clamp-3">
+        {product.description}
+      </p>
+
+      <span className="mt-2 text-[11px] sm:text-xs font-semibold text-amber-700 opacity-0 group-hover:opacity-100 transition">
+        Saznajte više →
+      </span>
+    </div>
+  </motion.button>
 );
 
 interface ProductModalProps {
