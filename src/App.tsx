@@ -182,7 +182,7 @@ const products: Product[] = [
   },
   {
     id: 10,
-    name: "Mix: Med-polen-propolis-kopriva",
+    name: "Mix: Med-kopriva",
     description: "Idealan za krvnu sliku i gvožđe.",
     longDescription: "Ovaj miks smo obogatili semenom koprive, što ga čini izuzetnim saveznikom u borbi protiv anemije. Pomaže kod umora i vraća vitalnost organizmu.",
     prices: [
@@ -217,9 +217,9 @@ const products: Product[] = [
     id: 13,
     name: "Poklon aranžmani",
     description: "Personalizovane korpice za sve prilike.",
-    longDescription: "Pravimo aranžmane po vašoj želji! Bilo da je u pitanju Slava, rođendan, Božić ili Uskrs, mi spajamo naše proizvode u prelepe dekorisane korpice sa natpisima po vašoj želji.",
+    longDescription: "Pravimo aranžmane po vašoj želji! Bilo da je u pitanju slava, rođendan, Božić ili Uskrs, mi spajamo naše proizvode u prelepe dekorisane korpice sa natpisima po vašoj želji.",
     prices: [
-      { size: "", price: "po dogovoru" }
+      { size: "", price: "cena po dogovoru" }
     ],    
     image: "images/aranzman.jpg"
   }
@@ -643,8 +643,8 @@ export const App = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
+<section className="relative h-screen flex items-center justify-center overflow-hidden pt-24 md:pt-20">
+          <div className="absolute inset-0">
           <img 
             src="images/kontejner1.webp" 
             alt="Pčelinjak" 
@@ -884,14 +884,14 @@ export const App = () => {
       <footer className="bg-white py-12 border-t border-amber-100">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-6">
-<img
-  src="images/logo.svg"
-  alt="Pčelarsko gazdinstvo Letvenčuk"
-  className="h-64 md:h-80 w-auto mx-auto -mt-40 md:-mt-40"
-  style={{
-    clipPath: 'inset(45% 0 30% 0)'
-  }}
-/>
+            <img
+              src="images/logo.svg"
+              alt="Pčelarsko gazdinstvo Letvenčuk"
+              className="h-64 md:h-80 w-auto mx-auto -mt-40 md:-mt-40"
+              style={{
+                clipPath: 'inset(45% 0 30% 0)'
+              }}
+            />
           </div>
           <p className="text-gray-500 text-sm -mt-30 md:-mt-30">
             © {new Date().getFullYear()} Pčelarsko gazdinstvo Letvenčuk. Sva prava zadržana.
