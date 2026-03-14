@@ -12,8 +12,7 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
-  Truck,
-  Flower2
+  Truck  
 } from 'lucide-react';
 
 const BeeIcon = ({ className = "w-6 h-6" }) => (
@@ -136,7 +135,7 @@ const products: Product[] = [
       { size: "kapi 20ml", price: "400 RSD" },
       { size: "sprej 50ml", price: "450 RSD" }
     ],
-    image: "images/propolisi.webp"
+    image: "images/propolis2.jpeg"
   },
   {
     id: 6,
@@ -147,7 +146,7 @@ const products: Product[] = [
       { size: "100g", price: "200 RSD" },
       { size: "200g", price: "400 RSD" }
     ],
-    image: "images/polen.jpeg"
+    image: "images/polen2.jpeg"
   },
   {
     id: 7,
@@ -157,7 +156,7 @@ const products: Product[] = [
     prices: [
       { size: "komad", price: "200 RSD" }
     ],    
-    image: "images/vosak.jpeg"
+    image: "images/vosak2.jpeg"
   },
   {
     id: 8,
@@ -168,7 +167,7 @@ const products: Product[] = [
       { size: "0.2l", price: "400 RSD" },
       { size: "0.5l", price: "800 RSD" }
     ],    
-    image: "images/medovaca.jpeg"
+    image: "images/medovaca2.jpeg"
   },
   {
     id: 9,
@@ -481,10 +480,11 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           <div className="flex items-center gap-2">
-            <BeeIcon className="text-amber-600 w-8 h-8" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-amber-700 to-amber-500 bg-clip-text text-transparent">
-              LETVENČUK
-            </span>
+            <img 
+              src="images/Tanja logo.svg" 
+              alt="Letvenčuk logo" 
+              className="h-80 w-auto transition hover:scale-105 -translate-y-2"
+            />
           </div>
 
           {/* desktop linkovi */}
@@ -664,11 +664,16 @@ export const App = () => {
             </span>
             <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-6 leading-tight">
               Pčelarsko gazdinstvo <br />
-              <span className="bg-gradient-to-r from-amber-700 to-amber-500 bg-clip-text text-transparent">
-                Letvenčuk
-              </span>
+            <img
+              src="images/Tanja logo.svg"
+              alt="Pčelarsko gazdinstvo Letvenčuk"
+              className="h-182 md:h-182 w-auto mx-auto -mt-80 md:-mt-80"
+              style={{
+                clipPath: 'inset(45% 0 30% 0)'
+              }}
+            />
             </h1>
-            <p className="text-xl text-gray-700 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-700 mb-10 max-w-2xl mx-auto leading-relaxed -mt-72 md:-mt-72">
               Donosimo vam najčistije darove prirode direktno iz naših košnica. 
               Od klasičnog meda do moćnih imuno-mikseva, sve pravimo sa puno ljubavi i pažnje.
             </p>
@@ -879,12 +884,16 @@ export const App = () => {
       <footer className="bg-white py-12 border-t border-amber-100">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-6">
-            <BeeIcon className="text-amber-600 w-6 h-6" />
-            <span className="text-xl font-bold bg-gradient-to-r from-amber-700 to-amber-500 bg-clip-text text-transparent">
-              LETVENČUK
-            </span>
+<img
+  src="images/Tanja logo.svg"
+  alt="Pčelarsko gazdinstvo Letvenčuk"
+  className="h-64 md:h-80 w-auto mx-auto -mt-40 md:-mt-40"
+  style={{
+    clipPath: 'inset(45% 0 30% 0)'
+  }}
+/>
           </div>
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 text-sm -mt-30 md:-mt-30">
             © {new Date().getFullYear()} Pčelarsko gazdinstvo Letvenčuk. Sva prava zadržana.
           </p>
           <div className="flex justify-center gap-6 mt-6">
