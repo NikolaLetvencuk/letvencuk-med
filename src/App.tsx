@@ -481,7 +481,7 @@ const Navbar = () => {
         <div className="flex justify-between h-20 items-center">
           <div className="flex items-center gap-2">
             <img 
-              src="images/Tanja logo.svg" 
+              src="images/logo.svg" 
               alt="Letvenčuk logo" 
               className="h-80 w-auto transition hover:scale-105 -translate-y-2"
             />
@@ -665,7 +665,7 @@ export const App = () => {
             <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-6 leading-tight">
               Pčelarsko gazdinstvo <br />
             <img
-              src="images/Tanja logo.svg"
+              src="images/logo.svg"
               alt="Pčelarsko gazdinstvo Letvenčuk"
               className="h-182 md:h-182 w-auto mx-auto -mt-80 md:-mt-80"
               style={{
@@ -885,7 +885,7 @@ export const App = () => {
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-6">
 <img
-  src="images/Tanja logo.svg"
+  src="images/logo.svg"
   alt="Pčelarsko gazdinstvo Letvenčuk"
   className="h-64 md:h-80 w-auto mx-auto -mt-40 md:-mt-40"
   style={{
