@@ -104,17 +104,6 @@ const products: Product[] = [
     image: "images/bagremov_med.webp"
   },
   {
-    id: 3,
-    name: "Suncokretov med",
-    description: "Prepoznatljive žute boje, brzo se kristališe u prelepe sitne kristale.",
-    longDescription: "Suncokretov med je izuzetno zdrav zbog visokog sadržaja polena i minerala. Ima specifičan ukus i brzo se kristališe, što je siguran znak njegove čistoće i kvaliteta. Odličan je za srce i disajne puteve.",
-    prices: [
-      { size: "400g", price: "400 RSD" },
-      { size: "1kg", price: "800 RSD" }
-    ],    
-    image: "images/suncokretov_med.webp"
-  },
-  {
     id: 4,
     name: "Med od uljane repice",
     description: "Kremast med bele boje, izuzetno bogat polenom.",
@@ -131,9 +120,9 @@ const products: Product[] = [
     description: "Prirodni antibiotik iz pčelinje košnice. Jaka zaštita za vaš organizam.",
     longDescription: "Naš propolis je 30% rastvor čistog pčelinjeg propolisa u alkoholu. Deluje protiv virusa, bakterija i gljivica. Nezaobilazan u kućnoj apoteci za dezinfekciju grla i jačanje odbrambene moći organizma.",
     prices: [
-      { size: "kapi 10ml", price: "200 RSD" },
+      { size: "kapi 10ml", price: "250 RSD" },
       { size: "kapi 20ml", price: "400 RSD" },
-      { size: "sprej 50ml", price: "450 RSD" }
+      { size: "sprej 20ml", price: "450 RSD" }
     ],
     image: "images/propolis2.jpeg"
   },
