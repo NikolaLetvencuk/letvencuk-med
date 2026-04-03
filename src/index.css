@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 3D perspective on body */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Video hero transitions */
+video {
+  transition: opacity 0.5s ease;
+}
+
+/* Stretch video to fill on laptop screens only */
+@media (min-width: 1024px) and (max-width: 1536px) {
+  video {
+    object-fit: cover !important;
+    object-position: center 70% !important;
+  }
+}
