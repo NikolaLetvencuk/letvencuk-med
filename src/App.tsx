@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { 
   Phone, 
   Instagram, 
@@ -542,32 +542,38 @@ interface ProductCardProps {
   onClick: (p: Product) => void;
 }
 
-const ProductCard = ({ product, onClick }: ProductCardProps) => (
-  <motion.div 
-    whileHover={{ y: -5 }}
-  className="bg-white rounded-2xl overflow-hidden shadow-lg border border-amber-50 flex flex-col h-full mb-4"
-  >
-    <div className="relative h-48 overflow-hidden">
-      <img src={product.image} alt={product.name} className="w-full h-full object-cover transform hover:scale-110 transition duration-500" />
-      <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-        {product.prices.length > 1 
-          ? `od ${product.prices[0].price}` 
-          : product.prices[0].price
-        }
+const ProductCard = ({ product, onClick }: ProductCardProps) => {
+  const tilt = use3DTilt();
+  return (
+    <div
+      ref={tilt.ref}
+      onMouseMove={tilt.handleMouseMove}
+      onMouseLeave={tilt.handleMouseLeave}
+      style={{ transition: 'transform 0.2s ease-out', transformStyle: 'preserve-3d' }}
+      className="bg-white rounded-2xl overflow-hidden shadow-lg border border-amber-50 flex flex-col h-full mb-4 hover:shadow-2xl hover:shadow-amber-200/50"
+    >
+      <div className="relative h-48 overflow-hidden">
+        <img src={product.image} alt={product.name} className="w-full h-full object-cover transform hover:scale-110 transition duration-500" />
+        <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+          {product.prices.length > 1
+            ? `od ${product.prices[0].price}`
+            : product.prices[0].price
+          }
+        </div>
+      </div>
+      <div className="p-6 flex flex-col flex-grow">
+        <h3 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h3>
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
+        <button
+          onClick={() => onClick(product)}
+          className="mt-auto flex items-center gap-2 text-amber-600 font-semibold hover:text-amber-700 transition group"
+        >
+          Saznajte više <ArrowRight size={16} className="group-hover:translate-x-1 transition" />
+        </button>
       </div>
     </div>
-    <div className="p-6 flex flex-col flex-grow">
-      <h3 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h3>
-      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
-      <button 
-        onClick={() => onClick(product)}
-        className="mt-auto flex items-center gap-2 text-amber-600 font-semibold hover:text-amber-700 transition group"
-      >
-        Saznajte više <ArrowRight size={16} className="group-hover:translate-x-1 transition" />
-      </button>
-    </div>
-  </motion.div>
-);
+  );
+};
 
 interface ProductModalProps {
   product: Product;
@@ -635,6 +641,95 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => (
   </motion.div>
 );
 
+// 3D tilt card hook
+const use3DTilt = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    el.style.transform = `perspective(800px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) scale3d(1.02, 1.02, 1.02)`;
+  }, []);
+  const handleMouseLeave = useCallback(() => {
+    const el = ref.current;
+    if (el) el.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg) scale3d(1, 1, 1)';
+  }, []);
+  return { ref, handleMouseMove, handleMouseLeave };
+};
+
+// Section wrapper with fade-in on scroll
+const Section3D = ({ children, className = '', id }: { children: React.ReactNode; className?: string; id?: string }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
+  return (
+    <motion.section
+      id={id}
+      ref={ref}
+      initial={{ opacity: 0, y: 60 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
+      transition={{ duration: 0.7, ease: 'easeOut' }}
+      className={className}
+    >
+      {children}
+    </motion.section>
+  );
+};
+
+// Hero section with video
+const HeroSection = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [videoPlaying, setVideoPlaying] = useState(false);
+  const isInView = useInView(sectionRef, { amount: 0.3 });
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isInView) {
+      // Reset to beginning and play every time we scroll into view
+      video.currentTime = 0;
+      video.play().catch(() => {});
+      setVideoPlaying(true);
+    } else {
+      video.pause();
+      setVideoPlaying(false);
+    }
+  }, [isInView]);
+
+  const handleVideoEnd = () => {
+    setVideoPlaying(false);
+  };
+
+  // Video aspect ratio: 2752x1536 ≈ 16:9
+  return (
+    <section ref={sectionRef} className="relative w-full pt-16 md:pt-20" style={{ aspectRatio: '2752 / 1536' }}>
+      {/* Background layer - responsive offsets */}
+      <div className="absolute inset-0 top-16 -bottom-16 md:top-20 md:bottom-20 lg:bottom-10 2xl:bottom-40 overflow-hidden bg-white">
+        {/* First frame as default (shown when video not playing) */}
+        <img
+          src="images/prvi_frame.png"
+          alt="Pčelarsko gazdinstvo Letvenčuk"
+          className={`absolute inset-0 w-full h-full object-cover max-md:object-bottom max-md:scale-x-[1.15] max-md:scale-y-100 md:object-fill bg-white transition-opacity duration-500 ${videoPlaying ? 'opacity-0' : 'opacity-100'} md:scale-[1.025] md:-translate-y-[1%]`}
+        />
+
+        {/* Video */}
+        <video
+          ref={videoRef}
+          src="images/letvencukmed_naslovna.mp4"
+          muted
+          playsInline
+          onEnded={handleVideoEnd}
+          className={`absolute inset-0 w-full h-full object-cover max-md:object-bottom max-md:scale-[1.20] bg-white transition-opacity duration-500 ${videoPlaying ? 'opacity-100' : 'opacity-0'}`}
+        />
+      </div>
+
+    </section>
+  );
+};
+
 export const App = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
@@ -642,61 +737,10 @@ export const App = () => {
     <div id="top" className="min-h-screen bg-amber-50/30 selection:bg-amber-200">
       <Navbar />
 
-      {/* Hero Section */}
-<section className="relative h-screen flex items-center justify-center overflow-hidden pt-24 md:pt-20">
-          <div className="absolute inset-0">
-          <img 
-            src="images/kontejner1.webp" 
-            alt="Pčelinjak" 
-            className="w-full h-full object-cover opacity-20"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-amber-50/50 to-amber-50"></div>
-        </div>
-        
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <span className="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-widest text-amber-700 uppercase bg-amber-100 rounded-full">
-              Tradicija od poverenja
-            </span>
-            <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-6 leading-tight">
-              Pčelarsko gazdinstvo <br />
-            <img
-              src="images/logo.svg"
-              alt="Pčelarsko gazdinstvo Letvenčuk"
-              className="h-182 md:h-182 w-auto mx-auto -mt-80 md:-mt-80"
-              style={{
-                clipPath: 'inset(45% 0 30% 0)'
-              }}
-            />
-            </h1>
-            <p className="text-xl text-gray-700 mb-10 max-w-2xl mx-auto leading-relaxed -mt-72 md:-mt-72">
-              Donosimo vam najčistije darove prirode direktno iz naših košnica. 
-              Od klasičnog meda do moćnih imuno-mikseva, sve pravimo sa puno ljubavi i pažnje.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => scrollToId('proizvodi')}
-                className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-full text-lg font-bold transition transform hover:scale-105 shadow-xl shadow-amber-200"
-              >
-                Istraži proizvode
-              </button>
-              <button
-                onClick={() => scrollToId('kontakt')}
-                className="bg-white border-2 border-amber-600 text-amber-600 px-8 py-4 rounded-full text-lg font-bold transition hover:bg-amber-50 transform hover:scale-105"
-              >
-                Kontaktiraj nas
-              </button>
-            </div>
-          </motion.div>
-        </div>        
-      </section>
+      <HeroSection />
 
       {/* Porodica Section */}
-      <section id="porodica" className="py-24 px-4 bg-white">
+      <Section3D id="porodica" className="pt-20 pb-24 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Upoznajte našu porodicu</h2>
@@ -709,10 +753,10 @@ export const App = () => {
           
          <FamilyCarousel />
         </div>
-      </section>
+      </Section3D>
 
       {/* Proizvodi Section */}
-      <section id="proizvodi" className="py-24 px-4">
+      <Section3D id="proizvodi" className="py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Naši proizvodi</h2>
@@ -735,10 +779,10 @@ export const App = () => {
             ))}
           </div>
         </div>
-      </section>
+      </Section3D>
 
       {/* Galerija Section */}
-      <section id="galerija" className="py-24 px-4 bg-gray-900 text-white">
+      <Section3D id="galerija" className="py-24 px-4 bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Život na pčelinjaku</h2>
@@ -748,14 +792,16 @@ export const App = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style={{ perspective: '1000px' }}>
             {galleryImages.map((img, index) => (
-              <motion.div 
+              <motion.div
                 key={index}
-                whileHover={{ scale: 1.02 }}
-                className="relative h-72 rounded-2xl overflow-hidden group cursor-pointer"
+                whileHover={{ scale: 1.03, rotateY: 3, rotateX: -2 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className="relative h-72 rounded-2xl overflow-hidden group cursor-pointer shadow-lg hover:shadow-2xl hover:shadow-amber-500/20"
+                style={{ transformStyle: 'preserve-3d' }}
               >
-                <img src={img.url} alt={img.caption} className="w-full h-full object-cover" />
+                <img src={img.url} alt={img.caption} className="w-full h-full object-cover transition duration-500 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-6">
                   <p className="text-sm font-medium">{img.caption}</p>
                 </div>
@@ -763,10 +809,10 @@ export const App = () => {
             ))}
           </div>
         </div>
-      </section>
+      </Section3D>
 
       {/* Kontakt Section */}
-      <section id="kontakt" className="py-24 px-4">
+      <Section3D id="kontakt" className="py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="bg-white rounded-[3rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row border border-amber-100">
             {/* Kontakt Informacije */}
@@ -878,7 +924,7 @@ export const App = () => {
             </div>
           </div>
         </div>
-      </section>
+      </Section3D>
 
       {/* Footer */}
       <footer className="bg-white py-12 border-t border-amber-100">
