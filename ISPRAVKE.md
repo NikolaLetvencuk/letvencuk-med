@@ -12,5 +12,9 @@
 - Dodati hamburger meni za mobilni prikaz.
 - Dodati sve potrebne elemente u navbar i za mobilnu verziju.
 
+## ~~5. Kartice clanova porodice - fiksna velicina~~ [DONE]
+- ~~Kartice za clanove porodice menjaju velicinu kad se listaju (npr. Nikola ima duzi tekst pa se kartice povecaju).~~
+- Reseno: fiksna visina kartica (h-72) sa overflow-hidden na tekstu.
+
 ## 4. Kartice proizvoda - klik na celu karticu
 - Kartice za produkte treba da se otvaraju klikom na celu karticu, a ne samo klikom na dugme "Saznaj vise".
