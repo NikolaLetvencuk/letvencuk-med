@@ -305,6 +305,23 @@ const useSwipe = (onSwipeLeft: () => void, onSwipeRight: () => void) => {
   return { onTouchStart, onTouchEnd };
 };
 
+const Spinning3DHoneycomb = () => (
+  <div className="flex justify-center mb-10" style={{ perspective: '600px' }}>
+    <div className="animate-spin3d">
+      <svg viewBox="0 0 100 100" className="w-24 h-24 md:w-32 md:h-32 drop-shadow-[0_0_20px_rgba(245,158,11,0.5)]">
+        <polygon points="50,20 72,35 72,65 50,80 28,65 28,35" fill="#f59e0b" opacity="0.9" />
+        <polygon points="50,0 65,8 65,28 50,36 35,28 35,8" fill="#d97706" opacity="0.7" />
+        <polygon points="50,64 65,72 65,92 50,100 35,92 35,72" fill="#d97706" opacity="0.7" />
+        <polygon points="72,10 87,18 87,38 72,46 57,38 57,18" fill="#b45309" opacity="0.6" />
+        <polygon points="28,10 43,18 43,38 28,46 13,38 13,18" fill="#b45309" opacity="0.6" />
+        <polygon points="72,54 87,62 87,82 72,90 57,82 57,62" fill="#b45309" opacity="0.6" />
+        <polygon points="28,54 43,62 43,82 28,90 13,82 13,62" fill="#b45309" opacity="0.6" />
+        <text x="50" y="56" textAnchor="middle" fontSize="22">🐝</text>
+      </svg>
+    </div>
+  </div>
+);
+
 // --- Components ---
 const FamilyCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -350,7 +367,7 @@ useEffect(() => {
     <div className="relative">
       <button
         onClick={() => paginate(-1)}
-        className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 hover:border-amber-400 transition"
+        className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 border border-amber-500/30 rounded-full shadow-md flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-400 transition"
       >
         <ChevronLeft size={20} />
       </button>
@@ -376,14 +393,14 @@ useEffect(() => {
             {getVisible().map((member) => (
               <div
                 key={member.name}
-                className="p-8 rounded-3xl bg-amber-50/50 border border-amber-100 text-center hover:bg-white hover:shadow-xl transition group h-72 flex flex-col"
+                className="p-8 rounded-3xl bg-white/5 border border-amber-500/20 text-center hover:bg-white/10 hover:border-amber-500/40 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] transition-all duration-300 group h-72 flex flex-col will-change-transform"
               >
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm group-hover:scale-110 transition">
-                  {member.icon}
+                <div className="w-16 h-16 bg-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:bg-amber-500/30 transition">
+                  <div className="text-amber-400">{member.icon}</div>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1">{member.name}</h3>
-                <p className="text-amber-600 text-sm font-semibold mb-4">{member.role}</p>
-                <p className="text-gray-600 text-sm leading-relaxed flex-1 overflow-hidden">{member.description}</p>
+                <h3 className="text-xl font-bold text-white mb-1">{member.name}</h3>
+                <p className="text-amber-400 text-sm font-semibold mb-4">{member.role}</p>
+                <p className="text-gray-400 text-sm leading-relaxed flex-1 overflow-hidden">{member.description}</p>
               </div>
             ))}
           </motion.div>
@@ -392,7 +409,7 @@ useEffect(() => {
 
       <button
         onClick={() => paginate(1)}
-        className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 hover:border-amber-400 transition"
+        className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 border border-amber-500/30 rounded-full shadow-md flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-400 transition"
       >
         <ChevronRight size={20} />
       </button>
@@ -403,7 +420,7 @@ useEffect(() => {
             key={i}
             onClick={() => { setDirection(i > currentIndex ? 1 : -1); setCurrentIndex(i); }}
             className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              i === currentIndex ? 'bg-amber-500 w-6' : 'bg-amber-200 hover:bg-amber-300'
+              i === currentIndex ? 'bg-amber-500 w-6' : 'bg-amber-500/30 hover:bg-amber-500/50'
             }`}
           />
         ))}
@@ -908,17 +925,21 @@ export const App = () => {
       <HeroSection />
 
       {/* Porodica Section */}
-      <Section3D id="porodica" className="pt-20 pb-24 px-4 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Upoznajte našu porodicu</h2>
+      <Section3D id="porodica" className="py-24 px-4 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden -mt-1">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-600/10 rounded-full blur-[120px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-8">
+            <Spinning3DHoneycomb />
+            <h2 className="text-4xl font-bold text-white mb-4">Upoznajte našu porodicu</h2>
             <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mb-6"></div>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Naše pčelarenje je porodični posao u kojem svako ima svoju ulogu. 
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Naše pčelarenje je porodični posao u kojem svako ima svoju ulogu.
               Zajedničkim snagama stvaramo najbolje za vas.
             </p>
           </div>
-          
+
          <FamilyCarousel />
         </div>
       </Section3D>
