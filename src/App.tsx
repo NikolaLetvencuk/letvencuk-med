@@ -8,6 +8,7 @@ import {
   ShoppingBasket, 
   Users, 
   X,
+  Menu,
   Send,
   ArrowRight,
   ChevronLeft,
@@ -461,7 +462,7 @@ const Navbar = () => {
 
   const handleNavClick = (sectionId: string) => {
     setIsOpen(false);
-    scrollToId(sectionId);
+    setTimeout(() => scrollToId(sectionId), 50);
   };
 
   return (
@@ -476,6 +477,14 @@ const Navbar = () => {
             />
           </div>
 
+          {/* Hamburger dugme - mobilni */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden w-10 h-10 flex items-center justify-center text-gray-700 hover:text-amber-600 transition"
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+
           {/* desktop linkovi */}
           <div className="hidden md:flex space-x-8">
             <button
@@ -489,7 +498,7 @@ const Navbar = () => {
               className="text-gray-700 hover:text-amber-600 transition font-medium"
             >
               Proizvodi
-            </button>            
+            </button>
             <button
               onClick={() => handleNavClick('galerija')}
               className="text-gray-700 hover:text-amber-600 transition font-medium"
@@ -514,10 +523,10 @@ const Navbar = () => {
             className="md:hidden bg-white border-b border-amber-50"
           >
             <div className="px-4 pt-2 pb-6 space-y-1">
-              <a href="#proizvodi" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-gray-700">Proizvodi</a>
-              <a href="#porodica" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-gray-700">O Nama</a>
-              <a href="#galerija" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-gray-700">Galerija</a>
-              <a href="#kontakt" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-gray-700">Kontakt</a>
+              <button onClick={() => handleNavClick('porodica')} className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition">O Nama</button>
+              <button onClick={() => handleNavClick('proizvodi')} className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition">Proizvodi</button>
+              <button onClick={() => handleNavClick('galerija')} className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition">Galerija</button>
+              <button onClick={() => handleNavClick('kontakt')} className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition">Kontakt</button>
             </div>
           </motion.div>
         )}

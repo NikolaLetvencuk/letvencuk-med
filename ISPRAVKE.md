@@ -8,9 +8,10 @@
 - ~~Logo je mnogo visi nego sto treba - hoveruje se od dole mnogo vise nego sto je potrebno. Smanjiti visinu ili podesiti pozicioniranje.~~
 - Reseno: wrapper cropuje logo na visinu navbara sa overflow-hidden.
 
-## 3. Navbar - mobilni prikaz (hamburger meni)
-- Dodati hamburger meni za mobilni prikaz.
-- Dodati sve potrebne elemente u navbar i za mobilnu verziju.
+## ~~3. Navbar - mobilni prikaz (hamburger meni)~~ [DONE]
+- ~~Dodati hamburger meni za mobilni prikaz.~~
+- ~~Dodati sve potrebne elemente u navbar i za mobilnu verziju.~~
+- Reseno: dodat hamburger dugme (Menu/X ikona), linkovi koriste smooth scroll, hover efekti na mobilnim linkovima.
 
 ## ~~5. Kartice clanova porodice - fiksna velicina~~ [DONE]
 - ~~Kartice za clanove porodice menjaju velicinu kad se listaju (npr. Nikola ima duzi tekst pa se kartice povecaju).~~
@@ -18,3 +19,6 @@
 
 ## 4. Kartice proizvoda - klik na celu karticu
 - Kartice za produkte treba da se otvaraju klikom na celu karticu, a ne samo klikom na dugme "Saznaj vise".
+
+## 6. Kontakt forma - validacija
+- Forma za "Kontaktirajte nas" prihvata slanje i kada su polja prazna. Dodati validaciju da sva obavezna polja moraju biti popunjena.
