@@ -468,10 +468,10 @@ const Navbar = () => {
     <nav className="fixed w-full bg-white/90 backdrop-blur-md z-50 border-b border-amber-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
-          <div className="flex items-center gap-2">
-            <img 
-              src="images/logo.svg" 
-              alt="Letvenčuk logo" 
+          <div className="flex items-center gap-2 h-20 overflow-hidden">
+            <img
+              src="images/logo.svg"
+              alt="Letvenčuk logo"
               className="h-80 w-auto transition hover:scale-105 -translate-y-2"
             />
           </div>
@@ -692,29 +692,27 @@ const HeroSection = () => {
     setVideoPlaying(false);
   };
 
-  // Video aspect ratio: 2752x1536 ≈ 16:9
+  // Video actual resolution: 1920x1080 (16:9)
   return (
-    <section ref={sectionRef} className="relative w-full pt-16 md:pt-20" style={{ aspectRatio: '2752 / 1536' }}>
-      {/* Background layer - responsive offsets */}
-      <div className="absolute inset-0 top-16 -bottom-16 md:top-20 md:bottom-20 lg:bottom-10 2xl:bottom-40 overflow-hidden bg-white">
+    <section ref={sectionRef} className="relative w-full pt-16 md:pt-20 max-md:aspect-[4/3] md:aspect-video" >
+      <div className="absolute inset-0 overflow-hidden">
         {/* First frame as default (shown when video not playing) */}
         <img
-          src="images/prvi_frame.png"
+          src="images/prvi_frame_nova_slika.png"
           alt="Pčelarsko gazdinstvo Letvenčuk"
-          className={`absolute inset-0 w-full h-full object-cover max-md:object-bottom max-md:scale-x-[1.15] max-md:scale-y-100 md:object-fill bg-white transition-opacity duration-500 ${videoPlaying ? 'opacity-0' : 'opacity-100'} md:scale-[1.025] md:-translate-y-[1%]`}
+          className={`absolute inset-0 w-full h-full object-cover scale-x-[1.02] -translate-x-[0.2%] transition-opacity duration-500 ${videoPlaying ? 'opacity-0' : 'opacity-100'}`}
         />
 
         {/* Video */}
         <video
           ref={videoRef}
-          src="images/letvencukmed_naslovna.mp4"
+          src="images/video_pozadina_novi.mp4"
           muted
           playsInline
           onEnded={handleVideoEnd}
-          className={`absolute inset-0 w-full h-full object-cover max-md:object-bottom max-md:scale-[1.20] bg-white transition-opacity duration-500 ${videoPlaying ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoPlaying ? 'opacity-100' : 'opacity-0'}`}
         />
       </div>
-
     </section>
   );
 };
