@@ -17,8 +17,10 @@
 - ~~Kartice za clanove porodice menjaju velicinu kad se listaju (npr. Nikola ima duzi tekst pa se kartice povecaju).~~
 - Reseno: fiksna visina kartica (h-72) sa overflow-hidden na tekstu.
 
-## 4. Kartice proizvoda - klik na celu karticu
-- Kartice za produkte treba da se otvaraju klikom na celu karticu, a ne samo klikom na dugme "Saznaj vise".
+## ~~4. Kartice proizvoda - klik na celu karticu + swipe~~ [DONE]
+- ~~Kartice za produkte treba da se otvaraju klikom na celu karticu, a ne samo klikom na dugme "Saznaj vise".~~
+- ~~Dodati swipe podrsku na sve carousele (porodica i proizvodi).~~
+- Reseno: dodat onClick i cursor-pointer na celu karticu, dodat useSwipe hook za oba carousela.
 
 ## 6. Kontakt forma - validacija
 - Forma za "Kontaktirajte nas" prihvata slanje i kada su polja prazna. Dodati validaciju da sva obavezna polja moraju biti popunjena.

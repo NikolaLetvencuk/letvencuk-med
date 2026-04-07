@@ -256,6 +256,18 @@ const scrollToId = (id: string) => {
   });
 };
 
+const useSwipe = (onSwipeLeft: () => void, onSwipeRight: () => void) => {
+  const touchStart = useRef<number | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => { touchStart.current = e.touches[0].clientX; };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart.current === null) return;
+    const diff = e.changedTouches[0].clientX - touchStart.current;
+    if (Math.abs(diff) > 50) { diff > 0 ? onSwipeRight() : onSwipeLeft(); }
+    touchStart.current = null;
+  };
+  return { onTouchStart, onTouchEnd };
+};
+
 // --- Components ---
 const FamilyCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -283,6 +295,8 @@ useEffect(() => {
     setCurrentIndex((prev) => (prev + dir + total) % total);
   };
 
+  const swipe = useSwipe(() => paginate(1), () => paginate(-1));
+
   const getVisible = () => {
     return Array.from({ length: visibleCount }, (_, i) =>
       familyMembers[(currentIndex + i) % total]
@@ -304,7 +318,7 @@ useEffect(() => {
         <ChevronLeft size={20} />
       </button>
 
-      <div className="overflow-hidden px-2 pb-6">
+      <div className="overflow-hidden px-2 pb-6" {...swipe}>
         <AnimatePresence mode="popLayout" custom={direction}>
           <motion.div
             key={currentIndex}
@@ -385,6 +399,8 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
     setCurrentIndex((prev) => (prev + dir + total) % total);
   };
 
+  const swipe = useSwipe(() => paginate(1), () => paginate(-1));
+
   const getVisible = () =>
     Array.from({ length: Math.min(visibleCount, total) }, (_, i) =>
       items[(currentIndex + i) % total]
@@ -412,7 +428,7 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
         </button>
       )}
 
-      <div className="overflow-hidden px-2 pb-6">
+      <div className="overflow-hidden px-2 pb-6" {...swipe}>
         <AnimatePresence mode="popLayout" custom={direction}>
           <motion.div
             key={currentIndex}
@@ -547,8 +563,9 @@ const ProductCard = ({ product, onClick }: ProductCardProps) => {
       ref={tilt.ref}
       onMouseMove={tilt.handleMouseMove}
       onMouseLeave={tilt.handleMouseLeave}
+      onClick={() => onClick(product)}
       style={{ transition: 'transform 0.2s ease-out', transformStyle: 'preserve-3d' }}
-      className="bg-white rounded-2xl overflow-hidden shadow-lg border border-amber-50 flex flex-col h-full mb-4 hover:shadow-2xl hover:shadow-amber-200/50"
+      className="bg-white rounded-2xl overflow-hidden shadow-lg border border-amber-50 flex flex-col h-full mb-4 hover:shadow-2xl hover:shadow-amber-200/50 cursor-pointer"
     >
       <div className="relative h-48 overflow-hidden">
         <img src={product.image} alt={product.name} className="w-full h-full object-cover transform hover:scale-110 transition duration-500" />
