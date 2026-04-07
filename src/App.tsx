@@ -371,9 +371,9 @@ useEffect(() => {
   };
 
   const variants = {
-    enter: (dir: number) => ({ x: dir > 0 ? 60 : -60, opacity: 0 }),
+    enter: (dir: number) => ({ x: dir > 0 ? 80 : -80, opacity: 0 }),
     center: { x: 0, opacity: 1 },
-    exit: (dir: number) => ({ x: dir > 0 ? -60 : 60, opacity: 0 }),
+    exit: (dir: number) => ({ x: dir > 0 ? -80 : 80, opacity: 0 }),
   };
 
   return (
@@ -386,7 +386,7 @@ useEffect(() => {
       </button>
 
       <div className="overflow-hidden px-2 pb-6" {...swipe}>
-        <AnimatePresence mode="wait" custom={direction}>
+        <AnimatePresence mode="popLayout" custom={direction}>
           <motion.div
             key={currentIndex}
             custom={direction}
@@ -394,7 +394,7 @@ useEffect(() => {
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 0.25, ease: "easeOut" }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
             className={`grid gap-8 ${
               visibleCount === 1
                 ? 'grid-cols-1'
@@ -406,9 +406,9 @@ useEffect(() => {
             {getVisible().map((member) => (
               <div
                 key={member.name}
-                className="p-8 rounded-3xl bg-white/5 border border-amber-500/20 text-center hover:bg-white/10 hover:border-amber-500/40 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] transition-all duration-300 group h-72 flex flex-col will-change-transform"
+                className="p-8 rounded-3xl bg-white/5 border border-amber-500/20 text-center hover:bg-white/10 hover:border-amber-500/40 transition-colors group h-72 flex flex-col"
               >
-                <div className="w-16 h-16 bg-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:bg-amber-500/30 transition">
+                <div className="w-16 h-16 bg-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                   <div className="text-amber-400">{member.icon}</div>
                 </div>
                 <h3 className="text-xl font-bold text-white mb-1">{member.name}</h3>
@@ -939,8 +939,8 @@ export const App = () => {
 
       {/* Porodica Section */}
       <Section3D id="porodica" className="py-24 px-4 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden -mt-1">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-600/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%)' }} />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(217,119,6,0.08) 0%, transparent 70%)' }} />
 
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-8">
