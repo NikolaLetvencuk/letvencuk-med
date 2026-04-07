@@ -16,6 +16,27 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* 3D spinning animation */
+@keyframes spin3d {
+  0% { transform: rotateY(0deg) rotateX(10deg); }
+  50% { transform: rotateY(180deg) rotateX(-10deg); }
+  100% { transform: rotateY(360deg) rotateX(10deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-spin3d {
+  animation: spin3d 8s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
 /* Video hero transitions */
 video {
   transition: opacity 0.5s ease;
