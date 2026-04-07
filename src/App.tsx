@@ -245,37 +245,37 @@ const newsPosts: NewsPost[] = [
   {
     title: "Naša tezga na festivalu",
     date: "2026-03-15",
-    text: "Ucestovali smo na festivalu meda gde smo predstavili nase najnovije proizvode. Bilo je divno videti koliko ljudi uziva u nasem medu!",
+    text: "Učestvovali smo na festivalu meda gde smo predstavili naše najnovije proizvode. Bilo je divno videti koliko ljudi uživa u našem medu!",
     images: ["images/tezga_med.webp"]
   },
   {
-    title: "Vredne pcele na pasi",
+    title: "Vredne pčele na paši",
     date: "2025-05-20",
-    text: "Nase pcele su na pasi i rade punom parom. Ove sezone ocekujemo odlican prinos meda.",
+    text: "Naše pčele su na paši i rade punom parom. Ove sezone očekujemo odličan prinos meda.",
     images: ["images/kontejner2.webp"]
   },
   {
-    title: "Miksevi za zdraviji zivot",
+    title: "Miksevi za zdraviji život",
     date: "2026-01-10",
-    text: "Predstavljamo vam nase mikseve - savrsenu kombinaciju meda, oraha i susenog voca za svakodnevno uzivanje.",
+    text: "Predstavljamo vam naše mikseve - savršenu kombinaciju meda, oraha i sušenog voća za svakodnevno uživanje.",
     images: ["images/sva_tri_miksa_mali_veliki.jpg"]
   },
   {
-    title: "Nas med putuje svetom!",
+    title: "Naš med putuje svetom!",
     date: "2025-12-05",
-    text: "Pogled sa terase u Dubaiju - nas med je stigao i do Bliskog istoka. Ponosni smo sto nas ukus prelazi granice.",
+    text: "Pogled sa terase u Dubaiju - naš med je stigao i do Bliskog istoka. Ponosni smo što naš ukus prelazi granice.",
     images: ["images/med_u_dubaiju.jpg"]
   },
   {
-    title: "Nadja i Ivana u akciji",
+    title: "Nađa i Ivana u akciji",
     date: "2025-11-18",
-    text: "Nase devojke su uvek spremne da docekaju kupce sa osmehom i pomognu im da izaberu pravi proizvod.",
+    text: "Naše devojke su uvek spremne da dočekaju kupce sa osmehom i pomognu im da izaberu pravi proizvod.",
     images: ["images/nadja_ivana_za_tezgom.webp"]
   },
   {
     title: "Gajbice spremne za isporuku",
     date: "2025-10-30",
-    text: "Nova tura pakovanja je spremna za nase verne kupce. Svaka gajbica je pazljivo pripremljena sa ljubavlju.",
+    text: "Nova tura pakovanja je spremna za naše verne kupce. Svaka gajbica je pažljivo pripremljena sa ljubavlju.",
     images: ["images/gajbice_lepa_slika.jpg", "images/gajbice1.jpg", "images/gajbice2.jpg", "images/gajbice3.jpg", "images/gajbice4.jpg", "images/gajbice5.jpg"]
   }
 ];
