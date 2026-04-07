@@ -316,7 +316,20 @@ const Spinning3DHoneycomb = () => (
         <polygon points="28,10 43,18 43,38 28,46 13,38 13,18" fill="#b45309" opacity="0.6" />
         <polygon points="72,54 87,62 87,82 72,90 57,82 57,62" fill="#b45309" opacity="0.6" />
         <polygon points="28,54 43,62 43,82 28,90 13,82 13,62" fill="#b45309" opacity="0.6" />
-        <text x="50" y="56" textAnchor="middle" fontSize="22">🐝</text>
+        {/* SVG pcela */}
+        <g transform="translate(36,32) scale(1.2)">
+          <ellipse cx="12" cy="14" rx="5" ry="7" fill="#1a1a1a" />
+          <ellipse cx="12" cy="6" rx="4" ry="4" fill="#1a1a1a" />
+          <rect x="7" y="10" width="10" height="2" rx="1" fill="#f59e0b" />
+          <rect x="7" y="14" width="10" height="2" rx="1" fill="#f59e0b" />
+          <rect x="7" y="18" width="10" height="2" rx="1" fill="#f59e0b" />
+          <ellipse cx="4" cy="8" rx="4" ry="2.5" fill="white" opacity="0.7" transform="rotate(-30 4 8)" />
+          <ellipse cx="20" cy="8" rx="4" ry="2.5" fill="white" opacity="0.7" transform="rotate(30 20 8)" />
+          <circle cx="10" cy="5" r="1" fill="white" />
+          <circle cx="14" cy="5" r="1" fill="white" />
+          <line x1="10" y1="2" x2="8" y2="0" stroke="#1a1a1a" strokeWidth="0.8" />
+          <line x1="14" y1="2" x2="16" y2="0" stroke="#1a1a1a" strokeWidth="0.8" />
+        </g>
       </svg>
     </div>
   </div>
@@ -358,9 +371,9 @@ useEffect(() => {
   };
 
   const variants = {
-    enter: (dir: number) => ({ x: dir > 0 ? 80 : -80, opacity: 0 }),
+    enter: (dir: number) => ({ x: dir > 0 ? 60 : -60, opacity: 0 }),
     center: { x: 0, opacity: 1 },
-    exit: (dir: number) => ({ x: dir > 0 ? -80 : 80, opacity: 0 }),
+    exit: (dir: number) => ({ x: dir > 0 ? -60 : 60, opacity: 0 }),
   };
 
   return (
@@ -373,7 +386,7 @@ useEffect(() => {
       </button>
 
       <div className="overflow-hidden px-2 pb-6" {...swipe}>
-        <AnimatePresence mode="popLayout" custom={direction}>
+        <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={currentIndex}
             custom={direction}
@@ -381,7 +394,7 @@ useEffect(() => {
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 0.35, ease: "easeInOut" }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
             className={`grid gap-8 ${
               visibleCount === 1
                 ? 'grid-cols-1'

@@ -31,6 +31,7 @@ body {
 .animate-spin3d {
   animation: spin3d 8s ease-in-out infinite;
   transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .animate-float {
