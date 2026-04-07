@@ -22,5 +22,6 @@
 - ~~Dodati swipe podrsku na sve carousele (porodica i proizvodi).~~
 - Reseno: dodat onClick i cursor-pointer na celu karticu, dodat useSwipe hook za oba carousela.
 
-## 6. Kontakt forma - validacija
-- Forma za "Kontaktirajte nas" prihvata slanje i kada su polja prazna. Dodati validaciju da sva obavezna polja moraju biti popunjena.
+## ~~6. Kontakt forma - validacija~~ [DONE]
+- ~~Forma za "Kontaktirajte nas" prihvata slanje i kada su polja prazna. Dodati validaciju da sva obavezna polja moraju biti popunjena.~~
+- Reseno: JS validacija na submit - proverava da su sva polja popunjena i da je email ispravan format.

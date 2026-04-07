@@ -882,10 +882,26 @@ export const App = () => {
             {/* Kontakt Forma */}
             <div className="lg:w-3/5 p-12">
               <h3 className="text-3xl font-bold text-gray-900 mb-8">Pošaljite nam poruku</h3>
-              <form 
+              <form
                 action="https://formspree.io/f/xykdqznv"
                 method="POST"
                 className="space-y-6"
+                onSubmit={(e) => {
+                  const form = e.currentTarget;
+                  const name = (form.elements.namedItem('name') as HTMLInputElement).value.trim();
+                  const email = (form.elements.namedItem('email') as HTMLInputElement).value.trim();
+                  const message = (form.elements.namedItem('message') as HTMLTextAreaElement).value.trim();
+                  if (!name || !email || !message) {
+                    e.preventDefault();
+                    alert('Molimo popunite sva polja pre slanja.');
+                    return;
+                  }
+                  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    e.preventDefault();
+                    alert('Molimo unesite ispravnu email adresu.');
+                    return;
+                  }
+                }}
               >
                 {/* Podesili smo Formspree ID koji je vezan za nik.letvencuk@gmail.com */}
                 {/* Napomena: Prvi put kada pošaljete poruku, proverite mejl za potvrdu od Formspree-a */}
