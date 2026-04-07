@@ -234,13 +234,50 @@ const productCategories = {
   }
 };
 
-const galleryImages = [
-  { url: "images/tezga_med.webp", caption: "Naša tezga na festivalu" },
-  { url: "images/kontejner2.webp", caption: "Vredne pčele na paši" },
-  { url: "images/sva_tri_miksa_mali_veliki.jpg", caption: "Miksevi za zdraviji život" },
-  { url: "images/med_u_dubaiju.jpg", caption: "Pogled sa terase u Dubaiju - naš med putuje svetom!" },
-  { url: "images/nadja_ivana_za_tezgom.webp", caption: "Nadja i Ivana u akciji" },
-  { url: "images/gajbice_lepa_slika.jpg", caption: "Gajbice spremne za isporuku" }
+interface NewsPost {
+  title: string;
+  date: string;
+  text: string;
+  images: string[];
+}
+
+const newsPosts: NewsPost[] = [
+  {
+    title: "Naša tezga na festivalu",
+    date: "2026-03-15",
+    text: "Ucestovali smo na festivalu meda gde smo predstavili nase najnovije proizvode. Bilo je divno videti koliko ljudi uziva u nasem medu!",
+    images: ["images/tezga_med.webp"]
+  },
+  {
+    title: "Vredne pcele na pasi",
+    date: "2025-05-20",
+    text: "Nase pcele su na pasi i rade punom parom. Ove sezone ocekujemo odlican prinos meda.",
+    images: ["images/kontejner2.webp"]
+  },
+  {
+    title: "Miksevi za zdraviji zivot",
+    date: "2026-01-10",
+    text: "Predstavljamo vam nase mikseve - savrsenu kombinaciju meda, oraha i susenog voca za svakodnevno uzivanje.",
+    images: ["images/sva_tri_miksa_mali_veliki.jpg"]
+  },
+  {
+    title: "Nas med putuje svetom!",
+    date: "2025-12-05",
+    text: "Pogled sa terase u Dubaiju - nas med je stigao i do Bliskog istoka. Ponosni smo sto nas ukus prelazi granice.",
+    images: ["images/med_u_dubaiju.jpg"]
+  },
+  {
+    title: "Nadja i Ivana u akciji",
+    date: "2025-11-18",
+    text: "Nase devojke su uvek spremne da docekaju kupce sa osmehom i pomognu im da izaberu pravi proizvod.",
+    images: ["images/nadja_ivana_za_tezgom.webp"]
+  },
+  {
+    title: "Gajbice spremne za isporuku",
+    date: "2025-10-30",
+    text: "Nova tura pakovanja je spremna za nase verne kupce. Svaka gajbica je pazljivo pripremljena sa ljubavlju.",
+    images: ["images/gajbice_lepa_slika.jpg", "images/gajbice1.jpg", "images/gajbice2.jpg", "images/gajbice3.jpg", "images/gajbice4.jpg", "images/gajbice5.jpg"]
+  }
 ];
 
 const scrollToId = (id: string) => {
@@ -656,6 +693,123 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => (
   </motion.div>
 );
 
+const NewsModal = ({ post, onClose }: { post: NewsPost; onClose: () => void }) => {
+  const [imgIndex, setImgIndex] = useState(0);
+  const swipe = useSwipe(
+    () => setImgIndex((p) => (p + 1) % post.images.length),
+    () => setImgIndex((p) => (p - 1 + post.images.length) % post.images.length)
+  );
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[60] flex items-center justify-center px-4 sm:px-6"
+    >
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        className="relative bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl z-10"
+      >
+        <button onClick={onClose} className="absolute top-4 right-4 z-20 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
+          <X size={18} />
+        </button>
+        <div className="relative h-64 sm:h-80 overflow-hidden rounded-t-2xl" {...swipe}>
+          <img src={post.images[imgIndex]} alt={post.title} className="w-full h-full object-contain bg-black/90" />
+          {post.images.length > 1 && (
+            <>
+              <button onClick={() => setImgIndex((p) => (p - 1 + post.images.length) % post.images.length)} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
+                <ChevronLeft size={16} />
+              </button>
+              <button onClick={() => setImgIndex((p) => (p + 1) % post.images.length)} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
+                <ChevronRight size={16} />
+              </button>
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                {post.images.map((_, i) => (
+                  <span key={i} className={`w-2 h-2 rounded-full ${i === imgIndex ? 'bg-white' : 'bg-white/50'}`} />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+        <div className="p-6">
+          <p className="text-sm text-amber-600 font-semibold mb-2">{new Date(post.date).toLocaleDateString('sr-Latn-RS', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">{post.title}</h3>
+          <p className="text-gray-600 leading-relaxed">{post.text}</p>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const HexCell = ({ post, onSelect }: { post: NewsPost; onSelect: (p: NewsPost) => void }) => (
+  <div
+    onClick={() => onSelect(post)}
+    className="relative cursor-pointer group"
+    style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}
+  >
+    <div className="aspect-[1/1.15] overflow-hidden">
+      <img
+        src={post.images[0]}
+        alt={post.title}
+        className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/20 opacity-90 group-hover:opacity-95 transition duration-300" />
+      <div className="absolute inset-0 flex flex-col items-center justify-end pb-[28%] px-4 text-center">
+        <h3 className="text-white text-sm md:text-lg font-bold leading-tight" style={{ textShadow: '0 2px 12px rgba(0,0,0,1), 0 1px 4px rgba(0,0,0,0.9)' }}>{post.title}</h3>
+        <p className="text-amber-400 text-xs md:text-sm mt-1 font-bold" style={{ textShadow: '0 2px 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,0.9)' }}>{new Date(post.date).toLocaleDateString('sr-Latn-RS', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+      </div>
+    </div>
+  </div>
+);
+
+const HoneycombGrid = ({ posts, onSelect }: { posts: NewsPost[]; onSelect: (p: NewsPost) => void }) => {
+  const [cols, setCols] = useState(window.innerWidth < 640 ? 2 : 3);
+
+  useEffect(() => {
+    const handle = () => setCols(window.innerWidth < 640 ? 2 : 3);
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, []);
+
+  // Build alternating rows: full row (cols), then offset row (cols-1)
+  const rows: { posts: NewsPost[]; offset: boolean }[] = [];
+  let idx = 0;
+  let full = true;
+  while (idx < posts.length) {
+    const count = full ? cols : cols - 1;
+    const slice = posts.slice(idx, idx + Math.min(count, posts.length - idx));
+    rows.push({ posts: slice, offset: !full });
+    idx += slice.length;
+    full = !full;
+  }
+
+  const hexWidth = 100 / cols;
+
+  return (
+    <div className="max-w-4xl mx-auto overflow-hidden px-4">
+      {rows.map((row, rowIdx) => (
+        <div
+          key={rowIdx}
+          className="flex justify-center"
+          style={{ marginTop: rowIdx > 0 ? `-${hexWidth * 0.24}%` : 0 }}
+        >
+          {row.posts.map((post, i) => (
+            <div
+              key={i}
+              style={{ width: `${hexWidth}%`, padding: '0 4px' }}
+            >
+              <HexCell post={post} onSelect={onSelect} />
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 // 3D tilt card hook
 const use3DTilt = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -745,6 +899,7 @@ const HeroSection = () => {
 
 export const App = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedPost, setSelectedPost] = useState<NewsPost | null>(null);
 
   return (
     <div id="top" className="min-h-screen bg-amber-50/30 selection:bg-amber-200">
@@ -794,7 +949,7 @@ export const App = () => {
         </div>
       </Section3D>
 
-      {/* Galerija Section */}
+      {/* Galerija / Vesti Section - Honeycomb */}
       <Section3D id="galerija" className="py-24 px-4 bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -805,24 +960,13 @@ export const App = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style={{ perspective: '1000px' }}>
-            {galleryImages.map((img, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ scale: 1.03, rotateY: 3, rotateX: -2 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                className="relative h-72 rounded-2xl overflow-hidden group cursor-pointer shadow-lg hover:shadow-2xl hover:shadow-amber-500/20"
-                style={{ transformStyle: 'preserve-3d' }}
-              >
-                <img src={img.url} alt={img.caption} className="w-full h-full object-cover transition duration-500 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-6">
-                  <p className="text-sm font-medium">{img.caption}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <HoneycombGrid posts={[...newsPosts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())} onSelect={setSelectedPost} />
         </div>
       </Section3D>
+
+      <AnimatePresence>
+        {selectedPost && <NewsModal post={selectedPost} onClose={() => setSelectedPost(null)} />}
+      </AnimatePresence>
 
       {/* Kontakt Section */}
       <Section3D id="kontakt" className="py-24 px-4">

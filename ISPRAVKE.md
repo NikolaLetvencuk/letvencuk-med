@@ -25,3 +25,7 @@
 ## ~~6. Kontakt forma - validacija~~ [DONE]
 - ~~Forma za "Kontaktirajte nas" prihvata slanje i kada su polja prazna. Dodati validaciju da sva obavezna polja moraju biti popunjena.~~
 - Reseno: JS validacija na submit - proverava da su sva polja popunjena i da je email ispravan format.
+
+## ~~7. Zivot na pcelinjaku - honeycomb vesti~~ [DONE]
+- ~~Pretvoriti galeriju u sekciju sa vestima/postovima u obliku pcelinjeg saca (sestouglovi).~~
+- Reseno: honeycomb grid layout sa clip-path sestouglovima, svaki post ima naslov/datum/tekst/vise slika, klik otvara modal sa carousel-om za slike.
