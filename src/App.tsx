@@ -8,6 +8,7 @@ import {
   ShoppingBasket, 
   Users, 
   X,
+  Menu,
   Send,
   ArrowRight,
   ChevronLeft,
@@ -233,13 +234,50 @@ const productCategories = {
   }
 };
 
-const galleryImages = [
-  { url: "images/tezga_med.webp", caption: "Naša tezga na festivalu" },
-  { url: "images/kontejner2.webp", caption: "Vredne pčele na paši" },
-  { url: "images/sva_tri_miksa_mali_veliki.jpg", caption: "Miksevi za zdraviji život" },
-  { url: "images/med_u_dubaiju.jpg", caption: "Pogled sa terase u Dubaiju - naš med putuje svetom!" },
-  { url: "images/nadja_ivana_za_tezgom.webp", caption: "Nadja i Ivana u akciji" },
-  { url: "images/gajbice_lepa_slika.jpg", caption: "Gajbice spremne za isporuku" }
+interface NewsPost {
+  title: string;
+  date: string;
+  text: string;
+  images: string[];
+}
+
+const newsPosts: NewsPost[] = [
+  {
+    title: "Naša tezga na festivalu",
+    date: "2026-03-15",
+    text: "Ucestovali smo na festivalu meda gde smo predstavili nase najnovije proizvode. Bilo je divno videti koliko ljudi uziva u nasem medu!",
+    images: ["images/tezga_med.webp"]
+  },
+  {
+    title: "Vredne pcele na pasi",
+    date: "2025-05-20",
+    text: "Nase pcele su na pasi i rade punom parom. Ove sezone ocekujemo odlican prinos meda.",
+    images: ["images/kontejner2.webp"]
+  },
+  {
+    title: "Miksevi za zdraviji zivot",
+    date: "2026-01-10",
+    text: "Predstavljamo vam nase mikseve - savrsenu kombinaciju meda, oraha i susenog voca za svakodnevno uzivanje.",
+    images: ["images/sva_tri_miksa_mali_veliki.jpg"]
+  },
+  {
+    title: "Nas med putuje svetom!",
+    date: "2025-12-05",
+    text: "Pogled sa terase u Dubaiju - nas med je stigao i do Bliskog istoka. Ponosni smo sto nas ukus prelazi granice.",
+    images: ["images/med_u_dubaiju.jpg"]
+  },
+  {
+    title: "Nadja i Ivana u akciji",
+    date: "2025-11-18",
+    text: "Nase devojke su uvek spremne da docekaju kupce sa osmehom i pomognu im da izaberu pravi proizvod.",
+    images: ["images/nadja_ivana_za_tezgom.webp"]
+  },
+  {
+    title: "Gajbice spremne za isporuku",
+    date: "2025-10-30",
+    text: "Nova tura pakovanja je spremna za nase verne kupce. Svaka gajbica je pazljivo pripremljena sa ljubavlju.",
+    images: ["images/gajbice_lepa_slika.jpg", "images/gajbice1.jpg", "images/gajbice2.jpg", "images/gajbice3.jpg", "images/gajbice4.jpg", "images/gajbice5.jpg"]
+  }
 ];
 
 const scrollToId = (id: string) => {
@@ -253,6 +291,18 @@ const scrollToId = (id: string) => {
     top,
     behavior: 'smooth',
   });
+};
+
+const useSwipe = (onSwipeLeft: () => void, onSwipeRight: () => void) => {
+  const touchStart = useRef<number | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => { touchStart.current = e.touches[0].clientX; };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart.current === null) return;
+    const diff = e.changedTouches[0].clientX - touchStart.current;
+    if (Math.abs(diff) > 50) { diff > 0 ? onSwipeRight() : onSwipeLeft(); }
+    touchStart.current = null;
+  };
+  return { onTouchStart, onTouchEnd };
 };
 
 // --- Components ---
@@ -282,6 +332,8 @@ useEffect(() => {
     setCurrentIndex((prev) => (prev + dir + total) % total);
   };
 
+  const swipe = useSwipe(() => paginate(1), () => paginate(-1));
+
   const getVisible = () => {
     return Array.from({ length: visibleCount }, (_, i) =>
       familyMembers[(currentIndex + i) % total]
@@ -303,7 +355,7 @@ useEffect(() => {
         <ChevronLeft size={20} />
       </button>
 
-      <div className="overflow-hidden px-2 pb-6">
+      <div className="overflow-hidden px-2 pb-6" {...swipe}>
         <AnimatePresence mode="popLayout" custom={direction}>
           <motion.div
             key={currentIndex}
@@ -324,14 +376,14 @@ useEffect(() => {
             {getVisible().map((member) => (
               <div
                 key={member.name}
-                className="p-8 rounded-3xl bg-amber-50/50 border border-amber-100 text-center hover:bg-white hover:shadow-xl transition group"
+                className="p-8 rounded-3xl bg-amber-50/50 border border-amber-100 text-center hover:bg-white hover:shadow-xl transition group h-72 flex flex-col"
               >
                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm group-hover:scale-110 transition">
                   {member.icon}
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-1">{member.name}</h3>
                 <p className="text-amber-600 text-sm font-semibold mb-4">{member.role}</p>
-                <p className="text-gray-600 text-sm leading-relaxed">{member.description}</p>
+                <p className="text-gray-600 text-sm leading-relaxed flex-1 overflow-hidden">{member.description}</p>
               </div>
             ))}
           </motion.div>
@@ -384,6 +436,8 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
     setCurrentIndex((prev) => (prev + dir + total) % total);
   };
 
+  const swipe = useSwipe(() => paginate(1), () => paginate(-1));
+
   const getVisible = () =>
     Array.from({ length: Math.min(visibleCount, total) }, (_, i) =>
       items[(currentIndex + i) % total]
@@ -411,7 +465,7 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
         </button>
       )}
 
-      <div className="overflow-hidden px-2 pb-6">
+      <div className="overflow-hidden px-2 pb-6" {...swipe}>
         <AnimatePresence mode="popLayout" custom={direction}>
           <motion.div
             key={currentIndex}
@@ -461,20 +515,28 @@ const Navbar = () => {
 
   const handleNavClick = (sectionId: string) => {
     setIsOpen(false);
-    scrollToId(sectionId);
+    setTimeout(() => scrollToId(sectionId), 50);
   };
 
   return (
     <nav className="fixed w-full bg-white/90 backdrop-blur-md z-50 border-b border-amber-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
-          <div className="flex items-center gap-2">
-            <img 
-              src="images/logo.svg" 
-              alt="Letvenčuk logo" 
+          <div className="flex items-center gap-2 h-20 overflow-hidden">
+            <img
+              src="images/logo.svg"
+              alt="Letvenčuk logo"
               className="h-80 w-auto transition hover:scale-105 -translate-y-2"
             />
           </div>
+
+          {/* Hamburger dugme - mobilni */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden w-10 h-10 flex items-center justify-center text-gray-700 hover:text-amber-600 transition"
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
 
           {/* desktop linkovi */}
           <div className="hidden md:flex space-x-8">
@@ -489,7 +551,7 @@ const Navbar = () => {
               className="text-gray-700 hover:text-amber-600 transition font-medium"
             >
               Proizvodi
-            </button>            
+            </button>
             <button
               onClick={() => handleNavClick('galerija')}
               className="text-gray-700 hover:text-amber-600 transition font-medium"
@@ -514,10 +576,10 @@ const Navbar = () => {
             className="md:hidden bg-white border-b border-amber-50"
           >
             <div className="px-4 pt-2 pb-6 space-y-1">
-              <a href="#proizvodi" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-gray-700">Proizvodi</a>
-              <a href="#porodica" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-gray-700">O Nama</a>
-              <a href="#galerija" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-gray-700">Galerija</a>
-              <a href="#kontakt" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-base font-medium text-gray-700">Kontakt</a>
+              <button onClick={() => handleNavClick('porodica')} className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition">O Nama</button>
+              <button onClick={() => handleNavClick('proizvodi')} className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition">Proizvodi</button>
+              <button onClick={() => handleNavClick('galerija')} className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition">Galerija</button>
+              <button onClick={() => handleNavClick('kontakt')} className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition">Kontakt</button>
             </div>
           </motion.div>
         )}
@@ -538,8 +600,9 @@ const ProductCard = ({ product, onClick }: ProductCardProps) => {
       ref={tilt.ref}
       onMouseMove={tilt.handleMouseMove}
       onMouseLeave={tilt.handleMouseLeave}
+      onClick={() => onClick(product)}
       style={{ transition: 'transform 0.2s ease-out', transformStyle: 'preserve-3d' }}
-      className="bg-white rounded-2xl overflow-hidden shadow-lg border border-amber-50 flex flex-col h-full mb-4 hover:shadow-2xl hover:shadow-amber-200/50"
+      className="bg-white rounded-2xl overflow-hidden shadow-lg border border-amber-50 flex flex-col h-full mb-4 hover:shadow-2xl hover:shadow-amber-200/50 cursor-pointer"
     >
       <div className="relative h-48 overflow-hidden">
         <img src={product.image} alt={product.name} className="w-full h-full object-cover transform hover:scale-110 transition duration-500" />
@@ -630,6 +693,123 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => (
   </motion.div>
 );
 
+const NewsModal = ({ post, onClose }: { post: NewsPost; onClose: () => void }) => {
+  const [imgIndex, setImgIndex] = useState(0);
+  const swipe = useSwipe(
+    () => setImgIndex((p) => (p + 1) % post.images.length),
+    () => setImgIndex((p) => (p - 1 + post.images.length) % post.images.length)
+  );
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[60] flex items-center justify-center px-4 sm:px-6"
+    >
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        className="relative bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl z-10"
+      >
+        <button onClick={onClose} className="absolute top-4 right-4 z-20 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
+          <X size={18} />
+        </button>
+        <div className="relative h-64 sm:h-80 overflow-hidden rounded-t-2xl" {...swipe}>
+          <img src={post.images[imgIndex]} alt={post.title} className="w-full h-full object-contain bg-black/90" />
+          {post.images.length > 1 && (
+            <>
+              <button onClick={() => setImgIndex((p) => (p - 1 + post.images.length) % post.images.length)} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
+                <ChevronLeft size={16} />
+              </button>
+              <button onClick={() => setImgIndex((p) => (p + 1) % post.images.length)} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
+                <ChevronRight size={16} />
+              </button>
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                {post.images.map((_, i) => (
+                  <span key={i} className={`w-2 h-2 rounded-full ${i === imgIndex ? 'bg-white' : 'bg-white/50'}`} />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+        <div className="p-6">
+          <p className="text-sm text-amber-600 font-semibold mb-2">{new Date(post.date).toLocaleDateString('sr-Latn-RS', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">{post.title}</h3>
+          <p className="text-gray-600 leading-relaxed">{post.text}</p>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const HexCell = ({ post, onSelect }: { post: NewsPost; onSelect: (p: NewsPost) => void }) => (
+  <div
+    onClick={() => onSelect(post)}
+    className="relative cursor-pointer group"
+    style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}
+  >
+    <div className="aspect-[1/1.15] overflow-hidden">
+      <img
+        src={post.images[0]}
+        alt={post.title}
+        className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/20 opacity-90 group-hover:opacity-95 transition duration-300" />
+      <div className="absolute inset-0 flex flex-col items-center justify-end pb-[28%] px-4 text-center">
+        <h3 className="text-white text-sm md:text-lg font-bold leading-tight" style={{ textShadow: '0 2px 12px rgba(0,0,0,1), 0 1px 4px rgba(0,0,0,0.9)' }}>{post.title}</h3>
+        <p className="text-amber-400 text-xs md:text-sm mt-1 font-bold" style={{ textShadow: '0 2px 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,0.9)' }}>{new Date(post.date).toLocaleDateString('sr-Latn-RS', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+      </div>
+    </div>
+  </div>
+);
+
+const HoneycombGrid = ({ posts, onSelect }: { posts: NewsPost[]; onSelect: (p: NewsPost) => void }) => {
+  const [cols, setCols] = useState(window.innerWidth < 640 ? 2 : 3);
+
+  useEffect(() => {
+    const handle = () => setCols(window.innerWidth < 640 ? 2 : 3);
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, []);
+
+  // Build alternating rows: full row (cols), then offset row (cols-1)
+  const rows: { posts: NewsPost[]; offset: boolean }[] = [];
+  let idx = 0;
+  let full = true;
+  while (idx < posts.length) {
+    const count = full ? cols : cols - 1;
+    const slice = posts.slice(idx, idx + Math.min(count, posts.length - idx));
+    rows.push({ posts: slice, offset: !full });
+    idx += slice.length;
+    full = !full;
+  }
+
+  const hexWidth = 100 / cols;
+
+  return (
+    <div className="max-w-4xl mx-auto overflow-hidden px-4">
+      {rows.map((row, rowIdx) => (
+        <div
+          key={rowIdx}
+          className="flex justify-center"
+          style={{ marginTop: rowIdx > 0 ? `-${hexWidth * 0.24}%` : 0 }}
+        >
+          {row.posts.map((post, i) => (
+            <div
+              key={i}
+              style={{ width: `${hexWidth}%`, padding: '0 4px' }}
+            >
+              <HexCell post={post} onSelect={onSelect} />
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 // 3D tilt card hook
 const use3DTilt = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -692,35 +872,34 @@ const HeroSection = () => {
     setVideoPlaying(false);
   };
 
-  // Video aspect ratio: 2752x1536 ≈ 16:9
+  // Video actual resolution: 1920x1080 (16:9)
   return (
-    <section ref={sectionRef} className="relative w-full pt-16 md:pt-20" style={{ aspectRatio: '2752 / 1536' }}>
-      {/* Background layer - responsive offsets */}
-      <div className="absolute inset-0 top-16 -bottom-16 md:top-20 md:bottom-20 lg:bottom-10 2xl:bottom-40 overflow-hidden bg-white">
+    <section ref={sectionRef} className="relative w-full pt-16 md:pt-20 max-md:aspect-[4/3] md:aspect-video" >
+      <div className="absolute inset-0 overflow-hidden">
         {/* First frame as default (shown when video not playing) */}
         <img
-          src="images/prvi_frame.png"
+          src="images/prvi_frame_nova_slika.png"
           alt="Pčelarsko gazdinstvo Letvenčuk"
-          className={`absolute inset-0 w-full h-full object-cover max-md:object-bottom max-md:scale-x-[1.15] max-md:scale-y-100 md:object-fill bg-white transition-opacity duration-500 ${videoPlaying ? 'opacity-0' : 'opacity-100'} md:scale-[1.025] md:-translate-y-[1%]`}
+          className={`absolute inset-0 w-full h-full object-cover scale-x-[1.02] -translate-x-[0.2%] transition-opacity duration-500 ${videoPlaying ? 'opacity-0' : 'opacity-100'}`}
         />
 
         {/* Video */}
         <video
           ref={videoRef}
-          src="images/letvencukmed_naslovna.mp4"
+          src="images/video_pozadina_novi.mp4"
           muted
           playsInline
           onEnded={handleVideoEnd}
-          className={`absolute inset-0 w-full h-full object-cover max-md:object-bottom max-md:scale-[1.20] bg-white transition-opacity duration-500 ${videoPlaying ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoPlaying ? 'opacity-100' : 'opacity-0'}`}
         />
       </div>
-
     </section>
   );
 };
 
 export const App = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedPost, setSelectedPost] = useState<NewsPost | null>(null);
 
   return (
     <div id="top" className="min-h-screen bg-amber-50/30 selection:bg-amber-200">
@@ -770,7 +949,7 @@ export const App = () => {
         </div>
       </Section3D>
 
-      {/* Galerija Section */}
+      {/* Galerija / Vesti Section - Honeycomb */}
       <Section3D id="galerija" className="py-24 px-4 bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -781,24 +960,13 @@ export const App = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style={{ perspective: '1000px' }}>
-            {galleryImages.map((img, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ scale: 1.03, rotateY: 3, rotateX: -2 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                className="relative h-72 rounded-2xl overflow-hidden group cursor-pointer shadow-lg hover:shadow-2xl hover:shadow-amber-500/20"
-                style={{ transformStyle: 'preserve-3d' }}
-              >
-                <img src={img.url} alt={img.caption} className="w-full h-full object-cover transition duration-500 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-6">
-                  <p className="text-sm font-medium">{img.caption}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <HoneycombGrid posts={[...newsPosts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())} onSelect={setSelectedPost} />
         </div>
       </Section3D>
+
+      <AnimatePresence>
+        {selectedPost && <NewsModal post={selectedPost} onClose={() => setSelectedPost(null)} />}
+      </AnimatePresence>
 
       {/* Kontakt Section */}
       <Section3D id="kontakt" className="py-24 px-4">
@@ -858,10 +1026,26 @@ export const App = () => {
             {/* Kontakt Forma */}
             <div className="lg:w-3/5 p-12">
               <h3 className="text-3xl font-bold text-gray-900 mb-8">Pošaljite nam poruku</h3>
-              <form 
+              <form
                 action="https://formspree.io/f/xykdqznv"
                 method="POST"
                 className="space-y-6"
+                onSubmit={(e) => {
+                  const form = e.currentTarget;
+                  const name = (form.elements.namedItem('name') as HTMLInputElement).value.trim();
+                  const email = (form.elements.namedItem('email') as HTMLInputElement).value.trim();
+                  const message = (form.elements.namedItem('message') as HTMLTextAreaElement).value.trim();
+                  if (!name || !email || !message) {
+                    e.preventDefault();
+                    alert('Molimo popunite sva polja pre slanja.');
+                    return;
+                  }
+                  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    e.preventDefault();
+                    alert('Molimo unesite ispravnu email adresu.');
+                    return;
+                  }
+                }}
               >
                 {/* Podesili smo Formspree ID koji je vezan za nik.letvencuk@gmail.com */}
                 {/* Napomena: Prvi put kada pošaljete poruku, proverite mejl za potvrdu od Formspree-a */}
