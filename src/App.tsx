@@ -76,7 +76,7 @@ const familyMembers = [
   {
     name: "Nikola",
     role: "Sin & Dostava",
-    description: "Nikola je naš pouzdani glasnik. Uvek spreman da pomogne  bilo da je u pitanju dostava meda na kućnu adresu, pakovanje porudžbina ili jednostavno da bude tu kada je potrebna još jedna ruka.",
+    description: "Nikola je naš pouzdani glasnik. Uvek spreman da pomogne - bilo da je u pitanju dostava meda na kućnu adresu ili pakovanje porudžbina.",
     icon: <Truck className="w-6 h-6 text-amber-600" />
   }
 ];
@@ -406,14 +406,14 @@ useEffect(() => {
             {getVisible().map((member) => (
               <div
                 key={member.name}
-                className="p-8 rounded-3xl bg-white/5 border border-amber-500/20 text-center hover:bg-white/10 hover:border-amber-500/40 transition-colors group h-72 flex flex-col"
+                className="p-8 rounded-3xl bg-white/5 border border-amber-500/20 text-center hover:bg-white/10 hover:border-amber-500/40 transition-colors group h-80 flex flex-col"
               >
-                <div className="w-16 h-16 bg-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 shrink-0 bg-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                   <div className="text-amber-400">{member.icon}</div>
                 </div>
                 <h3 className="text-xl font-bold text-white mb-1">{member.name}</h3>
                 <p className="text-amber-400 text-sm font-semibold mb-4">{member.role}</p>
-                <p className="text-gray-400 text-sm leading-relaxed flex-1 overflow-hidden">{member.description}</p>
+                <p className="text-gray-400 text-sm leading-relaxed flex-1">{member.description}</p>
               </div>
             ))}
           </motion.div>
