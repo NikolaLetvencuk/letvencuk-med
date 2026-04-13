@@ -91,7 +91,7 @@ const products: Product[] = [
       { size: "400g", price: "400 RSD" },
       { size: "1kg", price: "800 RSD" }
     ],    
-    image: "images/suncokretov_med.webp"
+    image: "images/livadski_novi.jpeg"
   },
   {
     id: 2,
@@ -99,10 +99,10 @@ const products: Product[] = [
     description: "Svetla boja i blag, prijatan ukus. Najtraženiji med zbog svoje nežne arome.",
     longDescription: "Bagremov med je poznat po svojoj prozirnosti i činjenici da ostaje u tečnom stanju veoma dugo. Zbog svog blagog ukusa, omiljen je deci. Deluje umirujuće na organizam i preporučuje se kod nesanice i stresa.",
     prices: [
-      { size: "400g", price: "600 RSD" },      
+      { size: "400g", price: "750 RSD" },
       { size: "1kg", price: "1500 RSD" }
     ],    
-    image: "images/bagremov_med.webp"
+    image: "images/bagrem_novi.jpeg"
   },
   {
     id: 4,
@@ -113,7 +113,7 @@ const products: Product[] = [
       { size: "400g", price: "400 RSD" },
       { size: "1kg", price: "800 RSD" }
     ],
-    image: "images/med_od_uljane_repice.webp"
+    image: "images/uljana_repica_novi.jpeg"
   },
   {
     id: 5,
@@ -125,7 +125,7 @@ const products: Product[] = [
       { size: "kapi 20ml", price: "400 RSD" },
       { size: "sprej 20ml", price: "450 RSD" }
     ],
-    image: "images/propolis2.jpeg"
+    image: "images/propolis_novi.jpeg"
   },
   {
     id: 6,
@@ -136,7 +136,7 @@ const products: Product[] = [
       { size: "100g", price: "200 RSD" },
       { size: "200g", price: "400 RSD" }
     ],
-    image: "images/polen2.jpeg"
+    image: "images/polen_novi.jpeg"
   },
   {
     id: 7,
@@ -157,7 +157,7 @@ const products: Product[] = [
       { size: "0.2l", price: "400 RSD" },
       { size: "0.5l", price: "800 RSD" }
     ],    
-    image: "images/medovaca2.jpeg"
+    image: "images/medovaca_nova.jpeg"
   },
   {
     id: 9,
@@ -304,36 +304,6 @@ const useSwipe = (onSwipeLeft: () => void, onSwipeRight: () => void) => {
   };
   return { onTouchStart, onTouchEnd };
 };
-
-const Spinning3DHoneycomb = () => (
-  <div className="flex justify-center mb-10" style={{ perspective: '600px' }}>
-    <div className="animate-spin3d">
-      <svg viewBox="0 0 100 100" className="w-24 h-24 md:w-32 md:h-32 drop-shadow-[0_0_20px_rgba(245,158,11,0.5)]">
-        <polygon points="50,20 72,35 72,65 50,80 28,65 28,35" fill="#f59e0b" opacity="0.9" />
-        <polygon points="50,0 65,8 65,28 50,36 35,28 35,8" fill="#d97706" opacity="0.7" />
-        <polygon points="50,64 65,72 65,92 50,100 35,92 35,72" fill="#d97706" opacity="0.7" />
-        <polygon points="72,10 87,18 87,38 72,46 57,38 57,18" fill="#b45309" opacity="0.6" />
-        <polygon points="28,10 43,18 43,38 28,46 13,38 13,18" fill="#b45309" opacity="0.6" />
-        <polygon points="72,54 87,62 87,82 72,90 57,82 57,62" fill="#b45309" opacity="0.6" />
-        <polygon points="28,54 43,62 43,82 28,90 13,82 13,62" fill="#b45309" opacity="0.6" />
-        {/* SVG pcela */}
-        <g transform="translate(36,32) scale(1.2)">
-          <ellipse cx="12" cy="14" rx="5" ry="7" fill="#1a1a1a" />
-          <ellipse cx="12" cy="6" rx="4" ry="4" fill="#1a1a1a" />
-          <rect x="7" y="10" width="10" height="2" rx="1" fill="#f59e0b" />
-          <rect x="7" y="14" width="10" height="2" rx="1" fill="#f59e0b" />
-          <rect x="7" y="18" width="10" height="2" rx="1" fill="#f59e0b" />
-          <ellipse cx="4" cy="8" rx="4" ry="2.5" fill="white" opacity="0.7" transform="rotate(-30 4 8)" />
-          <ellipse cx="20" cy="8" rx="4" ry="2.5" fill="white" opacity="0.7" transform="rotate(30 20 8)" />
-          <circle cx="10" cy="5" r="1" fill="white" />
-          <circle cx="14" cy="5" r="1" fill="white" />
-          <line x1="10" y1="2" x2="8" y2="0" stroke="#1a1a1a" strokeWidth="0.8" />
-          <line x1="14" y1="2" x2="16" y2="0" stroke="#1a1a1a" strokeWidth="0.8" />
-        </g>
-      </svg>
-    </div>
-  </div>
-);
 
 // --- Components ---
 const FamilyCarousel = () => {
@@ -644,8 +614,8 @@ const ProductCard = ({ product, onClick }: ProductCardProps) => {
         </div>
       </div>
       <div className="p-6 flex flex-col flex-grow">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h3>
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
+        <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem]">{product.name}</h3>
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">{product.description}</p>
         <button
           onClick={() => onClick(product)}
           className="mt-auto flex items-center gap-2 text-amber-600 font-semibold hover:text-amber-700 transition group"
@@ -663,59 +633,66 @@ interface ProductModalProps {
 }
 
 const ProductModal = ({ product, onClose }: ProductModalProps) => (
-  <motion.div 
+  <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
-    className="fixed inset-0 z-[60] flex items-center justify-center px-4 sm:px-6"
+    className="fixed inset-0 z-[60] flex items-center justify-center px-4 sm:px-6 py-4 sm:py-6"
   >
     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-    <motion.div 
+    <motion.div
       initial={{ scale: 0.9, opacity: 0, y: 20 }}
       animate={{ scale: 1, opacity: 1, y: 0 }}
       exit={{ scale: 0.9, opacity: 0, y: 20 }}
-      className="relative bg-white rounded-3xl overflow-hidden shadow-2xl max-w-2xl w-full"
+      className="relative bg-white rounded-3xl overflow-hidden shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col"
     >
-      <button onClick={onClose} className="absolute top-4 right-4 z-10 p-2 bg-black/10 hover:bg-black/20 rounded-full transition">
-        <X className="w-6 h-6 text-gray-800" />
+      <button
+        onClick={onClose}
+        aria-label="Zatvori"
+        className="absolute top-3 right-3 z-20 p-2 bg-white/90 hover:bg-white rounded-full transition shadow-md ring-1 ring-black/5"
+      >
+        <X className="w-5 h-5 text-gray-800" />
       </button>
-      <div className="flex flex-col md:flex-row">
-        <div className="md:w-1/2 h-64 md:h-auto">
-          <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-        </div>
-        <div className="md:w-1/2 p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">{product.name}</h2>
-          <div className="mb-6">
-            <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Dostupne opcije:</p>
-            <div className="flex flex-wrap gap-2">
-              {[...product.prices].map((priceOption, index) => (
-                <div 
-                  key={index}
-                  className="bg-amber-50 border-2 border-amber-200 rounded-xl px-4 py-2 flex items-center gap-2"
-                >
-                  <span className="text-amber-800 font-bold">{priceOption.size}</span>
-                  <span className="text-gray-400">•</span>
-                  <span className="text-amber-600 font-bold">{priceOption.price}</span>
-                </div>
-              ))}
+      <div className="overflow-y-auto overscroll-contain">
+        <div className="flex flex-col md:flex-row">
+          <div className="md:w-1/2 h-56 sm:h-64 md:h-auto flex-shrink-0">
+            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+          </div>
+          <div className="md:w-1/2 p-6 sm:p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2 pr-10">{product.name}</h2>
+            <div className="mb-6">
+              <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Dostupne opcije:</p>
+              <div className="flex flex-wrap gap-2">
+                {[...product.prices].map((priceOption, index) => (
+                  <div
+                    key={index}
+                    className="bg-amber-50 border-2 border-amber-200 rounded-xl px-4 py-2 flex items-center gap-2"
+                  >
+                    <span className="text-amber-800 font-bold">{priceOption.size}</span>
+                    <span className="text-gray-400">•</span>
+                    <span className="text-amber-600 font-bold">{priceOption.price}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>          <p className="text-gray-600 mb-6 leading-relaxed">
-            {product.longDescription}
-          </p>
-          <div className="flex flex-col gap-3">
-            <a 
-              href={`https://wa.me/381607262539?text=Zdravo, zainteresovan sam za ${product.name}`}
-              className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-green-200"
-            >
-              Naruči preko WhatsApp-a
-            </a>
-            <a 
-              href="#kontakt"
-              onClick={onClose}
-              className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-amber-200"
-            >
-              Pošalji upit
-            </a>
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              {product.longDescription}
+            </p>
+            <div className="flex flex-col gap-3">
+              <a
+                href={`https://wa.me/381607262539?text=Zdravo, zainteresovan sam za ${product.name}`}
+                className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-green-200"
+              >
+                Naruči preko WhatsApp-a
+              </a>
+              <a
+                href="#kontakt"
+                onClick={onClose}
+                className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-amber-200"
+              >
+                Pošalji upit
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -930,6 +907,38 @@ const HeroSection = () => {
 export const App = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedPost, setSelectedPost] = useState<NewsPost | null>(null);
+  const [activeContactTab, setActiveContactTab] = useState<'forma' | 'mapa' | 'kontakt'>('forma');
+
+  // When a modal is open, push a history entry so the phone's back button
+  // closes the modal instead of navigating away from the site.
+  useEffect(() => {
+    const isOpen = selectedProduct !== null || selectedPost !== null;
+    if (!isOpen) return;
+    window.history.pushState({ modal: true }, '');
+    const handlePop = () => {
+      setSelectedProduct(null);
+      setSelectedPost(null);
+    };
+    window.addEventListener('popstate', handlePop);
+    return () => window.removeEventListener('popstate', handlePop);
+  }, [selectedProduct, selectedPost]);
+
+  // Close helpers that also pop the pushed history entry (keeps history clean
+  // so subsequent back presses behave normally).
+  const closeProduct = () => {
+    if (window.history.state?.modal) {
+      window.history.back();
+    } else {
+      setSelectedProduct(null);
+    }
+  };
+  const closePost = () => {
+    if (window.history.state?.modal) {
+      window.history.back();
+    } else {
+      setSelectedPost(null);
+    }
+  };
 
   return (
     <div id="top" className="min-h-screen bg-amber-50/30 selection:bg-amber-200">
@@ -943,14 +952,26 @@ export const App = () => {
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(217,119,6,0.08) 0%, transparent 70%)' }} />
 
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-8">
-            <Spinning3DHoneycomb />
+          <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-white mb-4">Upoznajte našu porodicu</h2>
-            <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mb-6"></div>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              Naše pčelarenje je porodični posao u kojem svako ima svoju ulogu.
-              Zajedničkim snagama stvaramo najbolje za vas.
-            </p>
+            <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mb-8"></div>
+            <div className="text-gray-300 max-w-3xl mx-auto space-y-4 text-left md:text-center leading-relaxed">
+              <p>
+                Priča porodice Letvenčuk počinje sa <span className="text-amber-400 font-semibold">Ivanom</span>,
+                koji se pčelarstvom bavi više decenija. Strpljivo i posvećeno gradio je znanje o pčelama
+                i ovom zanatu, a taj dugogodišnji trud postao je temelj svega što danas radimo.
+              </p>
+              <p>
+                Od Ivana je pčelarstvo nasledio njegov sin <span className="text-amber-400 font-semibold">Mihajlo</span>.
+                Prikupio je očevo iskustvo i znatno ga proširio — novim tehnikama, modernim pristupom i
+                ljubavlju prema svakoj košnici.
+              </p>
+              <p>
+                Danas otac i sin rade rame uz rame. Brinemo o <span className="text-amber-400 font-semibold">oko 70 košnica</span>,
+                a svaka tegla meda koja izađe iz našeg gazdinstva nosi deo te porodične priče — tradicije,
+                znanja i iskrenog rada koji se prenosi s generacije na generaciju.
+              </p>
+            </div>
           </div>
 
          <FamilyCarousel />
@@ -999,135 +1020,242 @@ export const App = () => {
       </Section3D>
 
       <AnimatePresence>
-        {selectedPost && <NewsModal post={selectedPost} onClose={() => setSelectedPost(null)} />}
+        {selectedPost && <NewsModal post={selectedPost} onClose={closePost} />}
       </AnimatePresence>
 
       {/* Kontakt Section */}
       <Section3D id="kontakt" className="py-24 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-[3rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row border border-amber-100">
-            {/* Kontakt Informacije */}
-            <div className="lg:w-2/5 bg-amber-600 p-12 text-white">
-              <h2 className="text-4xl font-bold mb-8">Kontaktirajte nas</h2>
-              <p className="text-amber-100 mb-12 text-lg">
-                Imate pitanja ili želite da naručite naše proizvode? 
-                Tu smo za vas svakog dana.
-              </p>
-              
-              <div className="space-y-8">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
-                    <Phone className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className="text-amber-200 text-sm font-bold uppercase tracking-wider">Mihajlo</p>
-                    <a href="tel:+381600726253" className="text-xl font-bold hover:text-amber-200 transition">060 0726 253</a>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
-                    <Phone className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className="text-amber-200 text-sm font-bold uppercase tracking-wider">Tanja</p>
-                    <a href="tel:+381607262530" className="text-xl font-bold hover:text-amber-200 transition">060 726 2530</a>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
-                    <Instagram className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className="text-amber-200 text-sm font-bold uppercase tracking-wider">Instagram</p>
-                    <a href="https://www.instagram.com/med.letvencuk/" target="_blank" rel="noopener noreferrer" className="text-xl font-bold hover:text-amber-200 transition">@med.letvencuk</a>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
-                    <MapPin className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className="text-amber-200 text-sm font-bold uppercase tracking-wider">Lokacija</p>
-                    <p className="text-xl font-bold">Kula, Srbija</p>
-                  </div>
-                </div>
-              </div>
+        <div className="max-w-5xl mx-auto">
+          <div className="bg-white rounded-[2.5rem] md:rounded-[3rem] shadow-2xl overflow-hidden border border-amber-100">
+            {/* Header */}
+            <div className="bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 text-white p-8 md:p-12 text-center relative overflow-hidden">
+              <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+              <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-amber-300/20 blur-2xl pointer-events-none" />
+              <h2 className="text-3xl md:text-4xl font-bold mb-2 relative">Kontaktirajte nas</h2>
+              <p className="text-amber-100 text-base md:text-lg relative">Tu smo za vas svakog dana.</p>
             </div>
 
-            {/* Kontakt Forma */}
-            <div className="lg:w-3/5 p-12">
-              <h3 className="text-3xl font-bold text-gray-900 mb-8">Pošaljite nam poruku</h3>
-              <form
-                action="https://formspree.io/f/xykdqznv"
-                method="POST"
-                className="space-y-6"
-                onSubmit={(e) => {
-                  const form = e.currentTarget;
-                  const name = (form.elements.namedItem('name') as HTMLInputElement).value.trim();
-                  const email = (form.elements.namedItem('email') as HTMLInputElement).value.trim();
-                  const message = (form.elements.namedItem('message') as HTMLTextAreaElement).value.trim();
-                  if (!name || !email || !message) {
-                    e.preventDefault();
-                    alert('Molimo popunite sva polja pre slanja.');
-                    return;
-                  }
-                  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    e.preventDefault();
-                    alert('Molimo unesite ispravnu email adresu.');
-                    return;
-                  }
-                }}
-              >
-                {/* Podesili smo Formspree ID koji je vezan za nik.letvencuk@gmail.com */}
-                {/* Napomena: Prvi put kada pošaljete poruku, proverite mejl za potvrdu od Formspree-a */}
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">Ime i Prezime</label>
-                    <input 
-                      type="text" 
-                      name="name"
-                      required
-                      placeholder="Petar Petrović"
-                      className="w-full px-5 py-4 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">Email Adresa</label>
-                    <input 
-                      type="email" 
-                      name="email"
-                      required
-                      placeholder="petar@gmail.com"
-                      className="w-full px-5 py-4 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition"
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">Vaša Poruka</label>
-                  <textarea 
-                    name="message"
-                    required
-                    rows={4}
-                    placeholder="Kako vam možemo pomoći?"
-                    className="w-full px-5 py-4 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition resize-none"
-                  ></textarea>
-                </div>
+            {/* Tab bar */}
+            <div className="flex bg-amber-50/60 border-b border-amber-100">
+              {[
+                { key: 'forma' as const, label: 'Poruka', icon: Send },
+                { key: 'mapa' as const, label: 'Lokacija', icon: MapPin },
+                { key: 'kontakt' as const, label: 'Kontakt', icon: Phone },
+              ].map(({ key, label, icon: Icon }) => {
+                const active = activeContactTab === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setActiveContactTab(key)}
+                    className={`flex-1 py-4 px-2 font-bold text-xs sm:text-sm uppercase tracking-wider transition relative ${
+                      active ? 'text-amber-700' : 'text-gray-400 hover:text-gray-700'
+                    }`}
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span>{label}</span>
+                    </span>
+                    {active && (
+                      <motion.div
+                        layoutId="contactTabUnderline"
+                        className="absolute bottom-0 left-4 right-4 h-0.5 bg-amber-500 rounded-full"
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
 
-                <button 
-                  type="submit"
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-5 rounded-xl transition transform hover:scale-[1.02] flex items-center justify-center gap-3 shadow-xl shadow-amber-100"
-                >
-                  <Send size={20} /> Pošalji pitanje
-                </button>
-                <p className="text-xs text-gray-500 text-center mt-4">
-                  Vaša poruka će biti poslata na: nik.letvencuk@gmail.com
-                </p>
-              </form>
+            {/* Tab content */}
+            <div className="p-6 sm:p-10 md:p-12 min-h-[420px]">
+              <AnimatePresence mode="wait">
+                {activeContactTab === 'forma' && (
+                  <motion.div
+                    key="forma"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Pošaljite nam poruku</h3>
+                    <p className="text-gray-500 mb-8 text-sm">Odgovaramo u najkraćem roku na vaš email.</p>
+                    <form
+                      action="https://formspree.io/f/xykdqznv"
+                      method="POST"
+                      className="space-y-5"
+                      onSubmit={(e) => {
+                        const form = e.currentTarget;
+                        const name = (form.elements.namedItem('name') as HTMLInputElement).value.trim();
+                        const email = (form.elements.namedItem('email') as HTMLInputElement).value.trim();
+                        const message = (form.elements.namedItem('message') as HTMLTextAreaElement).value.trim();
+                        if (!name || !email || !message) {
+                          e.preventDefault();
+                          alert('Molimo popunite sva polja pre slanja.');
+                          return;
+                        }
+                        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                          e.preventDefault();
+                          alert('Molimo unesite ispravnu email adresu.');
+                          return;
+                        }
+                      }}
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Ime i Prezime</label>
+                          <input
+                            type="text"
+                            name="name"
+                            required
+                            placeholder="Petar Petrović"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Email Adresa</label>
+                          <input
+                            type="email"
+                            name="email"
+                            required
+                            placeholder="petar@gmail.com"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Vaša Poruka</label>
+                        <textarea
+                          name="message"
+                          required
+                          rows={5}
+                          placeholder="Kako vam možemo pomoći?"
+                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition resize-none"
+                        ></textarea>
+                      </div>
+                      <button
+                        type="submit"
+                        className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl transition transform hover:scale-[1.02] flex items-center justify-center gap-3 shadow-xl shadow-amber-100"
+                      >
+                        <Send size={20} /> Pošalji pitanje
+                      </button>
+                      <p className="text-xs text-gray-400 text-center">
+                        Vaša poruka stiže na: nik.letvencuk@gmail.com
+                      </p>
+                    </form>
+                  </motion.div>
+                )}
+
+                {activeContactTab === 'mapa' && (
+                  <motion.div
+                    key="mapa"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Gde smo</h3>
+                    <p className="text-gray-500 mb-6 text-sm">Kliknite na mapu da otvorite pravac u Google Maps.</p>
+
+                    <a
+                      href="https://www.google.com/maps/search/?api=1&query=Kulska+9%2F1%2C+Kula%2C+Vojvodina%2C+Srbija"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-white border border-amber-100 hover:border-amber-300 hover:shadow-lg transition mb-6"
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shrink-0 shadow-md shadow-amber-200/50">
+                        <MapPin className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Adresa</p>
+                        <p className="text-lg font-bold text-gray-900">Kulska 9/1, Kula</p>
+                        <p className="text-sm text-amber-600">Vojvodina, Srbija</p>
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-amber-600 group-hover:translate-x-1 transition shrink-0" />
+                    </a>
+
+                    <a
+                      href="https://www.google.com/maps/search/?api=1&query=Kulska+9%2F1%2C+Kula%2C+Vojvodina%2C+Srbija"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block rounded-2xl overflow-hidden shadow-lg ring-1 ring-amber-100 hover:ring-amber-300 transition"
+                      aria-label="Otvori lokaciju u Google Maps"
+                    >
+                      <iframe
+                        title="Letvenčuk Med — lokacija"
+                        src="https://www.google.com/maps?q=Kulska%209%2F1%2C%20Kula%2C%20Srbija&output=embed"
+                        className="w-full h-64 sm:h-80 border-0 pointer-events-none"
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                      />
+                    </a>
+                  </motion.div>
+                )}
+
+                {activeContactTab === 'kontakt' && (
+                  <motion.div
+                    key="kontakt"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Direktan kontakt</h3>
+                    <p className="text-gray-500 mb-6 text-sm">Pozovite nas, pišite preko WhatsApp-a ili nam pošaljite DM.</p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {[
+                        {
+                          href: 'tel:+381600726253',
+                          icon: Phone,
+                          label: 'Mihajlo',
+                          value: '060 0726 253',
+                          sub: 'Pozovite direktno',
+                        },
+                        {
+                          href: 'tel:+381607262530',
+                          icon: Phone,
+                          label: 'Tanja',
+                          value: '060 726 2530',
+                          sub: 'Pozovite direktno',
+                        },
+                        {
+                          href: 'https://wa.me/381607262539',
+                          icon: Send,
+                          label: 'WhatsApp',
+                          value: 'Chat online',
+                          sub: 'Najbrži odgovor',
+                          external: true,
+                        },
+                        {
+                          href: 'https://www.instagram.com/med.letvencuk/',
+                          icon: Instagram,
+                          label: 'Instagram',
+                          value: '@med.letvencuk',
+                          sub: 'Pišite nam DM',
+                          external: true,
+                        },
+                      ].map(({ href, icon: Icon, label, value, sub, external }, i) => (
+                        <a
+                          key={i}
+                          href={href}
+                          {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                          className="group bg-gradient-to-br from-amber-50 to-white border border-amber-100 rounded-2xl p-5 flex items-center gap-4 hover:shadow-lg hover:shadow-amber-200/40 hover:-translate-y-0.5 hover:border-amber-300 transition-all duration-300"
+                        >
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 flex items-center justify-center shrink-0 shadow-md shadow-amber-200/50 ring-1 ring-amber-200/60 group-hover:scale-110 transition-transform">
+                            <Icon className="w-5 h-5 text-white" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">{label}</p>
+                            <p className="text-base font-bold text-gray-900 truncate">{value}</p>
+                            <p className="text-xs text-amber-600">{sub}</p>
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-amber-600 group-hover:translate-x-1 transition shrink-0" />
+                        </a>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -1204,9 +1332,9 @@ export const App = () => {
       {/* Modal */}
       <AnimatePresence>
         {selectedProduct && (
-          <ProductModal 
-            product={selectedProduct} 
-            onClose={() => setSelectedProduct(null)} 
+          <ProductModal
+            product={selectedProduct}
+            onClose={closeProduct}
           />
         )}
       </AnimatePresence>
