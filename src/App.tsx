@@ -76,7 +76,7 @@ const familyMembers = [
   {
     name: "Nikola",
     role: "Sin & Dostava",
-    description: "Nikola je naš pouzdani glasnik. Uvek spreman da pomogne  bilo da je u pitanju dostava meda na kućnu adresu, pakovanje porudžbina ili jednostavno da bude tu kada je potrebna još jedna ruka.",
+    description: "Nikola je naš pouzdani glasnik. Uvek spreman da pomogne - bilo da je u pitanju dostava meda na kućnu adresu ili pakovanje porudžbina.",
     icon: <Truck className="w-6 h-6 text-amber-600" />
   }
 ];
@@ -245,37 +245,37 @@ const newsPosts: NewsPost[] = [
   {
     title: "Naša tezga na festivalu",
     date: "2026-03-15",
-    text: "Ucestovali smo na festivalu meda gde smo predstavili nase najnovije proizvode. Bilo je divno videti koliko ljudi uziva u nasem medu!",
+    text: "Učestvovali smo na festivalu meda gde smo predstavili naše najnovije proizvode. Bilo je divno videti koliko ljudi uživa u našem medu!",
     images: ["images/tezga_med.webp"]
   },
   {
-    title: "Vredne pcele na pasi",
+    title: "Vredne pčele na paši",
     date: "2025-05-20",
-    text: "Nase pcele su na pasi i rade punom parom. Ove sezone ocekujemo odlican prinos meda.",
+    text: "Naše pčele su na paši i rade punom parom. Ove sezone očekujemo odličan prinos meda.",
     images: ["images/kontejner2.webp"]
   },
   {
-    title: "Miksevi za zdraviji zivot",
+    title: "Miksevi za zdraviji život",
     date: "2026-01-10",
-    text: "Predstavljamo vam nase mikseve - savrsenu kombinaciju meda, oraha i susenog voca za svakodnevno uzivanje.",
+    text: "Predstavljamo vam naše mikseve - savršenu kombinaciju meda, oraha i sušenog voća za svakodnevno uživanje.",
     images: ["images/sva_tri_miksa_mali_veliki.jpg"]
   },
   {
-    title: "Nas med putuje svetom!",
+    title: "Naš med putuje svetom!",
     date: "2025-12-05",
-    text: "Pogled sa terase u Dubaiju - nas med je stigao i do Bliskog istoka. Ponosni smo sto nas ukus prelazi granice.",
+    text: "Pogled sa terase u Dubaiju - naš med je stigao i do Bliskog istoka. Ponosni smo što naš ukus prelazi granice.",
     images: ["images/med_u_dubaiju.jpg"]
   },
   {
-    title: "Nadja i Ivana u akciji",
+    title: "Nađa i Ivana u akciji",
     date: "2025-11-18",
-    text: "Nase devojke su uvek spremne da docekaju kupce sa osmehom i pomognu im da izaberu pravi proizvod.",
+    text: "Naše devojke su uvek spremne da dočekaju kupce sa osmehom i pomognu im da izaberu pravi proizvod.",
     images: ["images/nadja_ivana_za_tezgom.webp"]
   },
   {
     title: "Gajbice spremne za isporuku",
     date: "2025-10-30",
-    text: "Nova tura pakovanja je spremna za nase verne kupce. Svaka gajbica je pazljivo pripremljena sa ljubavlju.",
+    text: "Nova tura pakovanja je spremna za naše verne kupce. Svaka gajbica je pažljivo pripremljena sa ljubavlju.",
     images: ["images/gajbice_lepa_slika.jpg", "images/gajbice1.jpg", "images/gajbice2.jpg", "images/gajbice3.jpg", "images/gajbice4.jpg", "images/gajbice5.jpg"]
   }
 ];
@@ -304,6 +304,36 @@ const useSwipe = (onSwipeLeft: () => void, onSwipeRight: () => void) => {
   };
   return { onTouchStart, onTouchEnd };
 };
+
+const Spinning3DHoneycomb = () => (
+  <div className="flex justify-center mb-10" style={{ perspective: '600px' }}>
+    <div className="animate-spin3d">
+      <svg viewBox="0 0 100 100" className="w-24 h-24 md:w-32 md:h-32 drop-shadow-[0_0_20px_rgba(245,158,11,0.5)]">
+        <polygon points="50,20 72,35 72,65 50,80 28,65 28,35" fill="#f59e0b" opacity="0.9" />
+        <polygon points="50,0 65,8 65,28 50,36 35,28 35,8" fill="#d97706" opacity="0.7" />
+        <polygon points="50,64 65,72 65,92 50,100 35,92 35,72" fill="#d97706" opacity="0.7" />
+        <polygon points="72,10 87,18 87,38 72,46 57,38 57,18" fill="#b45309" opacity="0.6" />
+        <polygon points="28,10 43,18 43,38 28,46 13,38 13,18" fill="#b45309" opacity="0.6" />
+        <polygon points="72,54 87,62 87,82 72,90 57,82 57,62" fill="#b45309" opacity="0.6" />
+        <polygon points="28,54 43,62 43,82 28,90 13,82 13,62" fill="#b45309" opacity="0.6" />
+        {/* SVG pcela */}
+        <g transform="translate(36,32) scale(1.2)">
+          <ellipse cx="12" cy="14" rx="5" ry="7" fill="#1a1a1a" />
+          <ellipse cx="12" cy="6" rx="4" ry="4" fill="#1a1a1a" />
+          <rect x="7" y="10" width="10" height="2" rx="1" fill="#f59e0b" />
+          <rect x="7" y="14" width="10" height="2" rx="1" fill="#f59e0b" />
+          <rect x="7" y="18" width="10" height="2" rx="1" fill="#f59e0b" />
+          <ellipse cx="4" cy="8" rx="4" ry="2.5" fill="white" opacity="0.7" transform="rotate(-30 4 8)" />
+          <ellipse cx="20" cy="8" rx="4" ry="2.5" fill="white" opacity="0.7" transform="rotate(30 20 8)" />
+          <circle cx="10" cy="5" r="1" fill="white" />
+          <circle cx="14" cy="5" r="1" fill="white" />
+          <line x1="10" y1="2" x2="8" y2="0" stroke="#1a1a1a" strokeWidth="0.8" />
+          <line x1="14" y1="2" x2="16" y2="0" stroke="#1a1a1a" strokeWidth="0.8" />
+        </g>
+      </svg>
+    </div>
+  </div>
+);
 
 // --- Components ---
 const FamilyCarousel = () => {
@@ -350,7 +380,7 @@ useEffect(() => {
     <div className="relative">
       <button
         onClick={() => paginate(-1)}
-        className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 hover:border-amber-400 transition"
+        className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 border border-amber-500/30 rounded-full shadow-md flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-400 transition"
       >
         <ChevronLeft size={20} />
       </button>
@@ -376,14 +406,14 @@ useEffect(() => {
             {getVisible().map((member) => (
               <div
                 key={member.name}
-                className="p-8 rounded-3xl bg-amber-50/50 border border-amber-100 text-center hover:bg-white hover:shadow-xl transition group h-72 flex flex-col"
+                className="p-8 rounded-3xl bg-white/5 border border-amber-500/20 text-center hover:bg-white/10 hover:border-amber-500/40 transition-colors group h-80 flex flex-col"
               >
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm group-hover:scale-110 transition">
-                  {member.icon}
+                <div className="w-16 h-16 shrink-0 bg-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <div className="text-amber-400">{member.icon}</div>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1">{member.name}</h3>
-                <p className="text-amber-600 text-sm font-semibold mb-4">{member.role}</p>
-                <p className="text-gray-600 text-sm leading-relaxed flex-1 overflow-hidden">{member.description}</p>
+                <h3 className="text-xl font-bold text-white mb-1">{member.name}</h3>
+                <p className="text-amber-400 text-sm font-semibold mb-4">{member.role}</p>
+                <p className="text-gray-400 text-sm leading-relaxed flex-1">{member.description}</p>
               </div>
             ))}
           </motion.div>
@@ -392,7 +422,7 @@ useEffect(() => {
 
       <button
         onClick={() => paginate(1)}
-        className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 hover:border-amber-400 transition"
+        className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 border border-amber-500/30 rounded-full shadow-md flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-400 transition"
       >
         <ChevronRight size={20} />
       </button>
@@ -403,7 +433,7 @@ useEffect(() => {
             key={i}
             onClick={() => { setDirection(i > currentIndex ? 1 : -1); setCurrentIndex(i); }}
             className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              i === currentIndex ? 'bg-amber-500 w-6' : 'bg-amber-200 hover:bg-amber-300'
+              i === currentIndex ? 'bg-amber-500 w-6' : 'bg-amber-500/30 hover:bg-amber-500/50'
             }`}
           />
         ))}
@@ -908,17 +938,21 @@ export const App = () => {
       <HeroSection />
 
       {/* Porodica Section */}
-      <Section3D id="porodica" className="pt-20 pb-24 px-4 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Upoznajte našu porodicu</h2>
+      <Section3D id="porodica" className="py-24 px-4 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden -mt-1">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%)' }} />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(217,119,6,0.08) 0%, transparent 70%)' }} />
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-8">
+            <Spinning3DHoneycomb />
+            <h2 className="text-4xl font-bold text-white mb-4">Upoznajte našu porodicu</h2>
             <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mb-6"></div>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Naše pčelarenje je porodični posao u kojem svako ima svoju ulogu. 
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Naše pčelarenje je porodični posao u kojem svako ima svoju ulogu.
               Zajedničkim snagama stvaramo najbolje za vas.
             </p>
           </div>
-          
+
          <FamilyCarousel />
         </div>
       </Section3D>
