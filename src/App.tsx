@@ -91,7 +91,7 @@ const products: Product[] = [
       { size: "400g", price: "400 RSD" },
       { size: "1kg", price: "800 RSD" }
     ],    
-    image: "images/suncokretov_med.webp"
+    image: "images/livadski_novi.jpeg"
   },
   {
     id: 2,
@@ -99,10 +99,10 @@ const products: Product[] = [
     description: "Svetla boja i blag, prijatan ukus. Najtraženiji med zbog svoje nežne arome.",
     longDescription: "Bagremov med je poznat po svojoj prozirnosti i činjenici da ostaje u tečnom stanju veoma dugo. Zbog svog blagog ukusa, omiljen je deci. Deluje umirujuće na organizam i preporučuje se kod nesanice i stresa.",
     prices: [
-      { size: "400g", price: "600 RSD" },      
+      { size: "400g", price: "750 RSD" },
       { size: "1kg", price: "1500 RSD" }
     ],    
-    image: "images/bagremov_med.webp"
+    image: "images/bagrem_novi.jpeg"
   },
   {
     id: 4,
@@ -113,7 +113,7 @@ const products: Product[] = [
       { size: "400g", price: "400 RSD" },
       { size: "1kg", price: "800 RSD" }
     ],
-    image: "images/med_od_uljane_repice.webp"
+    image: "images/uljana_repica_novi.jpeg"
   },
   {
     id: 5,
@@ -136,7 +136,7 @@ const products: Product[] = [
       { size: "100g", price: "200 RSD" },
       { size: "200g", price: "400 RSD" }
     ],
-    image: "images/polen2.jpeg"
+    image: "images/polen_novi.jpeg"
   },
   {
     id: 7,
@@ -157,7 +157,7 @@ const products: Product[] = [
       { size: "0.2l", price: "400 RSD" },
       { size: "0.5l", price: "800 RSD" }
     ],    
-    image: "images/medovaca2.jpeg"
+    image: "images/medovaca_nova.jpeg"
   },
   {
     id: 9,
