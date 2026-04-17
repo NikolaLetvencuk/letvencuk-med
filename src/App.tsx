@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { 
   Phone, 
   Instagram, 
@@ -1472,6 +1474,9 @@ export const App = () => {
           />
         )}
       </AnimatePresence>
+
+      <Analytics />
+      <SpeedInsights />
     </div>
   );
 }
