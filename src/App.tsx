@@ -146,7 +146,7 @@ const products: Product[] = [
     prices: [
       { size: "komad", price: "200 RSD" }
     ],    
-    image: "images/vosak2.jpeg"
+    image: "images/vosak_novi.jpeg"
   },
   {
     id: 8,
@@ -277,8 +277,35 @@ const newsPosts: NewsPost[] = [
     date: "2025-10-30",
     text: "Nova tura pakovanja je spremna za naše verne kupce. Svaka gajbica je pažljivo pripremljena sa ljubavlju.",
     images: ["images/gajbice_lepa_slika.jpg", "images/gajbice1.jpg", "images/gajbice2.jpg", "images/gajbice3.jpg", "images/gajbice4.jpg", "images/gajbice5.jpg"]
+  },
+  {
+    title: "Pčele obišle voćnjake u Tornjošu i Deronjama",
+    date: "2026-04-05",
+    text: "Naše pčele su obišle voćnjake u Tornjošu i Deronjama. Veselo zuje među rascvetanim stablima i marljivo skupljaju nektar za novu sezonu meda.",
+    images: [
+      "images/pcele_na_vocnjaku.jpeg",
+      "images/pcele_na_vocnjaku2.jpeg",
+      "images/pcele_na_vocnjaku3.jpeg",
+      "images/kontejner_na_pasi.jpeg",
+      "images/kontejner_na_pasi2.jpeg",
+      "images/kontejner_na_pasi3.jpeg"
+    ]
+  },
+  {
+    title: "Naš novi prepoznatljivi kombi",
+    date: "2026-03-27",
+    text: "Imamo nov kombi sa novom nalepnicom Letvenčuk Med koja ga čini lako prepoznatljivim i olakšava nam i ubrzava isporuku do naših vernih kupaca.",
+    images: ["images/kombi_sa_nalepnicom_letvencukmed.jpeg"]
+  },
+  {
+    title: "Pčele stigle u Bačku Topolu",
+    date: "2026-04-16",
+    text: "Naše pčele su stigle u Bačku Topolu. Kontejner sa košnicama je postavljen i pčele kreću da istražuju nove pašnjake.",
+    images: ["images/video_backa_topola_kontejner_sa_kosnicama.mp4"]
   }
 ];
+
+const isVideo = (src: string) => /\.(mp4|webm|mov)$/i.test(src);
 
 const scrollToId = (id: string) => {
   const el = document.getElementById(id);
@@ -656,7 +683,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => (
       <div className="overflow-y-auto overscroll-contain">
         <div className="flex flex-col md:flex-row">
           <div className="md:w-1/2 h-56 sm:h-64 md:h-auto flex-shrink-0">
-            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+            <img src={product.image} alt={product.name} className="w-full h-full object-cover object-[35%_center]" />
           </div>
           <div className="md:w-1/2 p-6 sm:p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-2 pr-10">{product.name}</h2>
@@ -723,8 +750,19 @@ const NewsModal = ({ post, onClose }: { post: NewsPost; onClose: () => void }) =
         <button onClick={onClose} className="absolute top-4 right-4 z-20 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
           <X size={18} />
         </button>
-        <div className="relative h-64 sm:h-80 overflow-hidden rounded-t-2xl" {...swipe}>
-          <img src={post.images[imgIndex]} alt={post.title} className="w-full h-full object-contain bg-black/90" />
+        <div className="relative h-64 sm:h-80 overflow-hidden rounded-t-2xl bg-black/90" {...swipe}>
+          {isVideo(post.images[imgIndex]) ? (
+            <video
+              src={post.images[imgIndex]}
+              controls
+              autoPlay
+              muted
+              playsInline
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <img src={post.images[imgIndex]} alt={post.title} className="w-full h-full object-contain" />
+          )}
           {post.images.length > 1 && (
             <>
               <button onClick={() => setImgIndex((p) => (p - 1 + post.images.length) % post.images.length)} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
@@ -758,11 +796,23 @@ const HexCell = ({ post, onSelect }: { post: NewsPost; onSelect: (p: NewsPost) =
     style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}
   >
     <div className="aspect-[1/1.15] overflow-hidden">
-      <img
-        src={post.images[0]}
-        alt={post.title}
-        className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-      />
+      {isVideo(post.images[0]) ? (
+        <video
+          src={post.images[0]}
+          muted
+          loop
+          autoPlay
+          playsInline
+          preload="metadata"
+          className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+        />
+      ) : (
+        <img
+          src={post.images[0]}
+          alt={post.title}
+          className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+        />
+      )}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/20 opacity-90 group-hover:opacity-95 transition duration-300" />
       <div className="absolute inset-0 flex flex-col items-center justify-end pb-[28%] px-4 text-center">
         <h3 className="text-white text-sm md:text-lg font-bold leading-tight" style={{ textShadow: '0 2px 12px rgba(0,0,0,1), 0 1px 4px rgba(0,0,0,0.9)' }}>{post.title}</h3>
@@ -772,7 +822,7 @@ const HexCell = ({ post, onSelect }: { post: NewsPost; onSelect: (p: NewsPost) =
   </div>
 );
 
-const HoneycombGrid = ({ posts, onSelect }: { posts: NewsPost[]; onSelect: (p: NewsPost) => void }) => {
+const HoneycombGrid = ({ posts, onSelect }: { posts: (NewsPost | null)[]; onSelect: (p: NewsPost) => void }) => {
   const [cols, setCols] = useState(window.innerWidth < 640 ? 2 : 3);
 
   useEffect(() => {
@@ -782,7 +832,7 @@ const HoneycombGrid = ({ posts, onSelect }: { posts: NewsPost[]; onSelect: (p: N
   }, []);
 
   // Build alternating rows: full row (cols), then offset row (cols-1)
-  const rows: { posts: NewsPost[]; offset: boolean }[] = [];
+  const rows: { posts: (NewsPost | null)[]; offset: boolean }[] = [];
   let idx = 0;
   let full = true;
   while (idx < posts.length) {
@@ -808,11 +858,93 @@ const HoneycombGrid = ({ posts, onSelect }: { posts: NewsPost[]; onSelect: (p: N
               key={i}
               style={{ width: `${hexWidth}%`, padding: '0 4px' }}
             >
-              <HexCell post={post} onSelect={onSelect} />
+              {post ? (
+                <HexCell post={post} onSelect={onSelect} />
+              ) : (
+                <div className="aspect-[1/1.15] invisible" aria-hidden="true" />
+              )}
             </div>
           ))}
         </div>
       ))}
+    </div>
+  );
+};
+
+const HoneycombCarousel = ({ posts, onSelect }: { posts: NewsPost[]; onSelect: (p: NewsPost) => void }) => {
+  const pageSize = 5;
+  const totalPages = Math.ceil(posts.length / pageSize);
+  const [page, setPage] = useState(0);
+  const [direction, setDirection] = useState(0);
+
+  const paginate = (dir: number) => {
+    setDirection(dir);
+    setPage((prev) => (prev + dir + totalPages) % totalPages);
+  };
+
+  const swipe = useSwipe(() => paginate(1), () => paginate(-1));
+
+  const pagePosts: (NewsPost | null)[] = posts.slice(page * pageSize, page * pageSize + pageSize);
+  while (pagePosts.length < pageSize) pagePosts.push(null);
+
+  const variants = {
+    enter: (dir: number) => ({ x: dir > 0 ? 80 : -80, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir: number) => ({ x: dir > 0 ? -80 : 80, opacity: 0 }),
+  };
+
+  return (
+    <div className="relative">
+      {totalPages > 1 && (
+        <button
+          onClick={() => paginate(-1)}
+          aria-label="Prethodna"
+          className="absolute left-0 sm:-left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 border border-amber-500/30 rounded-full shadow-md flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-400 transition"
+        >
+          <ChevronLeft size={20} />
+        </button>
+      )}
+
+      <div {...swipe}>
+        <AnimatePresence mode="popLayout" custom={direction}>
+          <motion.div
+            key={page}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.35, ease: 'easeInOut' }}
+          >
+            <HoneycombGrid posts={pagePosts} onSelect={onSelect} />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {totalPages > 1 && (
+        <button
+          onClick={() => paginate(1)}
+          aria-label="Sledeća"
+          className="absolute right-0 sm:-right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 border border-amber-500/30 rounded-full shadow-md flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-400 transition"
+        >
+          <ChevronRight size={20} />
+        </button>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-2 mt-8">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => { setDirection(i > page ? 1 : -1); setPage(i); }}
+              aria-label={`Stranica ${i + 1}`}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                i === page ? 'bg-amber-500 w-6' : 'bg-amber-500/30 hover:bg-amber-500/50'
+              }`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -881,8 +1013,8 @@ const HeroSection = () => {
 
   // Video actual resolution: 1920x1080 (16:9)
   return (
-    <section ref={sectionRef} className="relative w-full pt-16 md:pt-20 max-md:aspect-[4/3] md:aspect-video" >
-      <div className="absolute inset-0 overflow-hidden">
+    <section ref={sectionRef} className="relative w-full pt-20 md:pt-20 max-md:aspect-[4/3] md:aspect-video" >
+      <div className="absolute inset-x-0 bottom-0 top-20 md:top-0 overflow-hidden">
         {/* First frame as default (shown when video not playing) */}
         <img
           src="images/prvi_frame_nova_slika.png"
@@ -955,21 +1087,23 @@ export const App = () => {
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-white mb-4">Upoznajte našu porodicu</h2>
             <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mb-8"></div>
-            <div className="text-gray-300 max-w-3xl mx-auto space-y-4 text-left md:text-center leading-relaxed">
+            <div className="text-gray-300 max-w-3xl mx-auto space-y-4 text-justify md:text-center leading-relaxed">
               <p>
-                Priča porodice Letvenčuk počinje sa <span className="text-amber-400 font-semibold">Ivanom</span>,
-                koji se pčelarstvom bavi više decenija. Strpljivo i posvećeno gradio je znanje o pčelama
-                i ovom zanatu, a taj dugogodišnji trud postao je temelj svega što danas radimo.
+                Sve je počelo od <span className="text-amber-400 font-semibold">Ivana</span>.
+                Već decenijama se bavi pčelama, a kroz sve te godine naučio je koliko ovaj zanat
+                traži strpljenja i tihe ljubavi. Ono što je on gradio dan za danom, danas je srce
+                svega što radimo.
               </p>
               <p>
-                Od Ivana je pčelarstvo nasledio njegov sin <span className="text-amber-400 font-semibold">Mihajlo</span>.
-                Prikupio je očevo iskustvo i znatno ga proširio — novim tehnikama, modernim pristupom i
-                ljubavlju prema svakoj košnici.
+                Njegov sin <span className="text-amber-400 font-semibold">Mihajlo</span> nasledio
+                je očevu ljubav prema pčelama i dodao joj nešto svoje. Nova znanja, drugačiji
+                pristup i želju da ovaj posao gurne još korak dalje.
               </p>
               <p>
-                Danas otac i sin rade rame uz rame. Brinemo o <span className="text-amber-400 font-semibold">oko 70 košnica</span>,
-                a svaka tegla meda koja izađe iz našeg gazdinstva nosi deo te porodične priče — tradicije,
-                znanja i iskrenog rada koji se prenosi s generacije na generaciju.
+                Danas Ivan pomaže Mihajlu koliko može, a zajedno brinemo o <span className="text-amber-400 font-semibold">oko 70 košnica</span> i
+                svaku pazimo kao da nam je prva. Svaka tegla meda koja izađe iz naše kuće nosi deo
+                te priče. Priču o radu, o porodici i o onome što se ne kupuje, nego prenosi s
+                kolena na koleno.
               </p>
             </div>
           </div>
@@ -1015,7 +1149,7 @@ export const App = () => {
             </p>
           </div>
 
-          <HoneycombGrid posts={[...newsPosts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())} onSelect={setSelectedPost} />
+          <HoneycombCarousel posts={[...newsPosts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())} onSelect={setSelectedPost} />
         </div>
       </Section3D>
 
@@ -1067,7 +1201,7 @@ export const App = () => {
             </div>
 
             {/* Tab content */}
-            <div className="p-6 sm:p-10 md:p-12 min-h-[420px]">
+            <div className="p-6 sm:p-10 md:p-12 min-h-[600px] sm:min-h-[660px] md:min-h-[680px]">
               <AnimatePresence mode="wait">
                 {activeContactTab === 'forma' && (
                   <motion.div
