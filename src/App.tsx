@@ -281,9 +281,9 @@ const newsPosts: NewsPost[] = [
     images: ["images/gajbice_lepa_slika.jpg", "images/gajbice1.jpg", "images/gajbice2.jpg", "images/gajbice3.jpg", "images/gajbice4.jpg", "images/gajbice5.jpg"]
   },
   {
-    title: "Pčele obišle voćnjake u Tornjošu i Deronjama",
+    title: "Pčele obišle voćnjake Čelareva i Tornjoša",
     date: "2026-04-05",
-    text: "Naše pčele su obišle voćnjake u Tornjošu i Deronjama. Veselo zuje među rascvetanim stablima i marljivo skupljaju nektar za novu sezonu meda.",
+    text: "Naše pčele su ove sezone obišle voćnjak u Čelarevu, a zatim i voćnjak jabuka u Tornjošu. Među rascvetanim stablima marljivo su skupljale nektar za novu sezonu meda.",
     images: [
       "images/pcele_na_vocnjaku.jpeg",
       "images/pcele_na_vocnjaku2.jpeg",
