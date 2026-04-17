@@ -659,9 +659,10 @@ const ProductCard = ({ product, onClick }: ProductCardProps) => {
 interface ProductModalProps {
   product: Product;
   onClose: () => void;
+  onInquiry: () => void;
 }
 
-const ProductModal = ({ product, onClose }: ProductModalProps) => (
+const ProductModal = ({ product, onClose, onInquiry }: ProductModalProps) => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
@@ -714,13 +715,13 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => (
               >
                 Naruči preko WhatsApp-a
               </a>
-              <a
-                href="#kontakt"
-                onClick={onClose}
+              <button
+                type="button"
+                onClick={onInquiry}
                 className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-amber-200"
               >
                 Pošalji upit
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -1042,6 +1043,21 @@ export const App = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedPost, setSelectedPost] = useState<NewsPost | null>(null);
   const [activeContactTab, setActiveContactTab] = useState<'forma' | 'mapa' | 'kontakt'>('forma');
+  const [formMessage, setFormMessage] = useState('');
+  const [formError, setFormError] = useState('');
+
+  const handleProductInquiry = (product: Product) => {
+    setFormMessage(`Zdravo, zainteresovan/a sam za proizvod "${product.name}". Molim vas da mi pošaljete više informacija o dostupnosti i načinu isporuke.`);
+    setActiveContactTab('forma');
+    setSelectedProduct(null);
+    setTimeout(() => scrollToId('kontakt'), 100);
+  };
+
+  useEffect(() => {
+    if (!formError) return;
+    const t = setTimeout(() => setFormError(''), 4000);
+    return () => clearTimeout(t);
+  }, [formError]);
 
   // When a modal is open, push a history entry so the phone's back button
   // closes the modal instead of navigating away from the site.
@@ -1218,7 +1234,9 @@ export const App = () => {
                     <form
                       action="https://formspree.io/f/xykdqznv"
                       method="POST"
+                      noValidate
                       className="space-y-5"
+                      onChange={() => { if (formError) setFormError(''); }}
                       onSubmit={(e) => {
                         const form = e.currentTarget;
                         const name = (form.elements.namedItem('name') as HTMLInputElement).value.trim();
@@ -1226,14 +1244,15 @@ export const App = () => {
                         const message = (form.elements.namedItem('message') as HTMLTextAreaElement).value.trim();
                         if (!name || !email || !message) {
                           e.preventDefault();
-                          alert('Molimo popunite sva polja pre slanja.');
+                          setFormError('Molimo popunite sva polja pre slanja.');
                           return;
                         }
                         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
                           e.preventDefault();
-                          alert('Molimo unesite ispravnu email adresu.');
+                          setFormError('Molimo unesite ispravnu email adresu.');
                           return;
                         }
+                        setFormError('');
                       }}
                     >
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -1264,6 +1283,8 @@ export const App = () => {
                           name="message"
                           required
                           rows={5}
+                          value={formMessage}
+                          onChange={(e) => setFormMessage(e.target.value)}
                           placeholder="Kako vam možemo pomoći?"
                           className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition resize-none"
                         ></textarea>
@@ -1471,7 +1492,35 @@ export const App = () => {
           <ProductModal
             product={selectedProduct}
             onClose={closeProduct}
+            onInquiry={() => handleProductInquiry(selectedProduct)}
           />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {formError && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.25 }}
+            className="fixed top-24 left-1/2 -translate-x-1/2 z-[70] flex items-center gap-3 bg-white border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm shadow-xl max-w-[90vw]"
+            role="alert"
+          >
+            <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span className="font-medium">{formError}</span>
+            <button
+              onClick={() => setFormError('')}
+              aria-label="Zatvori"
+              className="ml-2 text-red-400 hover:text-red-600 transition"
+            >
+              <X size={16} />
+            </button>
+          </motion.div>
         )}
       </AnimatePresence>
 
