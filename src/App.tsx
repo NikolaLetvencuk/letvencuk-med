@@ -307,7 +307,7 @@ const newsPosts: NewsPost[] = [
   },
   {
     title: "Prolećni festival cveća",
-    date: "2026-04-19",
+    date: "2026-04-18",
     text: "Izašli smo na Prolećni festival cveća i lepo se družili sa našim starim i novim prijateljima. Na slikama možete videti naše tezge i atmosferu sa festivala.",
     images: [
       "images/prolecni_festiva_cveca1.jpeg",
