@@ -304,6 +304,18 @@ const newsPosts: NewsPost[] = [
     date: "2026-04-16",
     text: "Naše pčele su stigle u Bačku Topolu. Kontejner sa košnicama je postavljen i pčele kreću da istražuju nove pašnjake.",
     images: ["images/video_backa_topola_kontejner_sa_kosnicama.mp4"]
+  },
+  {
+    title: "Prolećni festival cveća",
+    date: "2026-04-18",
+    text: "Izašli smo na Prolećni festival cveća i lepo se družili sa našim starim i novim prijateljima. Na slikama možete videti naše tezge i atmosferu sa festivala.",
+    images: [
+      "images/prolecni_festiva_cveca1.jpeg",
+      "images/prolecni_festiva_cveca2.jpeg",
+      "images/prolecni_festiva_cveca3.jpeg",
+      "images/prolecni_festiva_cveca4.jpeg",
+      "images/prolecni_festiva_cveca5.jpeg"
+    ]
   }
 ];
 
