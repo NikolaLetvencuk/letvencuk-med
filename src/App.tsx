@@ -391,6 +391,7 @@ useEffect(() => {
     <div className="relative">
       <button
         onClick={() => paginate(-1)}
+        aria-label="Prethodni član"
         className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 border border-amber-500/30 rounded-full shadow-md flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-400 transition"
       >
         <ChevronLeft size={20} />
@@ -433,6 +434,7 @@ useEffect(() => {
 
       <button
         onClick={() => paginate(1)}
+        aria-label="Sledeći član"
         className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 border border-amber-500/30 rounded-full shadow-md flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-400 transition"
       >
         <ChevronRight size={20} />
@@ -443,7 +445,8 @@ useEffect(() => {
           <button
             key={i}
             onClick={() => { setDirection(i > currentIndex ? 1 : -1); setCurrentIndex(i); }}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+            aria-label={`Idi na člana ${i + 1}`}
+            className={`relative before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-11 before:h-11 before:content-[''] w-2 h-2 rounded-full transition-all duration-300 ${
               i === currentIndex ? 'bg-amber-500 w-6' : 'bg-amber-500/30 hover:bg-amber-500/50'
             }`}
           />
@@ -500,6 +503,7 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
       {total > visibleCount && (
         <button
           onClick={() => paginate(-1)}
+          aria-label="Prethodni proizvod"
           className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 transition"
         >
           <ChevronLeft size={20} />
@@ -528,6 +532,7 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
       {total > visibleCount && (
         <button
           onClick={() => paginate(1)}
+          aria-label="Sledeći proizvod"
           className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 transition"
         >
           <ChevronRight size={20} />
@@ -540,7 +545,8 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
             <button
               key={i}
               onClick={() => { setDirection(i > currentIndex ? 1 : -1); setCurrentIndex(i); }}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              aria-label={`Idi na proizvod ${i + 1}`}
+              className={`relative before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-11 before:h-11 before:content-[''] w-2 h-2 rounded-full transition-all duration-300 ${
                 i === currentIndex ? 'bg-amber-500 w-6' : 'bg-amber-200 hover:bg-amber-300'
               }`}
             />
@@ -567,6 +573,8 @@ const Navbar = () => {
             <img
               src="images/logo.svg"
               alt="Letvenčuk logo"
+              width={148}
+              height={210}
               className="h-80 w-auto transition hover:scale-105 -translate-y-2"
             />
           </div>
@@ -574,6 +582,8 @@ const Navbar = () => {
           {/* Hamburger dugme - mobilni */}
           <button
             onClick={() => setIsOpen(!isOpen)}
+            aria-label={isOpen ? 'Zatvori meni' : 'Otvori meni'}
+            aria-expanded={isOpen}
             className="md:hidden w-10 h-10 flex items-center justify-center text-gray-700 hover:text-amber-600 transition"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -646,7 +656,7 @@ const ProductCard = ({ product, onClick }: ProductCardProps) => {
       className="bg-white rounded-2xl overflow-hidden shadow-lg border border-amber-50 flex flex-col h-full mb-4 hover:shadow-2xl hover:shadow-amber-200/50 cursor-pointer"
     >
       <div className="relative h-48 overflow-hidden">
-        <img src={product.image} alt={product.name} className="w-full h-full object-cover transform hover:scale-110 transition duration-500" />
+        <img src={product.image} alt={product.name} width={400} height={192} loading="lazy" className="w-full h-full object-cover transform hover:scale-110 transition duration-500" />
         <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
           {product.prices.length > 1
             ? `od ${product.prices[0].price}`
@@ -698,7 +708,7 @@ const ProductModal = ({ product, onClose, onInquiry }: ProductModalProps) => (
       <div className="overflow-y-auto overscroll-contain">
         <div className="flex flex-col md:flex-row">
           <div className="md:w-1/2 h-56 sm:h-64 md:h-auto flex-shrink-0">
-            <img src={product.image} alt={product.name} className="w-full h-full object-cover object-[35%_center]" />
+            <img src={product.image} alt={product.name} width={400} height={400} loading="lazy" className="w-full h-full object-cover object-[35%_center]" />
           </div>
           <div className="md:w-1/2 p-6 sm:p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-2 pr-10">{product.name}</h2>
@@ -762,7 +772,7 @@ const NewsModal = ({ post, onClose }: { post: NewsPost; onClose: () => void }) =
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
         className="relative bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl z-10"
       >
-        <button onClick={onClose} className="absolute top-4 right-4 z-20 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
+        <button onClick={onClose} aria-label="Zatvori" className="absolute top-4 right-4 z-20 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
           <X size={18} />
         </button>
         <div className="relative h-64 sm:h-80 overflow-hidden rounded-t-2xl bg-black/90" {...swipe}>
@@ -776,14 +786,14 @@ const NewsModal = ({ post, onClose }: { post: NewsPost; onClose: () => void }) =
               className="w-full h-full object-contain"
             />
           ) : (
-            <img src={post.images[imgIndex]} alt={post.title} className="w-full h-full object-contain" />
+            <img src={post.images[imgIndex]} alt={post.title} width={512} height={320} loading="lazy" className="w-full h-full object-contain" />
           )}
           {post.images.length > 1 && (
             <>
-              <button onClick={() => setImgIndex((p) => (p - 1 + post.images.length) % post.images.length)} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
+              <button onClick={() => setImgIndex((p) => (p - 1 + post.images.length) % post.images.length)} aria-label="Prethodna slika" className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
                 <ChevronLeft size={16} />
               </button>
-              <button onClick={() => setImgIndex((p) => (p + 1) % post.images.length)} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
+              <button onClick={() => setImgIndex((p) => (p + 1) % post.images.length)} aria-label="Sledeća slika" className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
                 <ChevronRight size={16} />
               </button>
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
@@ -825,6 +835,9 @@ const HexCell = ({ post, onSelect }: { post: NewsPost; onSelect: (p: NewsPost) =
         <img
           src={post.images[0]}
           alt={post.title}
+          width={300}
+          height={345}
+          loading="lazy"
           className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
         />
       )}
@@ -953,7 +966,7 @@ const HoneycombCarousel = ({ posts, onSelect }: { posts: NewsPost[]; onSelect: (
               key={i}
               onClick={() => { setDirection(i > page ? 1 : -1); setPage(i); }}
               aria-label={`Stranica ${i + 1}`}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              className={`relative before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-11 before:h-11 before:content-[''] w-2 h-2 rounded-full transition-all duration-300 ${
                 i === page ? 'bg-amber-500 w-6' : 'bg-amber-500/30 hover:bg-amber-500/50'
               }`}
             />
@@ -1005,11 +1018,24 @@ const HeroSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
   const [videoPlaying, setVideoPlaying] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const isInView = useInView(sectionRef, { amount: 0.3 });
+
+  // Defer loading the background video until after the page has fully loaded,
+  // so its download never competes with the hero image (LCP) or first render.
+  useEffect(() => {
+    const enable = () => setVideoReady(true);
+    if (document.readyState === 'complete') {
+      const t = setTimeout(enable, 200);
+      return () => clearTimeout(t);
+    }
+    window.addEventListener('load', enable, { once: true });
+    return () => window.removeEventListener('load', enable);
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !videoReady) return;
 
     if (isInView) {
       // Reset to beginning and play every time we scroll into view
@@ -1020,32 +1046,38 @@ const HeroSection = () => {
       video.pause();
       setVideoPlaying(false);
     }
-  }, [isInView]);
+  }, [isInView, videoReady]);
 
   const handleVideoEnd = () => {
     setVideoPlaying(false);
   };
 
-  // Video actual resolution: 1920x1080 (16:9)
+  // Video actual resolution: 1280x720 (16:9)
   return (
     <section ref={sectionRef} className="relative w-full pt-20 md:pt-20 max-md:aspect-[4/3] md:aspect-video" >
       <div className="absolute inset-x-0 bottom-0 top-20 md:top-0 overflow-hidden">
-        {/* First frame as default (shown when video not playing) */}
+        {/* First frame as default (shown when video not playing), also the LCP image */}
         <img
-          src="images/prvi_frame_nova_slika.png"
+          src="images/prvi_frame_nova_slika.webp"
           alt="Pčelarsko gazdinstvo Letvenčuk"
+          width={1920}
+          height={1072}
+          fetchPriority="high"
           className={`absolute inset-0 w-full h-full object-cover scale-x-[1.02] -translate-x-[0.2%] transition-opacity duration-500 ${videoPlaying ? 'opacity-0' : 'opacity-100'}`}
         />
 
-        {/* Video */}
-        <video
-          ref={videoRef}
-          src="images/video_pozadina_novi.mp4"
-          muted
-          playsInline
-          onEnded={handleVideoEnd}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoPlaying ? 'opacity-100' : 'opacity-0'}`}
-        />
+        {/* Video (lazy: only mounted after page load) */}
+        {videoReady && (
+          <video
+            ref={videoRef}
+            src="images/video_pozadina_novi.mp4"
+            muted
+            playsInline
+            preload="auto"
+            onEnded={handleVideoEnd}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoPlaying ? 'opacity-100' : 'opacity-0'}`}
+          />
+        )}
       </div>
     </section>
   );
@@ -1106,6 +1138,7 @@ export const App = () => {
     <div id="top" className="min-h-screen bg-amber-50/30 selection:bg-amber-200">
       <Navbar />
 
+      <main>
       <HeroSection />
 
       {/* Porodica Section */}
@@ -1430,6 +1463,8 @@ export const App = () => {
         </div>
       </Section3D>
 
+      </main>
+
       {/* Footer */}
       <footer className="bg-white py-12 border-t border-amber-100">
         <div className="max-w-7xl mx-auto px-4 text-center">
@@ -1437,6 +1472,9 @@ export const App = () => {
             <img
               src="images/logo.svg"
               alt="Pčelarsko gazdinstvo Letvenčuk"
+              width={148}
+              height={210}
+              loading="lazy"
               className="h-64 md:h-80 w-auto mx-auto -mt-40 md:-mt-40"
               style={{
                 clipPath: 'inset(45% 0 30% 0)'
