@@ -213,7 +213,7 @@ const products: Product[] = [
     id: 14,
     name: "Krem med",
     description: "Med glatke, mazive teksture u tri ukusa — limun i đumbir, malina i menta.",
-    longDescription: "Krem med je naš med umućen do glatke, mazive teksture koja se lako razmazuje i ne kaplje. Dolazi u tri ukusa: sa limunom i đumbirom — osvežavajuće i blago pikantno, savršeno za jutarnji tost ili čaj; sa malinom — voćno i puno, sa prepoznatljivom aromom prave maline; i sa mentom — svež i neočekivan, odličan uz palačinke, jogurt ili sam sa kašikom. Svaki ukus nastaje od našeg meda, uz prirodne dodatke koji mu daju karakter. Teglica ima 120g, a možete je uzeti pojedinačno, u drvenoj poklon kutiji, ili kao komplet sa sva tri ukusa u kutiji.",
+    longDescription: "Naš med umućen do glatke, mazive teksture, u tri ukusa: limun i đumbir, malina i menta. Svaki nastaje od našeg meda, uz prirodne dodatke koji mu daju karakter. Teglica ima 120g — uzmite je pojedinačno, u drvenoj poklon kutiji, ili kao komplet sa sva tri ukusa.",
     prices: [
       { size: "teglica 120g", price: "300 RSD" },
       { size: "teglica u poklon kutiji", price: "500 RSD" },
