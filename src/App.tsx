@@ -47,6 +47,10 @@ interface Product {
   longDescription: string;
   prices: PriceOption[];  
   image: string;
+  /** Opciono: dodatne slike za galeriju u modalu (prva je obicno `image`). */
+  images?: string[];
+  /** Opciono: prikazuje "NOVO" oznaku na kartici. */
+  isNew?: boolean;
 }
 
 
@@ -206,6 +210,28 @@ const products: Product[] = [
     image: "images/med_limun_djumbir_miks.webp"
   },
   {
+    id: 14,
+    name: "Krem med",
+    description: "Med glatke, mazive teksture u tri ukusa — limun i đumbir, malina i menta.",
+    longDescription: "Krem med je naš med umućen do glatke, mazive teksture koja se lako razmazuje i ne kaplje. Dolazi u tri ukusa: sa limunom i đumbirom — osvežavajuće i blago pikantno, savršeno za jutarnji tost ili čaj; sa malinom — voćno i puno, sa prepoznatljivom aromom prave maline; i sa mentom — svež i neočekivan, odličan uz palačinke, jogurt ili sam sa kašikom. Svaki ukus nastaje od našeg meda, uz prirodne dodatke koji mu daju karakter. Teglica ima 120g, a možete je uzeti pojedinačno, u drvenoj poklon kutiji, ili kao komplet sa sva tri ukusa u kutiji.",
+    prices: [
+      { size: "teglica 120g", price: "300 RSD" },
+      { size: "teglica u poklon kutiji", price: "500 RSD" },
+      { size: "tri teglice u poklon kutiji", price: "1400 RSD" }
+    ],
+    isNew: true,
+    image: "images/krem_med5.jpeg",
+    images: [
+      "images/krem_med5.jpeg",
+      "images/krem_med2.jpeg",
+      "images/krem_med3.jpeg",
+      "images/krem_med6.jpeg",
+      "images/krem_med7.jpeg",
+      "images/krem_med1.jpeg",
+      "images/krem_med4.jpeg"
+    ]
+  },
+  {
     id: 13,
     name: "Poklon aranžmani",
     description: "Personalizovane korpice za sve prilike.",
@@ -220,7 +246,7 @@ const products: Product[] = [
 const productCategories = {
   med: {
     label: "Med",
-    items: products.filter(p => [1,2,3,4].includes(p.id))
+    items: products.filter(p => [1,2,3,4,14].includes(p.id))
   },
   miks: {
     label: "Miksevi",
@@ -304,6 +330,30 @@ const newsPosts: NewsPost[] = [
     date: "2026-04-16",
     text: "Naše pčele su stigle u Bačku Topolu. Kontejner sa košnicama je postavljen i pčele kreću da istražuju nove pašnjake.",
     images: ["images/video_backa_topola_kontejner_sa_kosnicama.mp4"]
+  },
+  {
+    title: "Novo u ponudi: krem med u tri ukusa",
+    date: "2026-09-12",
+    text: `Predstavljamo vam nešto novo iz našeg pčelinjaka — krem med u tri ukusa. Nastao je od našeg meda, umućenog do glatke, mazive teksture, uz prirodne dodatke koji mu daju karakter.
+
+• Krem med sa limunom i đumbirom — osvežavajuće i blago pikantno, savršeno za jutarnji tost ili čaj.
+• Krem med sa malinom — voćno i puno, sa prepoznatljivom aromom prave maline.
+• Krem med sa mentom — svež i neočekivan, odličan uz palačinke, jogurt ili sam sa kašikom.
+
+Gde da probate?
+Danas nas možete pronaći na festivalima u Vrbasu i na Paliću — svratite i probajte sva tri ukusa.
+
+Kako do njega?
+Od sutra vas čeka i kod nas kući, a možete ga poručiti i direktno preko sajta. Donosimo na vašu adresu.`,
+    images: [
+      "images/krem_med5.jpeg",
+      "images/krem_med2.jpeg",
+      "images/krem_med3.jpeg",
+      "images/krem_med6.jpeg",
+      "images/krem_med7.jpeg",
+      "images/krem_med1.jpeg",
+      "images/krem_med4.jpeg"
+    ]
   },
   {
     title: "Prolećni festival cveća",
@@ -639,6 +689,67 @@ const Navbar = () => {
   );
 };
 
+interface MediaGalleryProps {
+  items: string[];
+  alt: string;
+  className?: string;
+  mediaClassName?: string;
+  autoPlay?: boolean;
+}
+
+/** Deljeni galerijski prikaz slika/videa sa strelicama, tackama i swipe-om. */
+const MediaGallery = ({
+  items,
+  alt,
+  className = '',
+  mediaClassName = 'object-contain',
+  autoPlay = true,
+}: MediaGalleryProps) => {
+  const [index, setIndex] = useState(0);
+  const next = () => setIndex((p) => (p + 1) % items.length);
+  const prev = () => setIndex((p) => (p - 1 + items.length) % items.length);
+  const swipe = useSwipe(next, prev);
+
+  return (
+    <div className={`relative overflow-hidden ${className}`} {...swipe}>
+      {isVideo(items[index]) ? (
+        <video
+          src={items[index]}
+          controls
+          autoPlay={autoPlay}
+          muted
+          playsInline
+          className={`w-full h-full ${mediaClassName}`}
+        />
+      ) : (
+        <img
+          src={items[index]}
+          alt={alt}
+          width={512}
+          height={320}
+          loading="lazy"
+          className={`w-full h-full ${mediaClassName}`}
+        />
+      )}
+      {items.length > 1 && (
+        <>
+          <button onClick={prev} aria-label="Prethodna slika" className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
+            <ChevronLeft size={16} />
+          </button>
+          <button onClick={next} aria-label="Sledeća slika" className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
+            <ChevronRight size={16} />
+          </button>
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+            {items.map((_, i) => (
+              <span key={i} className={`w-2 h-2 rounded-full ${i === index ? 'bg-white' : 'bg-white/50'}`} />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
 interface ProductCardProps {
   product: Product;
   onClick: (p: Product) => void;
@@ -657,6 +768,11 @@ const ProductCard = ({ product, onClick }: ProductCardProps) => {
     >
       <div className="relative h-48 overflow-hidden">
         <img src={product.image} alt={product.name} width={400} height={192} loading="lazy" className="w-full h-full object-cover transform hover:scale-110 transition duration-500" />
+        {product.isNew && (
+          <div className="absolute top-4 left-4 bg-rose-500 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg">
+            Novo
+          </div>
+        )}
         <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
           {product.prices.length > 1
             ? `od ${product.prices[0].price}`
@@ -707,8 +823,13 @@ const ProductModal = ({ product, onClose, onInquiry }: ProductModalProps) => (
       </button>
       <div className="overflow-y-auto overscroll-contain">
         <div className="flex flex-col md:flex-row">
-          <div className="md:w-1/2 h-56 sm:h-64 md:h-auto flex-shrink-0">
-            <img src={product.image} alt={product.name} width={400} height={400} loading="lazy" className="w-full h-full object-cover object-[35%_center]" />
+          <div className="md:w-1/2 h-72 sm:h-80 md:h-auto flex-shrink-0">
+            <MediaGallery
+              items={product.images ?? [product.image]}
+              alt={product.name}
+              className="h-full bg-amber-50"
+              autoPlay={false}
+            />
           </div>
           <div className="md:w-1/2 p-6 sm:p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-2 pr-10">{product.name}</h2>
@@ -807,7 +928,7 @@ const NewsModal = ({ post, onClose }: { post: NewsPost; onClose: () => void }) =
         <div className="p-6">
           <p className="text-sm text-amber-600 font-semibold mb-2">{new Date(post.date).toLocaleDateString('sr-Latn-RS', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
           <h3 className="text-2xl font-bold text-gray-900 mb-4">{post.title}</h3>
-          <p className="text-gray-600 leading-relaxed">{post.text}</p>
+          <p className="text-gray-600 leading-relaxed whitespace-pre-line">{post.text}</p>
         </div>
       </motion.div>
     </motion.div>
