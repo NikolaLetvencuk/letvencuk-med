@@ -5,3 +5,11 @@ dist
 *.log
 .vscode
 .idea
+
+# Sirove fotografije sa sutinga (477 MB). Obradjene verzije su u public/images/v2.
+public/new_images/
+
+# Skill-ovi instalirani preko npx skills / typeui.sh
+.agents/
+.claude/
+skills-lock.json

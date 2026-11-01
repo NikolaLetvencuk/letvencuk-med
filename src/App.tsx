@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { 
@@ -10,7 +10,6 @@ import {
   ShoppingBasket, 
   Users, 
   X,
-  Menu,
   Send,
   ArrowRight,
   ChevronLeft,
@@ -47,6 +46,8 @@ interface Product {
   longDescription: string;
   prices: PriceOption[];  
   image: string;
+  /** Slug nove serije u images/v2 (daje srcset). Bez njega se koristi `image`. */
+  imgSlug?: string;
   /** Opciono: dodatne slike za galeriju u modalu (prva je obicno `image`). */
   images?: string[];
   /** Opciono: prikazuje "NOVO" oznaku na kartici. */
@@ -59,31 +60,31 @@ const familyMembers = [
     name: "Mihajlo",
     role: "Otac & Glavni Pčelar",
     description: "Stub našeg gazdinstva. Mihajlo je zadužen za sve na pčelinjaku - od brige o zdravlju pčela do vrcanja meda. Njegovo znanje i iskustvo su temelj svega što radimo.",
-    icon: <BeeIcon className="w-6 h-6 text-amber-600" />
+    icon: <BeeIcon className="w-6 h-6" />
   },
   {
     name: "Tanja",
     role: "Majka & Kreativni Centar",
     description: "Tanja pretvara naše pčelinje darove u prelepe aranžmane. Zadužena je za planiranje festivala, prodaju, dostavu i osmeh koji dočekuje svakog kupca.",
-    icon: <ShoppingBasket className="w-6 h-6 text-amber-600" />
+    icon: <ShoppingBasket className="w-6 h-6" />
   },
   {
     name: "Ivan",
     role: "Deda & Desna ruka",
     description: "Iskustvo koje se ne kupuje. Ivan pomaže Mihajlu na pčelinjaku, uvek je tu kada je potrebna dodatna ruka i mudrost u radu sa košnicama.",
-    icon: <Users className="w-6 h-6 text-amber-600" />
+    icon: <Users className="w-6 h-6" />
   },
   {
     name: "Nađa",
     role: "Ćerka & Mlada nada",
     description: "Nađa je mamin glavni asistent na festivalima. Svojom energijom i ljubaznošću pomaže u prezentaciji proizvoda i komunikaciji sa našim dragim kupcima.",
-    icon: <CheckCircle2 className="w-6 h-6 text-amber-600" />
+    icon: <CheckCircle2 className="w-6 h-6" />
   },
   {
     name: "Nikola",
     role: "Sin & Dostava",
     description: "Nikola je naš pouzdani glasnik. Uvek spreman da pomogne - bilo da je u pitanju dostava meda na kućnu adresu ili pakovanje porudžbina.",
-    icon: <Truck className="w-6 h-6 text-amber-600" />
+    icon: <Truck className="w-6 h-6" />
   }
 ];
 
@@ -97,7 +98,8 @@ const products: Product[] = [
       { size: "400g", price: "400 RSD" },
       { size: "1kg", price: "800 RSD" }
     ],    
-    image: "images/livadski_novi.jpeg"
+    image: "images/v2/livadski-960.webp",
+    imgSlug: "livadski"
   },
   {
     id: 2,
@@ -108,7 +110,8 @@ const products: Product[] = [
       { size: "400g", price: "750 RSD" },
       { size: "1kg", price: "1500 RSD" }
     ],    
-    image: "images/bagrem_novi.jpeg"
+    image: "images/v2/bagremov-960.webp",
+    imgSlug: "bagremov"
   },
   {
     id: 4,
@@ -119,7 +122,8 @@ const products: Product[] = [
       { size: "400g", price: "400 RSD" },
       { size: "1kg", price: "800 RSD" }
     ],
-    image: "images/uljana_repica_novi.jpeg"
+    image: "images/v2/uljana-repica-960.webp",
+    imgSlug: "uljana-repica"
   },
   {
     id: 5,
@@ -131,7 +135,8 @@ const products: Product[] = [
       { size: "kapi 20ml", price: "400 RSD" },
       { size: "sprej 20ml", price: "450 RSD" }
     ],
-    image: "images/propolis_novi.jpeg"
+    image: "images/v2/propolis-960.webp",
+    imgSlug: "propolis"
   },
   {
     id: 6,
@@ -142,7 +147,8 @@ const products: Product[] = [
       { size: "100g", price: "200 RSD" },
       { size: "200g", price: "400 RSD" }
     ],
-    image: "images/polen_novi.jpeg"
+    image: "images/v2/polen-960.webp",
+    imgSlug: "polen"
   },
   {
     id: 7,
@@ -152,7 +158,8 @@ const products: Product[] = [
     prices: [
       { size: "komad", price: "200 RSD" }
     ],    
-    image: "images/vosak_novi.jpeg"
+    image: "images/v2/vosak-960.webp",
+    imgSlug: "vosak"
   },
   {
     id: 8,
@@ -163,7 +170,8 @@ const products: Product[] = [
       { size: "0.2l", price: "400 RSD" },
       { size: "0.5l", price: "800 RSD" }
     ],    
-    image: "images/medovaca_nova.jpeg"
+    image: "images/v2/medovaca-960.webp",
+    imgSlug: "medovaca"
   },
   {
     id: 9,
@@ -174,7 +182,8 @@ const products: Product[] = [
       { size: "400g", price: "700 RSD" },
       { size: "1kg", price: "1500 RSD" }
     ],    
-    image: "images/miks_med_polen_propolis.jpg"
+    image: "images/v2/mix-polen-propolis-960.webp",
+    imgSlug: "mix-polen-propolis"
   },
   {
     id: 10,
@@ -185,7 +194,8 @@ const products: Product[] = [
       { size: "400g", price: "700 RSD" },
       { size: "1kg", price: "1500 RSD" }
     ],    
-    image: "images/miks_kopriva.jpg"
+    image: "images/v2/mix-kopriva-960.webp",
+    imgSlug: "mix-kopriva"
   },
   {
     id: 11,
@@ -196,7 +206,8 @@ const products: Product[] = [
       { size: "400g", price: "700 RSD" },
       { size: "1kg", price: "1500 RSD" }
     ],    
-    image: "images/miks_med_polen_propolis_golica.jpg"
+    image: "images/v2/mix-golica-960.webp",
+    imgSlug: "mix-golica"
   },
   {
     id: 12,
@@ -210,26 +221,153 @@ const products: Product[] = [
     image: "images/med_limun_djumbir_miks.webp"
   },
   {
-    id: 14,
-    name: "Krem med",
-    description: "Med glatke, mazive teksture u tri ukusa — limun i đumbir, malina i menta.",
-    longDescription: "Naš med umućen do glatke, mazive teksture, u tri ukusa: limun i đumbir, malina i menta. Svaki nastaje od našeg meda, uz prirodne dodatke koji mu daju karakter. Teglica ima 120g — uzmite je pojedinačno, u drvenoj poklon kutiji, ili kao komplet sa sva tri ukusa.",
+    id: 20,
+    name: "Krem med sa malinom",
+    description: "Voćno i puno, sa prepoznatljivom aromom prave maline.",
+    longDescription: "Pravi se od našeg meda umućenog do glatke, mazive teksture, uz pravu malinu. Najtraženiji ukus iz linije. Lepo ide na tost, uz jogurt ili prosto sa kašike.",
     prices: [
       { size: "teglica 120g", price: "300 RSD" },
-      { size: "teglica u poklon kutiji", price: "500 RSD" },
-      { size: "tri teglice u poklon kutiji", price: "1400 RSD" }
+      { size: "teglica u poklon kutiji", price: "500 RSD" }
+    ],
+    image: "images/v2/krem-malina-960.webp",
+    imgSlug: "krem-malina",
+    images: ["images/v2/krem-malina-1440.webp", "images/v2/kat-krem-med-1280.webp"]
+  },
+  {
+    id: 21,
+    name: "Krem med sa borovnicom",
+    description: "Tamno i zrelo, sa punim ukusom borovnice.",
+    longDescription: "Borovnica meda daje duboku boju i blago kiselkast završetak koji seče slatkoću. Odličan uz palačinke i sveže voće.",
+    prices: [
+      { size: "teglica 120g", price: "300 RSD" },
+      { size: "teglica u poklon kutiji", price: "500 RSD" }
     ],
     isNew: true,
-    image: "images/krem_med5.jpeg",
-    images: [
-      "images/krem_med5.jpeg",
-      "images/krem_med2.jpeg",
-      "images/krem_med3.jpeg",
-      "images/krem_med6.jpeg",
-      "images/krem_med7.jpeg",
-      "images/krem_med1.jpeg",
-      "images/krem_med4.jpeg"
-    ]
+    image: "images/v2/krem-borovnica-960.webp",
+    imgSlug: "krem-borovnica",
+    images: ["images/v2/krem-borovnica-1440.webp", "images/v2/kat-krem-med-1280.webp"]
+  },
+  {
+    id: 22,
+    name: "Krem med sa limunom i đumbirom",
+    description: "Osvežavajuće i blago pikantno, za jutarnji tost ili čaj.",
+    longDescription: "Limun daje svežinu, đumbir blagu toplinu u grlu. Naš izbor za hladne dane i za one koji ne vole previše slatko.",
+    prices: [
+      { size: "teglica 120g", price: "300 RSD" },
+      { size: "teglica u poklon kutiji", price: "500 RSD" }
+    ],
+    image: "images/v2/krem-limun-djumbir-960.webp",
+    imgSlug: "krem-limun-djumbir",
+    images: ["images/v2/krem-limun-djumbir-1440.webp", "images/v2/kat-krem-med-1280.webp"]
+  },
+  {
+    id: 23,
+    name: "Krem med sa mentom",
+    description: "Svež i neočekivan, odličan uz palačinke ili jogurt.",
+    longDescription: "Menta u medu iznenadi svakoga ko ga prvi put proba. Hladan je u ustima iako je med topao po ukusu. Lep poklon za nekoga ko misli da je sve već probao.",
+    prices: [
+      { size: "teglica 120g", price: "300 RSD" },
+      { size: "teglica u poklon kutiji", price: "500 RSD" }
+    ],
+    image: "images/v2/krem-menta-960.webp",
+    imgSlug: "krem-menta",
+    images: ["images/v2/krem-menta-1440.webp", "images/v2/kat-krem-med-1280.webp"]
+  },
+  {
+    id: 24,
+    name: "Krem med sa čokoladom i lešnikom",
+    description: "Med, čokolada i lešnik. Namaz za decu i odrasle.",
+    longDescription: "Spoj našeg meda, tamne čokolade i mlevenog lešnika. Gust, mazivi namaz koji stoji rame uz rame sa kupovnim, samo bez palminog ulja.",
+    prices: [
+      { size: "teglica 120g", price: "300 RSD" },
+      { size: "teglica u poklon kutiji", price: "500 RSD" }
+    ],
+    isNew: true,
+    image: "images/v2/krem-cokolada-lesnik-960.webp",
+    imgSlug: "krem-cokolada-lesnik",
+    images: ["images/v2/krem-cokolada-lesnik-1440.webp", "images/v2/kat-krem-med-1280.webp"]
+  },
+  {
+    id: 25,
+    name: "Krem med sa belom čokoladom",
+    description: "Blag i kremast, najslađi iz linije.",
+    longDescription: "Bela čokolada medu daje mlečnu zaokruženost i svetlu boju. Najblaži ukus iz linije, obično prvi koji nestane kod dece.",
+    prices: [
+      { size: "teglica 120g", price: "300 RSD" },
+      { size: "teglica u poklon kutiji", price: "500 RSD" }
+    ],
+    isNew: true,
+    image: "images/v2/krem-bela-cokolada-960.webp",
+    imgSlug: "krem-bela-cokolada",
+    images: ["images/v2/krem-bela-cokolada-1440.webp", "images/v2/kat-krem-med-1280.webp"]
+  },
+  {
+    id: 26,
+    name: "Tri krem meda po izboru u kutijici",
+    description: "Tri krem meda po izboru u kutijici.",
+    longDescription: "Tri krem meda po izboru u kutijici, u drvenoj kutiji sa ugraviranim imenom gazdinstva. Birate koja tri ukusa idu unutra. Najčešći poklon koji pravimo za slave, rođendane i praznike.",
+    prices: [
+      { size: "3 x 120g u kutijici", price: "1400 RSD" }
+    ],
+    image: "images/v2/krem-kutija-960.webp",
+    imgSlug: "krem-kutija",
+    images: ["images/v2/krem-kutija-1440.webp", "images/v2/krem-linija-1440.webp"]
+  },
+  {
+    id: 15,
+    name: "Perga",
+    description: "Pčelinji hleb. Polen koji su pčele fermentisale u saću.",
+    longDescription: "Perga nastaje kada pčele polen utisnu u ćelije saća i prekriju ga medom. Tokom fermentacije polen postaje svarljiviji i bogatiji od sirovog. Uzima se po kašičica dnevno, obično ujutru.",
+    prices: [
+      { size: "10g", price: "1000 RSD" }
+    ],
+    image: "images/v2/perga-960.webp",
+    imgSlug: "perga"
+  },
+  {
+    id: 16,
+    name: "Med u kesicama",
+    description: "Jedna kašika meda u kesici. Za put, kancelariju i čaj.",
+    longDescription: "Isti med kao iz tegle, samo u kesici od 15g. Stane u džep i u tašnu, ne kaplje i ne traži kašiku. Zgodno za posao, put ili da se ponudi gostima uz čaj.",
+    prices: [
+      { size: "15g", price: "30 RSD" }
+    ],
+    image: "images/v2/kesice-960.webp",
+    imgSlug: "kesice"
+  },
+  {
+    id: 17,
+    name: "Medeni mečići",
+    description: "Med u flašici u obliku mede. Deca ga biraju sama.",
+    longDescription: "Providna flašica u obliku meda, puni se livadskim ili bagremovim medom. Med se cedi bez kašike, pa je najlakši način da dete samo uzme med. Čest poklon za rođendane.",
+    prices: [
+      { size: "livadski 400g", price: "400 RSD" },
+      { size: "bagremov 400g", price: "750 RSD" }
+    ],
+    image: "images/v2/medeni-mecici-960.webp",
+    imgSlug: "medeni-mecici"
+  },
+  {
+    id: 18,
+    name: "Mala medovača sa plutom",
+    description: "Flašica od 40ml sa plutenim čepom i drvenom etiketom.",
+    longDescription: "Naša medovača u maloj staklenoj flašici sa plutenim čepom i drvenom pločicom sa natpisom. Pravimo je za svadbe, slave i poslovne poklone, kada treba nešto malo ali domaće.",
+    prices: [
+      { size: "40ml", price: "200 RSD" }
+    ],
+    image: "images/v2/medovaca-mala-960.webp",
+    imgSlug: "medovaca-mala"
+  },
+  {
+    id: 19,
+    name: "Medovača u flaši violini",
+    description: "Staklena flaša u obliku violine, sa klik čepom.",
+    longDescription: "Ista medovača, u staklenoj flaši oblikovanoj kao violina, sa klik čepom koji drži. Poklon koji se ne baca posle, flaša ostaje na polici.",
+    prices: [
+      { size: "40ml", price: "400 RSD" }
+    ],
+    image: "images/v2/violina-960.webp",
+    imgSlug: "violina"
   },
   {
     id: 13,
@@ -246,11 +384,15 @@ const products: Product[] = [
 const productCategories = {
   med: {
     label: "Med",
-    items: products.filter(p => [1,2,3,4,14].includes(p.id))
+    items: products.filter(p => [1, 2, 4, 17, 16].includes(p.id))
+  },
+  kremMed: {
+    label: "Krem med",
+    items: products.filter(p => [20, 21, 22, 23, 24, 25, 26].includes(p.id))
   },
   miks: {
     label: "Miksevi",
-    items: products.filter(p => [9,10,11,12].includes(p.id))
+    items: products.filter(p => [9, 10, 11, 12].includes(p.id))
   },
   aranzman: {
     label: "Aranžmani",
@@ -258,7 +400,7 @@ const productCategories = {
   },
   ostalo: {
     label: "Ostalo",
-    items: products.filter(p => [5,6,7,8].includes(p.id))
+    items: products.filter(p => [5, 6, 7, 8, 15, 18, 19].includes(p.id))
   }
 };
 
@@ -332,6 +474,26 @@ const newsPosts: NewsPost[] = [
     images: ["images/video_backa_topola_kontejner_sa_kosnicama.mp4"]
   },
   {
+    title: "Krem med sada ima šest ukusa",
+    date: "2026-11-01",
+    text: `Krem med je kod nas počeo sa tri ukusa: malina, limun i đumbir, i menta. Od danas ih ima šest.
+
+Pridružila su im se tri nova:
+
+• Borovnica, tamna i zrela, sa blago kiselkastim završetkom koji seče slatkoću.
+• Čokolada i lešnik, gust namaz za decu i odrasle, bez palminog ulja.
+• Bela čokolada, najblaži i najslađi iz linije. Obično prvi nestane kod dece.
+
+Svi se prave isto, od našeg meda umućenog do glatke, mazive teksture. Teglica od 120g košta 300 dinara, a tri ukusa po izboru u drvenoj kutijici 1400 dinara.`,
+    images: [
+      "images/v2/krem-kutija-1440.webp",
+      "images/v2/krem-borovnica-1440.webp",
+      "images/v2/krem-cokolada-lesnik-1440.webp",
+      "images/v2/krem-bela-cokolada-1440.webp",
+      "images/v2/kat-krem-med-1280.webp"
+    ]
+  },
+  {
     title: "Novo u ponudi: krem med u tri ukusa",
     date: "2026-09-12",
     text: `Predstavljamo vam nešto novo iz našeg pčelinjaka — krem med u tri ukusa. Nastao je od našeg meda, umućenog do glatke, mazive teksture, uz prirodne dodatke koji mu daju karakter.
@@ -375,7 +537,7 @@ const scrollToId = (id: string) => {
   const el = document.getElementById(id);
   if (!el) return;
 
-  const navHeight = 80; // približna visina fiksnog navbara
+  const navHeight = 104; // visina plivajućeg navbara plus odmak od vrha
   const top = el.getBoundingClientRect().top + window.scrollY - navHeight;
 
   window.scrollTo({
@@ -394,6 +556,129 @@ const useSwipe = (onSwipeLeft: () => void, onSwipeRight: () => void) => {
     touchStart.current = null;
   };
   return { onTouchStart, onTouchEnd };
+};
+
+
+/* --- Responzivne slike iz nove serije --------------------------------- */
+
+/** Sirine koje postoje u images/v2 po odnosu stranica. */
+const V2 = {
+  card: { widths: [480, 960, 1440], w: 960, h: 1200 },   // 4:5
+  wide: { widths: [640, 1280, 1920], w: 1280, h: 853 },  // 3:2
+  hero: { widths: [800, 1440, 2200], w: 1440, h: 1080 }, // 4:3
+} as const;
+
+const v2SrcSet = (slug: string, kind: keyof typeof V2) =>
+  V2[kind].widths.map((w) => `images/v2/${slug}-${w}.webp ${w}w`).join(', ');
+
+/* --- Deljene primitive -------------------------------------------------- */
+
+/** Saće kao znak. Motiv koji se provlači kroz ceo sajt, umesto generične crtice. */
+const HexMark = ({ className = "w-5 h-5", filled = false }: { className?: string; filled?: boolean }) => (
+  <svg viewBox="0 0 24 28" aria-hidden="true" className={className}>
+    <path
+      d="M12 1 L22.4 7 L22.4 21 L12 27 L1.6 21 L1.6 7 Z"
+      fill={filled ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth={filled ? 0 : 2}
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+/**
+ * Jedan naslov sekcije za ceo sajt. Ranije je isti blok (h2 + crtica + tekst)
+ * bio iskucan iznova u svakoj sekciji, uvek centriran.
+ */
+const SectionHeading = ({
+  title,
+  lead,
+  align = "left",
+  id,
+}: {
+  title: React.ReactNode;
+  lead?: React.ReactNode;
+  align?: "left" | "center";
+  id?: string;
+}) => (
+  <div className={align === "center" ? "max-w-2xl mx-auto text-center" : "max-w-3xl"}>
+    <div className={`flex items-center gap-3 mb-6 ${align === "center" ? "justify-center" : ""}`}>
+      <HexMark className="w-4 h-4 text-honey" filled />
+      <HexMark className="w-3.5 h-3.5 text-honey/45" filled />
+      <span className="h-px w-16 bg-line" />
+    </div>
+    <h2 id={id} className="font-display text-[2rem] leading-[1.08] sm:text-4xl md:text-[2.75rem] font-semibold text-ink">
+      {title}
+    </h2>
+    {lead && (
+      <p className={`mt-5 text-base sm:text-lg text-ink-soft leading-relaxed max-w-[62ch] ${align === "center" ? "mx-auto" : ""}`}>
+        {lead}
+      </p>
+    )}
+  </div>
+);
+
+/**
+ * Pilula sa ikonom u sopstvenom krugu. Ikona nikad ne stoji gola uz tekst.
+ * Kao <a> ili <button>, zavisno od toga da li je prosledjen href.
+ */
+const ActionButton = ({
+  children,
+  href,
+  onClick,
+  variant = "solid",
+  icon: Icon = ArrowRight,
+  external = false,
+  className = "",
+  type,
+}: {
+  children: React.ReactNode;
+  href?: string;
+  onClick?: () => void;
+  variant?: "solid" | "outline";
+  icon?: React.ElementType;
+  external?: boolean;
+  className?: string;
+  type?: "button" | "submit";
+}) => {
+  const base =
+    "group inline-flex items-center gap-3 rounded-full pl-6 pr-2 py-2 font-semibold text-[0.95rem] whitespace-nowrap transition-[transform,background-color,border-color,box-shadow] duration-300 ease-[var(--ease-out-expo)] active:scale-[0.98]";
+  const skin =
+    variant === "solid"
+      ? "bg-honey text-white shadow-[var(--shadow-soft)] hover:bg-honey-deep hover:shadow-[var(--shadow-lift)]"
+      : "bg-raise text-ink border border-line hover:border-honey/50 hover:shadow-[var(--shadow-soft)]";
+  const bubble =
+    variant === "solid"
+      ? "bg-white/20"
+      : "bg-honey-tint text-honey";
+
+  const inner = (
+    <>
+      <span>{children}</span>
+      <span
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-transform duration-300 ease-[var(--ease-out-expo)] group-hover:translate-x-0.5 group-hover:-translate-y-px ${bubble}`}
+      >
+        <Icon className="h-4 w-4" strokeWidth={2} />
+      </span>
+    </>
+  );
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        className={`${base} ${skin} ${className}`}
+      >
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <button type={type ?? "button"} onClick={onClick} className={`${base} ${skin} ${className}`}>
+      {inner}
+    </button>
+  );
 };
 
 // --- Components ---
@@ -442,7 +727,7 @@ useEffect(() => {
       <button
         onClick={() => paginate(-1)}
         aria-label="Prethodni član"
-        className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 border border-amber-500/30 rounded-full shadow-md flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-400 transition"
+        className="absolute -left-2 sm:-left-5 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-raise border border-line rounded-full shadow-[var(--shadow-soft)] flex items-center justify-center text-ink-soft hover:text-honey-deep hover:border-honey/50 transition-colors duration-300 ease-[var(--ease-out-expo)]"
       >
         <ChevronLeft size={20} />
       </button>
@@ -468,14 +753,14 @@ useEffect(() => {
             {getVisible().map((member) => (
               <div
                 key={member.name}
-                className="p-8 rounded-3xl bg-white/5 border border-amber-500/20 text-center hover:bg-white/10 hover:border-amber-500/40 transition-colors group h-80 flex flex-col"
+                className="group flex h-full min-h-[21rem] flex-col rounded-[var(--radius-card)] border border-line bg-raise p-7 shadow-[var(--shadow-soft)] transition-[transform,box-shadow,border-color] duration-500 ease-[var(--ease-out-expo)] hover:-translate-y-1 hover:border-honey/40 hover:shadow-[var(--shadow-lift)]"
               >
-                <div className="w-16 h-16 shrink-0 bg-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                  <div className="text-amber-400">{member.icon}</div>
+                <div className="mb-6 flex h-14 w-14 shrink-0 items-center justify-center rounded-[var(--radius-inner)] bg-honey-tint text-honey-deep transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-105">
+                  {member.icon}
                 </div>
-                <h3 className="text-xl font-bold text-white mb-1">{member.name}</h3>
-                <p className="text-amber-400 text-sm font-semibold mb-4">{member.role}</p>
-                <p className="text-gray-400 text-sm leading-relaxed flex-1">{member.description}</p>
+                <h3 className="font-display text-xl font-semibold text-ink">{member.name}</h3>
+                <p className="mt-1 text-sm font-semibold text-honey-deep">{member.role}</p>
+                <p className="mt-4 flex-1 text-sm leading-relaxed text-ink-soft">{member.description}</p>
               </div>
             ))}
           </motion.div>
@@ -485,7 +770,7 @@ useEffect(() => {
       <button
         onClick={() => paginate(1)}
         aria-label="Sledeći član"
-        className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 border border-amber-500/30 rounded-full shadow-md flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-400 transition"
+        className="absolute -right-2 sm:-right-5 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-raise border border-line rounded-full shadow-[var(--shadow-soft)] flex items-center justify-center text-ink-soft hover:text-honey-deep hover:border-honey/50 transition-colors duration-300 ease-[var(--ease-out-expo)]"
       >
         <ChevronRight size={20} />
       </button>
@@ -496,8 +781,8 @@ useEffect(() => {
             key={i}
             onClick={() => { setDirection(i > currentIndex ? 1 : -1); setCurrentIndex(i); }}
             aria-label={`Idi na člana ${i + 1}`}
-            className={`relative before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-11 before:h-11 before:content-[''] w-2 h-2 rounded-full transition-all duration-300 ${
-              i === currentIndex ? 'bg-amber-500 w-6' : 'bg-amber-500/30 hover:bg-amber-500/50'
+            className={`relative before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-11 before:h-11 before:content-[''] w-2 h-2 rounded-full transition-[width,background-color] duration-300 ease-[var(--ease-out-expo)] ${
+              i === currentIndex ? 'bg-honey w-6' : 'bg-line hover:bg-honey/40'
             }`}
           />
         ))}
@@ -554,7 +839,7 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
         <button
           onClick={() => paginate(-1)}
           aria-label="Prethodni proizvod"
-          className="absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 transition"
+          className="absolute -left-2 sm:-left-5 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-raise border border-line rounded-full shadow-[var(--shadow-soft)] flex items-center justify-center text-ink-soft hover:text-honey-deep hover:border-honey/50 transition-colors duration-300 ease-[var(--ease-out-expo)]"
         >
           <ChevronLeft size={20} />
         </button>
@@ -583,7 +868,7 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
         <button
           onClick={() => paginate(1)}
           aria-label="Sledeći proizvod"
-          className="absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-amber-200 rounded-full shadow-md flex items-center justify-center text-amber-600 hover:bg-amber-50 transition"
+          className="absolute -right-2 sm:-right-5 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-raise border border-line rounded-full shadow-[var(--shadow-soft)] flex items-center justify-center text-ink-soft hover:text-honey-deep hover:border-honey/50 transition-colors duration-300 ease-[var(--ease-out-expo)]"
         >
           <ChevronRight size={20} />
         </button>
@@ -596,8 +881,8 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
               key={i}
               onClick={() => { setDirection(i > currentIndex ? 1 : -1); setCurrentIndex(i); }}
               aria-label={`Idi na proizvod ${i + 1}`}
-              className={`relative before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-11 before:h-11 before:content-[''] w-2 h-2 rounded-full transition-all duration-300 ${
-                i === currentIndex ? 'bg-amber-500 w-6' : 'bg-amber-200 hover:bg-amber-300'
+              className={`relative before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-11 before:h-11 before:content-[''] w-2 h-2 rounded-full transition-[width,background-color] duration-300 ease-[var(--ease-out-expo)] ${
+                i === currentIndex ? 'bg-honey w-6' : 'bg-line hover:bg-honey/40'
               }`}
             />
           ))}
@@ -607,85 +892,170 @@ const ProductCarousel = ({ items, onClick }: { items: Product[], onClick: (p: Pr
   );
 };
 
+const NAV_LINKS = [
+  { id: "porodica", label: "O nama" },
+  { id: "proizvodi", label: "Proizvodi" },
+  { id: "galerija", label: "Pčelinjak" },
+  { id: "kontakt", label: "Kontakt" },
+];
+
+/** Prati koja je sekcija trenutno u kadru, da navbar može da je označi. */
+const useActiveSection = (ids: string[]) => {
+  const [active, setActive] = useState("");
+  useEffect(() => {
+    const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    if (!els.length) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActive(visible.target.id);
+      },
+      { rootMargin: "-45% 0px -45% 0px", threshold: [0, 0.25, 0.5, 1] }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [ids]);
+  return active;
+};
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const active = useActiveSection(NAV_LINKS.map((l) => l.id));
 
   const handleNavClick = (sectionId: string) => {
     setIsOpen(false);
     setTimeout(() => scrollToId(sectionId), 50);
   };
 
+  // Dok je mobilni meni otvoren, strana iza njega ne sme da se skroluje.
+  useEffect(() => {
+    if (!isOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [isOpen]);
+
   return (
-    <nav className="fixed w-full bg-white/90 backdrop-blur-md z-50 border-b border-amber-100 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20 items-center">
-          <div className="flex items-center gap-2 h-20 overflow-hidden">
-            <img
-              src="images/logo.svg"
-              alt="Letvenčuk logo"
-              width={148}
-              height={210}
-              className="h-80 w-auto transition hover:scale-105 -translate-y-2"
-            />
-          </div>
+    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
+      <nav
+        aria-label="Glavna navigacija"
+        className="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-4 rounded-full border border-line/80 bg-raise/80 pl-5 pr-3 shadow-[var(--shadow-soft)] backdrop-blur-xl"
+      >
+        <button
+          onClick={() => handleNavClick("top")}
+          aria-label="Letvenčuk Med, na vrh strane"
+          className="flex shrink-0 items-center transition-transform duration-300 ease-[var(--ease-out-expo)] hover:scale-[1.03]"
+        >
+          <img
+            src="images/logo-mark.svg"
+            alt="Letvenčuk Med"
+            width={2000}
+            height={498}
+            className="h-8 w-auto -translate-y-[3px] sm:h-9"
+          />
+        </button>
 
-          {/* Hamburger dugme - mobilni */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label={isOpen ? 'Zatvori meni' : 'Otvori meni'}
-            aria-expanded={isOpen}
-            className="md:hidden w-10 h-10 flex items-center justify-center text-gray-700 hover:text-amber-600 transition"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-
-          {/* desktop linkovi */}
-          <div className="hidden md:flex space-x-8">
-            <button
-              onClick={() => handleNavClick('porodica')}
-              className="text-gray-700 hover:text-amber-600 transition font-medium"
-            >
-              O Nama
-            </button>
-            <button
-              onClick={() => handleNavClick('proizvodi')}
-              className="text-gray-700 hover:text-amber-600 transition font-medium"
-            >
-              Proizvodi
-            </button>
-            <button
-              onClick={() => handleNavClick('galerija')}
-              className="text-gray-700 hover:text-amber-600 transition font-medium"
-            >
-              Galerija
-            </button>
-            <button
-              onClick={() => handleNavClick('kontakt')}
-              className="text-gray-700 hover:text-amber-600 transition font-medium"
-            >
-              Kontakt
-            </button>
-          </div>
+        <div className="hidden items-center gap-1 md:flex">
+          {NAV_LINKS.map((link) => {
+            const isActive = active === link.id;
+            return (
+              <button
+                key={link.id}
+                onClick={() => handleNavClick(link.id)}
+                aria-current={isActive ? "true" : undefined}
+                className={`relative rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-300 ease-[var(--ease-out-expo)] ${
+                  isActive ? "text-honey-deep" : "text-ink-soft hover:text-ink"
+                }`}
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="navPill"
+                    className="absolute inset-0 rounded-full bg-honey-tint"
+                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                  />
+                )}
+                <span className="relative">{link.label}</span>
+              </button>
+            );
+          })}
         </div>
-      </div>
+
+        <div className="flex items-center gap-2">
+          <a
+            href="tel:+381600726253"
+            className="hidden shrink-0 items-center gap-2 rounded-full bg-honey px-5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-soft)] transition-[background-color,transform] duration-300 ease-[var(--ease-out-expo)] hover:bg-honey-deep active:scale-[0.98] md:inline-flex"
+          >
+            <Phone className="h-4 w-4" strokeWidth={2} />
+            Pozovite nas
+          </a>
+
+          {/* Hamburger koji se pretvara u X, bez skoka */}
+          <button
+            onClick={() => setIsOpen((v) => !v)}
+            aria-label={isOpen ? "Zatvori meni" : "Otvori meni"}
+            aria-expanded={isOpen}
+            aria-controls="mobilni-meni"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-ink transition-colors hover:bg-honey-tint md:hidden"
+          >
+            <span className="relative block h-4 w-5">
+              <span
+                className={`absolute left-0 block h-[2px] w-5 rounded-full bg-current transition-transform duration-300 ease-[var(--ease-out-expo)] ${
+                  isOpen ? "top-1/2 -translate-y-1/2 rotate-45" : "top-0"
+                }`}
+              />
+              <span
+                className={`absolute left-0 top-1/2 block h-[2px] w-5 -translate-y-1/2 rounded-full bg-current transition-opacity duration-200 ${
+                  isOpen ? "opacity-0" : "opacity-100"
+                }`}
+              />
+              <span
+                className={`absolute left-0 block h-[2px] w-5 rounded-full bg-current transition-transform duration-300 ease-[var(--ease-out-expo)] ${
+                  isOpen ? "top-1/2 -translate-y-1/2 -rotate-45" : "bottom-0"
+                }`}
+              />
+            </span>
+          </button>
+        </div>
+      </nav>
+
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white border-b border-amber-50"
+          <motion.div
+            id="mobilni-meni"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            className="mx-auto mt-2 max-w-6xl overflow-hidden rounded-[var(--radius-panel)] border border-line/80 bg-raise/95 p-2 shadow-[var(--shadow-lift)] backdrop-blur-xl md:hidden"
           >
-            <div className="px-4 pt-2 pb-6 space-y-1">
-              <button onClick={() => handleNavClick('porodica')} className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition">O Nama</button>
-              <button onClick={() => handleNavClick('proizvodi')} className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition">Proizvodi</button>
-              <button onClick={() => handleNavClick('galerija')} className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition">Galerija</button>
-              <button onClick={() => handleNavClick('kontakt')} className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition">Kontakt</button>
-            </div>
+            {NAV_LINKS.map((link, i) => (
+              <motion.button
+                key={link.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.04 + i * 0.05, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                onClick={() => handleNavClick(link.id)}
+                className={`flex w-full items-center justify-between rounded-[var(--radius-inner)] px-4 py-3.5 text-left text-base font-semibold transition-colors ${
+                  active === link.id ? "bg-honey-tint text-honey-deep" : "text-ink hover:bg-sunken"
+                }`}
+              >
+                {link.label}
+                <HexMark className={`h-3.5 w-3.5 ${active === link.id ? "text-honey" : "text-line"}`} filled />
+              </motion.button>
+            ))}
+            <a
+              href="tel:+381600726253"
+              className="mt-2 flex items-center justify-center gap-2 rounded-[var(--radius-inner)] bg-honey px-4 py-3.5 font-semibold text-white"
+            >
+              <Phone className="h-4 w-4" strokeWidth={2} />
+              060 0726 253
+            </a>
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </header>
   );
 };
 
@@ -733,10 +1103,10 @@ const MediaGallery = ({
       )}
       {items.length > 1 && (
         <>
-          <button onClick={prev} aria-label="Prethodna slika" className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
+          <button onClick={prev} aria-label="Prethodna slika" className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-raise/90 text-ink shadow-[var(--shadow-soft)] transition-colors duration-300 hover:bg-raise">
             <ChevronLeft size={16} />
           </button>
-          <button onClick={next} aria-label="Sledeća slika" className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
+          <button onClick={next} aria-label="Sledeća slika" className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-raise/90 text-ink shadow-[var(--shadow-soft)] transition-colors duration-300 hover:bg-raise">
             <ChevronRight size={16} />
           </button>
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
@@ -750,47 +1120,94 @@ const MediaGallery = ({
   );
 };
 
+/** Zaglavlje jedne kategorije proizvoda. */
+const CategoryHeading = ({ label, count }: { label: string; count: number }) => (
+  <h3 className="mb-8 flex items-center gap-4 font-display text-xl font-semibold text-ink sm:text-2xl">
+    <HexMark className="h-4 w-4 shrink-0 text-honey" filled />
+    {label}
+    <span className="ml-1 h-px flex-1 bg-line" />
+    <span className="tnum shrink-0 text-sm font-medium text-ink-mute">{count}</span>
+  </h3>
+);
+
 interface ProductCardProps {
   product: Product;
   onClick: (p: Product) => void;
 }
 
 const ProductCard = ({ product, onClick }: ProductCardProps) => {
-  const tilt = use3DTilt();
+  const tilt = use3DTilt<HTMLButtonElement>();
   return (
-    <div
+    <button
+      type="button"
       ref={tilt.ref}
       onMouseMove={tilt.handleMouseMove}
       onMouseLeave={tilt.handleMouseLeave}
       onClick={() => onClick(product)}
-      style={{ transition: 'transform 0.2s ease-out', transformStyle: 'preserve-3d' }}
-      className="bg-white rounded-2xl overflow-hidden shadow-lg border border-amber-50 flex flex-col h-full mb-4 hover:shadow-2xl hover:shadow-amber-200/50 cursor-pointer"
+      aria-label={`${product.name}, otvori detalje`}
+      style={{ transition: 'transform 0.4s var(--ease-out-expo)', transformStyle: 'preserve-3d' }}
+      className="group mb-4 flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-raise text-left shadow-[var(--shadow-soft)] transition-[box-shadow,border-color] duration-500 ease-[var(--ease-out-expo)] hover:border-honey/40 hover:shadow-[var(--shadow-lift)]"
     >
-      <div className="relative h-48 overflow-hidden">
-        <img src={product.image} alt={product.name} width={400} height={192} loading="lazy" className="w-full h-full object-cover transform hover:scale-110 transition duration-500" />
-        {product.isNew && (
-          <div className="absolute top-4 left-4 bg-rose-500 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg">
-            Novo
-          </div>
+      {/* Slika je glavni element kartice, zato nosi pun odnos 4:5 */}
+      <div className="relative aspect-[4/5] overflow-hidden bg-sunken">
+        {product.imgSlug ? (
+          <img
+            src={`images/v2/${product.imgSlug}-960.webp`}
+            srcSet={v2SrcSet(product.imgSlug, 'card')}
+            sizes="(max-width: 767px) 88vw, (max-width: 1023px) 44vw, 23vw"
+            alt={product.name}
+            width={V2.card.w}
+            height={V2.card.h}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover transition-transform duration-[900ms] ease-[var(--ease-out-expo)] group-hover:scale-[1.05]"
+          />
+        ) : (
+          <img
+            src={product.image}
+            alt={product.name}
+            width={480}
+            height={600}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover transition-transform duration-[900ms] ease-[var(--ease-out-expo)] group-hover:scale-[1.05]"
+          />
         )}
-        <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-          {product.prices.length > 1
-            ? `od ${product.prices[0].price}`
-            : product.prices[0].price
-          }
+
+        {product.isNew && (
+          <span className="absolute left-3 top-3 rounded-full bg-ink/85 px-3 py-1 text-[0.7rem] font-semibold tracking-wide text-page backdrop-blur-sm">
+            Novo
+          </span>
+        )}
+      </div>
+
+      <div className="flex flex-grow flex-col px-4 pb-5 pt-4 sm:px-5 sm:pb-6 sm:pt-5">
+        <h3 className="font-display text-[1rem] font-semibold leading-snug text-ink sm:text-[1.0625rem]">
+          {product.name}
+        </h3>
+        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink-soft">
+          {product.description}
+        </p>
+
+        {/* Cena nikad ne sme da se lomi. Na uskoj kartici (mreza krem meda na
+            telefonu) link jednostavno padne u novi red ispod cene. */}
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-t border-line pt-4">
+          <span className="tnum whitespace-nowrap text-base font-semibold text-ink">
+            {product.prices.length > 1
+              ? `od ${product.prices[0].price}`
+              : product.prices[0].price}
+          </span>
+          <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-honey-deep">
+            Detaljnije
+            <ArrowRight
+              size={15}
+              strokeWidth={2}
+              className="transition-transform duration-300 ease-[var(--ease-out-expo)] group-hover:translate-x-1"
+            />
+          </span>
         </div>
       </div>
-      <div className="p-6 flex flex-col flex-grow">
-        <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem]">{product.name}</h3>
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">{product.description}</p>
-        <button
-          onClick={() => onClick(product)}
-          className="mt-auto flex items-center gap-2 text-amber-600 font-semibold hover:text-amber-700 transition group"
-        >
-          Saznajte više <ArrowRight size={16} className="group-hover:translate-x-1 transition" />
-        </button>
-      </div>
-    </div>
+    </button>
   );
 };
 
@@ -807,63 +1224,63 @@ const ProductModal = ({ product, onClose, onInquiry }: ProductModalProps) => (
     exit={{ opacity: 0 }}
     className="fixed inset-0 z-[60] flex items-center justify-center px-4 sm:px-6 py-4 sm:py-6"
   >
-    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+    <div className="absolute inset-0 bg-ink/60 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
     <motion.div
       initial={{ scale: 0.9, opacity: 0, y: 20 }}
       animate={{ scale: 1, opacity: 1, y: 0 }}
       exit={{ scale: 0.9, opacity: 0, y: 20 }}
-      className="relative bg-white rounded-3xl overflow-hidden shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col"
+      className="relative flex max-h-[90dvh] w-full max-w-2xl flex-col overflow-hidden rounded-[var(--radius-panel)] bg-raise shadow-[var(--shadow-deep)]"
     >
       <button
         onClick={onClose}
         aria-label="Zatvori"
-        className="absolute top-3 right-3 z-20 p-2 bg-white/90 hover:bg-white rounded-full transition shadow-md ring-1 ring-black/5"
+        className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-raise/90 text-ink shadow-[var(--shadow-soft)] ring-1 ring-line transition-colors duration-300 hover:bg-sunken"
       >
-        <X className="w-5 h-5 text-gray-800" />
+        <X className="h-5 w-5" strokeWidth={2} />
       </button>
       <div className="overflow-y-auto overscroll-contain">
         <div className="flex flex-col md:flex-row">
           <div className="md:w-1/2 h-72 sm:h-80 md:h-auto flex-shrink-0">
             <MediaGallery
-              items={product.images ?? [product.image]}
+              items={product.images ?? [product.imgSlug ? `images/v2/${product.imgSlug}-1440.webp` : product.image]}
               alt={product.name}
-              className="h-full bg-amber-50"
+              className="h-full bg-sunken"
               autoPlay={false}
             />
           </div>
           <div className="md:w-1/2 p-6 sm:p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2 pr-10">{product.name}</h2>
-            <div className="mb-6">
-              <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Dostupne opcije:</p>
-              <div className="flex flex-wrap gap-2">
-                {[...product.prices].map((priceOption, index) => (
-                  <div
-                    key={index}
-                    className="bg-amber-50 border-2 border-amber-200 rounded-xl px-4 py-2 flex items-center gap-2"
-                  >
-                    <span className="text-amber-800 font-bold">{priceOption.size}</span>
-                    <span className="text-gray-400">•</span>
-                    <span className="text-amber-600 font-bold">{priceOption.price}</span>
-                  </div>
+            <h2 className="pr-10 font-display text-2xl font-semibold leading-tight text-ink">{product.name}</h2>
+
+            <div className="mt-6">
+              <p className="mb-3 text-sm font-semibold text-ink-mute">Dostupne opcije</p>
+              <ul className="divide-y divide-line overflow-hidden rounded-[var(--radius-inner)] border border-line">
+                {product.prices.map((priceOption, index) => (
+                  <li key={index} className="flex items-baseline justify-between gap-3 bg-sunken/50 px-4 py-2.5">
+                    <span className="text-sm text-ink-soft">{priceOption.size || 'Po dogovoru'}</span>
+                    <span className="tnum text-sm font-semibold text-ink">{priceOption.price}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              {product.longDescription}
-            </p>
-            <div className="flex flex-col gap-3">
+
+            <p className="mt-6 leading-relaxed text-ink-soft">{product.longDescription}</p>
+
+            <div className="mt-7 flex flex-col gap-3">
               <a
-                href={`https://wa.me/381607262539?text=Zdravo, zainteresovan sam za ${product.name}`}
-                className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-green-200"
+                href={`https://wa.me/381607262539?text=${encodeURIComponent(`Zdravo, zainteresovan/a sam za ${product.name}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center justify-center gap-3 rounded-full bg-honey py-3.5 font-semibold text-white shadow-[var(--shadow-soft)] transition-[background-color,transform] duration-300 ease-[var(--ease-out-expo)] hover:bg-honey-deep active:scale-[0.98]"
               >
-                Naruči preko WhatsApp-a
+                Naručite preko WhatsApp-a
+                <ArrowRight size={16} strokeWidth={2} className="transition-transform duration-300 ease-[var(--ease-out-expo)] group-hover:translate-x-1" />
               </a>
               <button
                 type="button"
                 onClick={onInquiry}
-                className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-amber-200"
+                className="rounded-full border border-line bg-raise py-3.5 font-semibold text-ink transition-[border-color,background-color,transform] duration-300 ease-[var(--ease-out-expo)] hover:border-honey/50 hover:bg-sunken active:scale-[0.98]"
               >
-                Pošalji upit
+                Pošaljite upit
               </button>
             </div>
           </div>
@@ -874,11 +1291,6 @@ const ProductModal = ({ product, onClose, onInquiry }: ProductModalProps) => (
 );
 
 const NewsModal = ({ post, onClose }: { post: NewsPost; onClose: () => void }) => {
-  const [imgIndex, setImgIndex] = useState(0);
-  const swipe = useSwipe(
-    () => setImgIndex((p) => (p + 1) % post.images.length),
-    () => setImgIndex((p) => (p - 1 + post.images.length) % post.images.length)
-  );
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -886,49 +1298,25 @@ const NewsModal = ({ post, onClose }: { post: NewsPost; onClose: () => void }) =
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[60] flex items-center justify-center px-4 sm:px-6"
     >
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-ink/60 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
       <motion.div
         initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className="relative bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl z-10"
+        className="relative z-10 max-h-[90dvh] w-full max-w-lg overflow-y-auto overscroll-contain rounded-[var(--radius-panel)] bg-raise shadow-[var(--shadow-deep)]"
       >
-        <button onClick={onClose} aria-label="Zatvori" className="absolute top-4 right-4 z-20 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
+        <button onClick={onClose} aria-label="Zatvori" className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-raise/90 text-ink shadow-[var(--shadow-soft)] ring-1 ring-line transition-colors duration-300 hover:bg-sunken">
           <X size={18} />
         </button>
-        <div className="relative h-64 sm:h-80 overflow-hidden rounded-t-2xl bg-black/90" {...swipe}>
-          {isVideo(post.images[imgIndex]) ? (
-            <video
-              src={post.images[imgIndex]}
-              controls
-              autoPlay
-              muted
-              playsInline
-              className="w-full h-full object-contain"
-            />
-          ) : (
-            <img src={post.images[imgIndex]} alt={post.title} width={512} height={320} loading="lazy" className="w-full h-full object-contain" />
-          )}
-          {post.images.length > 1 && (
-            <>
-              <button onClick={() => setImgIndex((p) => (p - 1 + post.images.length) % post.images.length)} aria-label="Prethodna slika" className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
-                <ChevronLeft size={16} />
-              </button>
-              <button onClick={() => setImgIndex((p) => (p + 1) % post.images.length)} aria-label="Sledeća slika" className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center hover:bg-white transition">
-                <ChevronRight size={16} />
-              </button>
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
-                {post.images.map((_, i) => (
-                  <span key={i} className={`w-2 h-2 rounded-full ${i === imgIndex ? 'bg-white' : 'bg-white/50'}`} />
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+        <MediaGallery
+          items={post.images}
+          alt={post.title}
+          className="h-64 rounded-t-[var(--radius-panel)] bg-ink sm:h-80"
+        />
         <div className="p-6">
-          <p className="text-sm text-amber-600 font-semibold mb-2">{new Date(post.date).toLocaleDateString('sr-Latn-RS', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">{post.title}</h3>
-          <p className="text-gray-600 leading-relaxed whitespace-pre-line">{post.text}</p>
+          <p className="mb-2 text-sm font-semibold text-honey-deep">{new Date(post.date).toLocaleDateString('sr-Latn-RS', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+          <h3 className="mb-4 font-display text-2xl font-semibold leading-tight text-ink">{post.title}</h3>
+          <p className="leading-relaxed whitespace-pre-line text-ink-soft">{post.text}</p>
         </div>
       </motion.div>
     </motion.div>
@@ -965,7 +1353,7 @@ const HexCell = ({ post, onSelect }: { post: NewsPost; onSelect: (p: NewsPost) =
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/20 opacity-90 group-hover:opacity-95 transition duration-300" />
       <div className="absolute inset-0 flex flex-col items-center justify-end pb-[28%] px-4 text-center">
         <h3 className="text-white text-sm md:text-lg font-bold leading-tight" style={{ textShadow: '0 2px 12px rgba(0,0,0,1), 0 1px 4px rgba(0,0,0,0.9)' }}>{post.title}</h3>
-        <p className="text-amber-400 text-xs md:text-sm mt-1 font-bold" style={{ textShadow: '0 2px 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,0.9)' }}>{new Date(post.date).toLocaleDateString('sr-Latn-RS', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+        <p className="mt-1 text-xs font-semibold text-honey md:text-sm" style={{ textShadow: '0 2px 8px rgba(0,0,0,1), 0 1px 3px rgba(0,0,0,0.9)' }}>{new Date(post.date).toLocaleDateString('sr-Latn-RS', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
       </div>
     </div>
   </div>
@@ -1048,7 +1436,7 @@ const HoneycombCarousel = ({ posts, onSelect }: { posts: NewsPost[]; onSelect: (
         <button
           onClick={() => paginate(-1)}
           aria-label="Prethodna"
-          className="absolute left-0 sm:-left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 border border-amber-500/30 rounded-full shadow-md flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-400 transition"
+          className="absolute left-0 sm:-left-2 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-raise border border-line rounded-full shadow-[var(--shadow-soft)] flex items-center justify-center text-ink-soft hover:text-honey-deep hover:border-honey/50 transition-colors duration-300 ease-[var(--ease-out-expo)]"
         >
           <ChevronLeft size={20} />
         </button>
@@ -1074,7 +1462,7 @@ const HoneycombCarousel = ({ posts, onSelect }: { posts: NewsPost[]; onSelect: (
         <button
           onClick={() => paginate(1)}
           aria-label="Sledeća"
-          className="absolute right-0 sm:-right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/10 border border-amber-500/30 rounded-full shadow-md flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-400 transition"
+          className="absolute right-0 sm:-right-2 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-raise border border-line rounded-full shadow-[var(--shadow-soft)] flex items-center justify-center text-ink-soft hover:text-honey-deep hover:border-honey/50 transition-colors duration-300 ease-[var(--ease-out-expo)]"
         >
           <ChevronRight size={20} />
         </button>
@@ -1087,8 +1475,8 @@ const HoneycombCarousel = ({ posts, onSelect }: { posts: NewsPost[]; onSelect: (
               key={i}
               onClick={() => { setDirection(i > page ? 1 : -1); setPage(i); }}
               aria-label={`Stranica ${i + 1}`}
-              className={`relative before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-11 before:h-11 before:content-[''] w-2 h-2 rounded-full transition-all duration-300 ${
-                i === page ? 'bg-amber-500 w-6' : 'bg-amber-500/30 hover:bg-amber-500/50'
+              className={`relative before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-11 before:h-11 before:content-[''] w-2 h-2 rounded-full transition-[width,background-color] duration-300 ease-[var(--ease-out-expo)] ${
+                i === page ? 'bg-honey w-6' : 'bg-line hover:bg-honey/40'
               }`}
             />
           ))}
@@ -1099,9 +1487,9 @@ const HoneycombCarousel = ({ posts, onSelect }: { posts: NewsPost[]; onSelect: (
 };
 
 // 3D tilt card hook
-const use3DTilt = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+const use3DTilt = <T extends HTMLElement>() => {
+  const ref = useRef<T>(null);
+  const handleMouseMove = useCallback((e: React.MouseEvent<T>) => {
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -1120,13 +1508,19 @@ const use3DTilt = () => {
 const Section3D = ({ children, className = '', id }: { children: React.ReactNode; className?: string; id?: string }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const reduceMotion = useReducedMotion();
+
+  if (reduceMotion) {
+    return <section id={id} className={className}>{children}</section>;
+  }
+
   return (
     <motion.section
       id={id}
       ref={ref}
-      initial={{ opacity: 0, y: 60 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
-      transition={{ duration: 0.7, ease: 'easeOut' }}
+      initial={{ opacity: 0, y: 36 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 36 }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className={className}
     >
       {children}
@@ -1134,75 +1528,86 @@ const Section3D = ({ children, className = '', id }: { children: React.ReactNode
   );
 };
 
-// Hero section with video
+// Hero: mirna slika, poruka i poziv na akciju preko nje.
+// Video je uklonjen namerno, stalno kretanje je odvlacilo paznju sa poruke.
 const HeroSection = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [videoPlaying, setVideoPlaying] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
-  const isInView = useInView(sectionRef, { amount: 0.3 });
+  const reduceMotion = useReducedMotion();
 
-  // Defer loading the background video until after the page has fully loaded,
-  // so its download never competes with the hero image (LCP) or first render.
-  useEffect(() => {
-    const enable = () => setVideoReady(true);
-    if (document.readyState === 'complete') {
-      const t = setTimeout(enable, 200);
-      return () => clearTimeout(t);
-    }
-    window.addEventListener('load', enable, { once: true });
-    return () => window.removeEventListener('load', enable);
-  }, []);
+  const fadeUp = (delay: number) =>
+    reduceMotion
+      ? {}
+      : {
+          initial: { opacity: 0, y: 28 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.85, delay, ease: [0.16, 1, 0.3, 1] as const },
+        };
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video || !videoReady) return;
-
-    if (isInView) {
-      // Reset to beginning and play every time we scroll into view
-      video.currentTime = 0;
-      video.play().catch(() => {});
-      setVideoPlaying(true);
-    } else {
-      video.pause();
-      setVideoPlaying(false);
-    }
-  }, [isInView, videoReady]);
-
-  const handleVideoEnd = () => {
-    setVideoPlaying(false);
-  };
-
-  // Video actual resolution: 1280x720 (16:9)
   return (
-    <section ref={sectionRef} className="relative w-full pt-20 md:pt-20 max-md:aspect-[4/3] md:aspect-video" >
-      <div className="absolute inset-x-0 bottom-0 top-20 md:top-0 overflow-hidden">
-        {/* First frame as default (shown when video not playing), also the LCP image */}
+    <section className="relative flex min-h-[86dvh] w-full items-end overflow-hidden md:min-h-[90dvh]">
+      <div className="absolute inset-0">
         <img
-          src="images/prvi_frame_nova_slika.webp"
-          alt="Pčelarsko gazdinstvo Letvenčuk"
-          width={1920}
-          height={1072}
+          src="images/v2/hero-med-hleb-1440.webp"
+          srcSet={v2SrcSet('hero-med-hleb', 'hero')}
+          sizes="100vw"
+          alt="Med se sliva sa drvene kašike na krišku hleba"
+          width={V2.hero.w}
+          height={V2.hero.h}
           fetchPriority="high"
-          className={`absolute inset-0 w-full h-full object-cover scale-x-[1.02] -translate-x-[0.2%] transition-opacity duration-500 ${videoPlaying ? 'opacity-0' : 'opacity-100'}`}
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
         />
 
-        {/* Video (lazy: only mounted after page load) */}
-        {videoReady && (
-          <video
-            ref={videoRef}
-            src="images/video_pozadina_novi.mp4"
-            muted
-            playsInline
-            preload="auto"
-            onEnded={handleVideoEnd}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoPlaying ? 'opacity-100' : 'opacity-0'}`}
+        {/* Zastor: bez njega beli tekst ne prolazi kontrast preko fotografije */}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink/55 via-ink/10 to-transparent" />
+      </div>
+
+      <div className="relative z-10 w-full px-5 pb-14 pt-32 sm:px-8 sm:pb-16 lg:px-12 lg:pb-20">
+        <div className="mx-auto max-w-6xl">
+          <motion.img
+            {...fadeUp(0)}
+            src="images/logo-mark-light.svg"
+            alt="Pčelarsko gazdinstvo Letvenčuk"
+            width={2000}
+            height={498}
+            className="mb-7 h-12 w-auto drop-shadow-[0_2px_14px_rgba(0,0,0,0.5)] sm:h-14 lg:h-16"
           />
-        )}
+
+          <motion.h1
+            {...fadeUp(0.05)}
+            className="max-w-[16ch] font-display text-[2.6rem] font-semibold leading-[1.02] text-white sm:text-6xl lg:text-[4.5rem]"
+          >
+            Med koji pravi jedna porodica
+          </motion.h1>
+
+          <motion.p
+            {...fadeUp(0.18)}
+            className="mt-5 max-w-[46ch] text-base leading-relaxed text-white/85 sm:text-lg"
+          >
+            Pčelarsko gazdinstvo Letvenčuk iz Kule. Oko 70 košnica, tri generacije
+            i med bez ijednog dodatka.
+          </motion.p>
+
+          <motion.div {...fadeUp(0.3)} className="mt-8 flex flex-wrap items-center gap-3">
+            <ActionButton onClick={() => scrollToId('proizvodi')}>
+              Pogledajte proizvode
+            </ActionButton>
+            <button
+              onClick={() => scrollToId('porodica')}
+              className="group inline-flex items-center gap-3 rounded-full border border-white/35 bg-white/10 py-2 pl-6 pr-2 text-[0.95rem] font-semibold text-white backdrop-blur-md transition-[background-color,border-color,transform] duration-300 ease-[var(--ease-out-expo)] hover:border-white/60 hover:bg-white/20 active:scale-[0.98]"
+            >
+              Naša priča
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 ease-[var(--ease-out-expo)] group-hover:translate-x-0.5 group-hover:-translate-y-px">
+                <ArrowRight className="h-4 w-4" strokeWidth={2} />
+              </span>
+            </button>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
 };
+
 
 export const App = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -1256,81 +1661,135 @@ export const App = () => {
   };
 
   return (
-    <div id="top" className="min-h-screen bg-amber-50/30 selection:bg-amber-200">
+    <div id="top" className="min-h-[100dvh] bg-page selection:bg-honey-tint selection:text-ink">
+      <a href="#sadrzaj" className="skip-link">Preskoči na sadržaj</a>
+      <div className="grain" aria-hidden="true" />
       <Navbar />
 
-      <main>
+      <main id="sadrzaj">
       <HeroSection />
 
       {/* Porodica Section */}
-      <Section3D id="porodica" className="py-24 px-4 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden -mt-1">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%)' }} />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(217,119,6,0.08) 0%, transparent 70%)' }} />
+      <Section3D id="porodica" className="relative overflow-hidden bg-sunken px-5 py-24 sm:px-8 md:py-32">
+        <div className="honeycomb-field pointer-events-none absolute inset-0 opacity-50" aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-page to-transparent" aria-hidden="true" />
 
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-white mb-4">Upoznajte našu porodicu</h2>
-            <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mb-8"></div>
-            <div className="text-gray-300 max-w-3xl mx-auto space-y-4 text-justify md:text-center leading-relaxed">
+        <div className="relative z-10 mx-auto max-w-6xl">
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:gap-16">
+            <SectionHeading
+              title={<>Tri generacije, <br className="hidden sm:block" />jedan pčelinjak</>}
+              lead="Ovo nije fabrika. Ovo je kuća u Kuli u kojoj se med vrca, puni i nosi na tezgu."
+            />
+            <div className="space-y-5 leading-relaxed text-ink-soft lg:pt-4">
               <p>
-                Sve je počelo od <span className="text-amber-400 font-semibold">Ivana</span>.
+                Sve je počelo od <span className="font-semibold text-honey-deep">Ivana</span>.
                 Već decenijama se bavi pčelama, a kroz sve te godine naučio je koliko ovaj zanat
                 traži strpljenja i tihe ljubavi. Ono što je on gradio dan za danom, danas je srce
                 svega što radimo.
               </p>
               <p>
-                Njegov sin <span className="text-amber-400 font-semibold">Mihajlo</span> nasledio
+                Njegov sin <span className="font-semibold text-honey-deep">Mihajlo</span> nasledio
                 je očevu ljubav prema pčelama i dodao joj nešto svoje. Nova znanja, drugačiji
                 pristup i želju da ovaj posao gurne još korak dalje.
               </p>
               <p>
-                Danas Ivan pomaže Mihajlu koliko može, a zajedno brinemo o <span className="text-amber-400 font-semibold">oko 70 košnica</span> i
+                Danas Ivan pomaže Mihajlu koliko može, a zajedno brinemo o <span className="font-semibold text-honey-deep">oko 70 košnica</span> i
                 svaku pazimo kao da nam je prva. Svaka tegla meda koja izađe iz naše kuće nosi deo
                 te priče. Priču o radu, o porodici i o onome što se ne kupuje, nego prenosi s
                 kolena na koleno.
               </p>
+              <div className="flex items-center gap-4 pt-4">
+                <span className="h-px w-10 bg-line" />
+                <img
+                  src="images/logo-mark.svg"
+                  alt="Pčelarsko gazdinstvo Letvenčuk"
+                  width={2000}
+                  height={498}
+                  loading="lazy"
+                  className="h-9 w-auto opacity-75 sm:h-10"
+                />
+              </div>
             </div>
           </div>
 
-         <FamilyCarousel />
+          <div className="mt-16 md:mt-20">
+            <FamilyCarousel />
+          </div>
         </div>
       </Section3D>
 
       {/* Proizvodi Section */}
-      <Section3D id="proizvodi" className="py-24 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Naši proizvodi</h2>
-            <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mb-6"></div>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Od čistog meda do specijalnih prirodnih mikseva za vaš imunitet.
-              Svi naši proizvodi su 100% prirodni i bez aditiva.
-            </p>
-          </div>
+      <Section3D id="proizvodi" className="bg-page px-5 py-24 sm:px-8 md:py-32">
+        <div className="mx-auto max-w-6xl">
+          <SectionHeading
+            title="Naši proizvodi"
+            lead="Sve što vidite dolazi iz naših košnica. Bez aditiva, bez dodatog šećera, bez kupovnog meda."
+          />
 
-          <div className="space-y-20">
-            {Object.values(productCategories).map((category) => (
-              <div key={category.label}>
-                <h3 className="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-3">
-                  {category.label}
-                  <div className="flex-1 h-px bg-amber-100 ml-2"></div>
-                </h3>
-                <ProductCarousel items={category.items} onClick={setSelectedProduct} />
-              </div>
-            ))}
+          {/* Med: prozračno, karusel */}
+          <div className="mt-16 md:mt-20">
+            <CategoryHeading label={productCategories.med.label} count={productCategories.med.items.length} />
+            <ProductCarousel items={productCategories.med.items} onClick={setSelectedProduct} />
           </div>
+        </div>
+
+        {/* Krem med: gusto, izdvojeno, sa slikom cele linije preko pune širine */}
+        <div className="mt-20 md:mt-28">
+          <div className="mx-auto max-w-6xl">
+            <div className="relative overflow-hidden rounded-[var(--radius-panel)]">
+              <img
+                src="images/v2/kat-krem-med-1280.webp"
+                srcSet={v2SrcSet('kat-krem-med', 'wide')}
+                sizes="(max-width: 1200px) 100vw, 1152px"
+                alt="Šest ukusa krem meda sa kriškama hleba"
+                width={V2.wide.w}
+                height={V2.wide.h}
+                loading="lazy"
+                decoding="async"
+                className="h-[260px] w-full object-cover sm:h-[340px] md:h-[420px]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/35 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-6 sm:p-9 md:p-12">
+                <h3 className="font-display text-[1.9375rem] font-semibold leading-tight text-white sm:text-[2.4375rem]">
+                  Krem med, šest ukusa
+                </h3>
+                <p className="mt-3 max-w-[46ch] text-sm leading-relaxed text-white/85 sm:text-base">
+                  Naš med umućen do glatke, mazive teksture, pa spojen sa pravim voćem,
+                  čokoladom ili mentom. Maže se kao namaz, a ostaje med.
+                </p>
+              </div>
+            </div>
+
+            {/* Mreža umesto karusela: svih sedam se vidi odjednom */}
+            <div className="mt-8 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
+              {productCategories.kremMed.items.map((item) => (
+                <ProductCard key={item.id} product={item} onClick={setSelectedProduct} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Miksevi, aranžmani i ostalo: nazad na prozračan ritam */}
+        <div className="mx-auto mt-20 max-w-6xl space-y-20 md:mt-28 md:space-y-24">
+          {[productCategories.miks, productCategories.aranzman, productCategories.ostalo].map((category) => (
+            <div key={category.label}>
+              <CategoryHeading label={category.label} count={category.items.length} />
+              <ProductCarousel items={category.items} onClick={setSelectedProduct} />
+            </div>
+          ))}
         </div>
       </Section3D>
 
       {/* Galerija / Vesti Section - Honeycomb */}
-      <Section3D id="galerija" className="py-24 px-4 bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Život na pčelinjaku</h2>
-            <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mb-6"></div>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              Deo naše atmosfere sa pčelinjaka, festivala i mesta gde naš med pronalazi svoj novi dom.
-            </p>
+      <Section3D id="galerija" className="relative overflow-hidden bg-sunken px-5 py-24 sm:px-8 md:py-32">
+        <div className="honeycomb-field pointer-events-none absolute inset-0 opacity-40" aria-hidden="true" />
+        <div className="relative z-10 mx-auto max-w-6xl">
+          <div className="mb-14 md:mb-16">
+            <SectionHeading
+              align="center"
+              title="Život na pčelinjaku"
+              lead="Sa paše, sa festivala i iz kuće. Kliknite na saće da otvorite priču."
+            />
           </div>
 
           <HoneycombCarousel posts={[...newsPosts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())} onSelect={setSelectedPost} />
@@ -1342,19 +1801,18 @@ export const App = () => {
       </AnimatePresence>
 
       {/* Kontakt Section */}
-      <Section3D id="kontakt" className="py-24 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="bg-white rounded-[2.5rem] md:rounded-[3rem] shadow-2xl overflow-hidden border border-amber-100">
-            {/* Header */}
-            <div className="bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 text-white p-8 md:p-12 text-center relative overflow-hidden">
-              <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-              <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-amber-300/20 blur-2xl pointer-events-none" />
-              <h2 className="text-3xl md:text-4xl font-bold mb-2 relative">Kontaktirajte nas</h2>
-              <p className="text-amber-100 text-base md:text-lg relative">Tu smo za vas svakog dana.</p>
-            </div>
+      <Section3D id="kontakt" className="bg-page px-5 py-24 sm:px-8 md:py-32">
+        <div className="mx-auto max-w-5xl">
+          <div className="mb-12">
+            <SectionHeading
+              title="Javite nam se"
+              lead="Pišite nam, pozovite ili svratite. Odgovaramo isti dan."
+            />
+          </div>
 
+          <div className="overflow-hidden rounded-[var(--radius-panel)] border border-line bg-raise shadow-[var(--shadow-lift)]">
             {/* Tab bar */}
-            <div className="flex bg-amber-50/60 border-b border-amber-100">
+            <div className="flex border-b border-line bg-sunken/60" role="tablist">
               {[
                 { key: 'forma' as const, label: 'Poruka', icon: Send },
                 { key: 'mapa' as const, label: 'Lokacija', icon: MapPin },
@@ -1364,9 +1822,11 @@ export const App = () => {
                 return (
                   <button
                     key={key}
+                    role="tab"
+                    aria-selected={active}
                     onClick={() => setActiveContactTab(key)}
-                    className={`flex-1 py-4 px-2 font-bold text-xs sm:text-sm uppercase tracking-wider transition relative ${
-                      active ? 'text-amber-700' : 'text-gray-400 hover:text-gray-700'
+                    className={`relative flex-1 px-2 py-4 text-sm font-semibold transition-colors duration-300 ${
+                      active ? 'text-honey-deep' : 'text-ink-mute hover:text-ink'
                     }`}
                   >
                     <span className="flex items-center justify-center gap-2">
@@ -1376,7 +1836,7 @@ export const App = () => {
                     {active && (
                       <motion.div
                         layoutId="contactTabUnderline"
-                        className="absolute bottom-0 left-4 right-4 h-0.5 bg-amber-500 rounded-full"
+                        className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-honey"
                       />
                     )}
                   </button>
@@ -1385,7 +1845,7 @@ export const App = () => {
             </div>
 
             {/* Tab content */}
-            <div className="p-6 sm:p-10 md:p-12 min-h-[600px] sm:min-h-[660px] md:min-h-[680px]">
+            <div className="p-6 sm:p-10 md:p-12">
               <AnimatePresence mode="wait">
                 {activeContactTab === 'forma' && (
                   <motion.div
@@ -1395,8 +1855,8 @@ export const App = () => {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.25 }}
                   >
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Pošaljite nam poruku</h3>
-                    <p className="text-gray-500 mb-8 text-sm">Odgovaramo u najkraćem roku na vaš email.</p>
+                    <h3 className="font-display text-2xl font-semibold text-ink">Pošaljite nam poruku</h3>
+                    <p className="mb-8 mt-1 text-sm text-ink-mute">Odgovaramo u najkraćem roku na vaš email.</p>
                     <form
                       action="https://formspree.io/f/xykdqznv"
                       method="POST"
@@ -1423,45 +1883,52 @@ export const App = () => {
                     >
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div className="space-y-2">
-                          <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Ime i Prezime</label>
+                          <label htmlFor="polje-ime" className="block text-sm font-medium text-ink">Ime i prezime</label>
                           <input
+                            id="polje-ime"
                             type="text"
                             name="name"
                             required
-                            placeholder="Petar Petrović"
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition"
+                            autoComplete="name"
+                            placeholder="npr. Petar Petrović"
+                            className="w-full rounded-[var(--radius-field)] border border-line bg-page px-4 py-3 text-ink placeholder:text-ink-mute/70 transition-colors duration-200 focus:border-honey focus:bg-raise"
                           />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Email Adresa</label>
+                          <label htmlFor="polje-email" className="block text-sm font-medium text-ink">Email adresa</label>
                           <input
+                            id="polje-email"
                             type="email"
                             name="email"
                             required
-                            placeholder="petar@gmail.com"
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition"
+                            autoComplete="email"
+                            inputMode="email"
+                            spellCheck={false}
+                            placeholder="npr. petar@gmail.com"
+                            className="w-full rounded-[var(--radius-field)] border border-line bg-page px-4 py-3 text-ink placeholder:text-ink-mute/70 transition-colors duration-200 focus:border-honey focus:bg-raise"
                           />
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Vaša Poruka</label>
+                        <label htmlFor="polje-poruka" className="block text-sm font-medium text-ink">Vaša poruka</label>
                         <textarea
+                          id="polje-poruka"
                           name="message"
                           required
                           rows={5}
                           value={formMessage}
                           onChange={(e) => setFormMessage(e.target.value)}
                           placeholder="Kako vam možemo pomoći?"
-                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition resize-none"
+                          className="w-full resize-none rounded-[var(--radius-field)] border border-line bg-page px-4 py-3 text-ink placeholder:text-ink-mute/70 transition-colors duration-200 focus:border-honey focus:bg-raise"
                         ></textarea>
                       </div>
                       <button
                         type="submit"
-                        className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl transition transform hover:scale-[1.02] flex items-center justify-center gap-3 shadow-xl shadow-amber-100"
+                        className="flex w-full items-center justify-center gap-3 rounded-full bg-honey py-4 font-semibold text-white shadow-[var(--shadow-soft)] transition-[background-color,transform] duration-300 ease-[var(--ease-out-expo)] hover:bg-honey-deep active:scale-[0.98]"
                       >
-                        <Send size={20} /> Pošalji pitanje
+                        <Send size={18} strokeWidth={2} /> Pošaljite poruku
                       </button>
-                      <p className="text-xs text-gray-400 text-center">
+                      <p className="text-center text-xs text-ink-mute">
                         Vaša poruka stiže na: nik.letvencuk@gmail.com
                       </p>
                     </form>
@@ -1476,31 +1943,31 @@ export const App = () => {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.25 }}
                   >
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Gde smo</h3>
-                    <p className="text-gray-500 mb-6 text-sm">Kliknite na mapu da otvorite pravac u Google Maps.</p>
+                    <h3 className="font-display text-2xl font-semibold text-ink">Gde smo</h3>
+                    <p className="mb-6 mt-1 text-sm text-ink-mute">Kliknite na mapu da otvorite pravac u Google Maps.</p>
 
                     <a
                       href="https://www.google.com/maps/search/?api=1&query=Kulska+9%2F1%2C+Kula%2C+Vojvodina%2C+Srbija"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-white border border-amber-100 hover:border-amber-300 hover:shadow-lg transition mb-6"
+                      className="group mb-6 flex items-center gap-4 rounded-[var(--radius-card)] border border-line bg-sunken/50 p-4 transition-[border-color,box-shadow] duration-300 ease-[var(--ease-out-expo)] hover:border-honey/50 hover:shadow-[var(--shadow-soft)]"
                     >
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shrink-0 shadow-md shadow-amber-200/50">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-field)] bg-honey text-white">
                         <MapPin className="w-6 h-6 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Adresa</p>
-                        <p className="text-lg font-bold text-gray-900">Kulska 9/1, Kula</p>
-                        <p className="text-sm text-amber-600">Vojvodina, Srbija</p>
+                        <p className="text-xs font-semibold text-ink-mute">Adresa</p>
+                        <p className="font-display text-lg font-semibold text-ink">Kulska 9/1, Kula</p>
+                        <p className="text-sm text-honey-deep">Vojvodina, Srbija</p>
                       </div>
-                      <ArrowRight className="w-5 h-5 text-amber-600 group-hover:translate-x-1 transition shrink-0" />
+                      <ArrowRight className="h-5 w-5 shrink-0 text-honey-deep transition-transform duration-300 ease-[var(--ease-out-expo)] group-hover:translate-x-1" strokeWidth={2} />
                     </a>
 
                     <a
                       href="https://www.google.com/maps/search/?api=1&query=Kulska+9%2F1%2C+Kula%2C+Vojvodina%2C+Srbija"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block rounded-2xl overflow-hidden shadow-lg ring-1 ring-amber-100 hover:ring-amber-300 transition"
+                      className="block overflow-hidden rounded-[var(--radius-card)] ring-1 ring-line transition-[box-shadow] duration-300 hover:shadow-[var(--shadow-soft)]"
                       aria-label="Otvori lokaciju u Google Maps"
                     >
                       <iframe
@@ -1522,8 +1989,8 @@ export const App = () => {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.25 }}
                   >
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Direktan kontakt</h3>
-                    <p className="text-gray-500 mb-6 text-sm">Pozovite nas, pišite preko WhatsApp-a ili nam pošaljite DM.</p>
+                    <h3 className="font-display text-2xl font-semibold text-ink">Direktan kontakt</h3>
+                    <p className="mb-6 mt-1 text-sm text-ink-mute">Pozovite nas, pišite preko WhatsApp-a ili nam pošaljite DM.</p>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {[
@@ -1562,17 +2029,17 @@ export const App = () => {
                           key={i}
                           href={href}
                           {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                          className="group bg-gradient-to-br from-amber-50 to-white border border-amber-100 rounded-2xl p-5 flex items-center gap-4 hover:shadow-lg hover:shadow-amber-200/40 hover:-translate-y-0.5 hover:border-amber-300 transition-all duration-300"
+                          className="group flex items-center gap-4 rounded-[var(--radius-card)] border border-line bg-sunken/50 p-5 transition-[transform,border-color,box-shadow] duration-300 ease-[var(--ease-out-expo)] hover:-translate-y-0.5 hover:border-honey/50 hover:shadow-[var(--shadow-soft)]"
                         >
-                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 flex items-center justify-center shrink-0 shadow-md shadow-amber-200/50 ring-1 ring-amber-200/60 group-hover:scale-110 transition-transform">
+                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-field)] bg-honey text-white transition-transform duration-300 ease-[var(--ease-out-expo)] group-hover:scale-105">
                             <Icon className="w-5 h-5 text-white" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">{label}</p>
-                            <p className="text-base font-bold text-gray-900 truncate">{value}</p>
-                            <p className="text-xs text-amber-600">{sub}</p>
+                            <p className="text-xs font-semibold text-ink-mute">{label}</p>
+                            <p className="tnum truncate text-base font-semibold text-ink">{value}</p>
+                            <p className="text-xs text-honey-deep">{sub}</p>
                           </div>
-                          <ArrowRight className="w-4 h-4 text-amber-600 group-hover:translate-x-1 transition shrink-0" />
+                          <ArrowRight className="h-4 w-4 shrink-0 text-honey-deep transition-transform duration-300 ease-[var(--ease-out-expo)] group-hover:translate-x-1" strokeWidth={2} />
                         </a>
                       ))}
                     </div>
@@ -1587,73 +2054,101 @@ export const App = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white py-12 border-t border-amber-100">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <img
-              src="images/logo.svg"
-              alt="Pčelarsko gazdinstvo Letvenčuk"
-              width={148}
-              height={210}
-              loading="lazy"
-              className="h-64 md:h-80 w-auto mx-auto -mt-40 md:-mt-40"
-              style={{
-                clipPath: 'inset(45% 0 30% 0)'
-              }}
-            />
+      <footer className="relative overflow-hidden border-t border-line bg-sunken px-5 pb-10 pt-16 sm:px-8">
+        <div className="honeycomb-field pointer-events-none absolute inset-0 opacity-40" aria-hidden="true" />
+        <div className="relative z-10 mx-auto max-w-6xl">
+          <div className="grid gap-10 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)]">
+            <div>
+              <img
+                src="images/logo-mark.svg"
+                alt="Pčelarsko gazdinstvo Letvenčuk"
+                width={2000}
+                height={498}
+                loading="lazy"
+                className="h-11 w-auto sm:h-12"
+              />
+              <p className="mt-5 max-w-[34ch] text-sm leading-relaxed text-ink-soft">
+                Porodično pčelarsko gazdinstvo iz Kule. Med, polen, propolis i vosak
+                iz sopstvenih košnica.
+              </p>
+            </div>
+
+            <nav aria-label="Podnožje">
+              <h2 className="font-display text-sm font-semibold text-ink">Sadržaj</h2>
+              <ul className="mt-4 space-y-2.5">
+                {NAV_LINKS.map((link) => (
+                  <li key={link.id}>
+                    <button
+                      onClick={() => scrollToId(link.id)}
+                      className="text-sm text-ink-soft transition-colors duration-200 hover:text-honey-deep"
+                    >
+                      {link.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div>
+              <h2 className="font-display text-sm font-semibold text-ink">Kontakt</h2>
+              <ul className="mt-4 space-y-2.5 text-sm">
+                <li>
+                  <a href="tel:+381600726253" className="tnum text-ink-soft transition-colors duration-200 hover:text-honey-deep">
+                    060 0726 253
+                  </a>
+                </li>
+                <li>
+                  <a href="tel:+381607262530" className="tnum text-ink-soft transition-colors duration-200 hover:text-honey-deep">
+                    060 726 2530
+                  </a>
+                </li>
+                <li className="text-ink-soft">Kulska 9/1, Kula</li>
+              </ul>
+
+              <div className="mt-5 flex gap-2.5">
+                <a
+                  href="https://www.instagram.com/med.letvencuk/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-raise text-ink-soft transition-colors duration-300 hover:border-honey/50 hover:text-honey-deep"
+                  aria-label="Instagram"
+                >
+                  <Instagram size={18} strokeWidth={2} />
+                </a>
+                <a
+                  href="https://wa.me/381607262539"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-raise text-ink-soft transition-colors duration-300 hover:border-honey/50 hover:text-honey-deep"
+                  aria-label="WhatsApp"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px]" aria-hidden="true">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                  </svg>
+                </a>
+                <a
+                  href="tel:+381600726253"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-raise text-ink-soft transition-colors duration-300 hover:border-honey/50 hover:text-honey-deep"
+                  aria-label="Pozovite nas"
+                >
+                  <Phone size={18} strokeWidth={2} />
+                </a>
+              </div>
+            </div>
           </div>
-          <p className="text-gray-500 text-sm -mt-30 md:-mt-30">
-            © {new Date().getFullYear()} Pčelarsko gazdinstvo Letvenčuk. Sva prava zadržana.
-          </p>
-          <div className="flex justify-center gap-6 mt-6">
+
+          <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-line pt-6 sm:flex-row">
+            <p className="text-xs text-ink-mute">
+              © {new Date().getFullYear()} Pčelarsko gazdinstvo Letvenčuk. Sva prava zadržana.
+            </p>
             <button
-              onClick={() => scrollToId('top')} // ako dodaš id na vrh (npr. na body wrapper) ili samo window.scrollTo(0,..)
-              className="text-gray-400 hover:text-amber-600 transition"
+              onClick={() => scrollToId('top')}
+              className="flex items-center gap-2 text-xs font-semibold text-ink-soft transition-colors duration-200 hover:text-honey-deep"
             >
-              Početna
-            </button>
-            <button
-              onClick={() => scrollToId('proizvodi')}
-              className="text-gray-400 hover:text-amber-600 transition"
-            >
-              Proizvodi
-            </button>
-            <button
-              onClick={() => scrollToId('kontakt')}
-              className="text-gray-400 hover:text-amber-600 transition"
-            >
-              Kontakt
+              <HexMark className="h-3 w-3 text-honey" filled />
+              Na vrh
             </button>
           </div>
-          <div className="flex justify-center gap-5 mt-8">
-  
-    <a href="https://www.instagram.com/med.letvencuk/"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="w-10 h-10 flex items-center justify-center rounded-full bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition"
-    aria-label="Instagram"
-  >
-    <Instagram size={18} />
-  </a>
-  
-  <a href="https://wa.me/381607262539"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="w-10 h-10 flex items-center justify-center rounded-full bg-amber-50 text-amber-600 hover:bg-green-500 hover:text-white transition"
-    aria-label="WhatsApp"
-  >
-    <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]">
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-    </svg>
-  </a>
-  
-  <a href="tel:+381600726253"
-    className="w-10 h-10 flex items-center justify-center rounded-full bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition"
-    aria-label="Pozovi"
-  >
-    <Phone size={18} />
-  </a>
-</div>
         </div>
       </footer>
 
@@ -1675,8 +2170,9 @@ export const App = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.25 }}
-            className="fixed top-24 left-1/2 -translate-x-1/2 z-[70] flex items-center gap-3 bg-white border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm shadow-xl max-w-[90vw]"
+            className="fixed left-1/2 top-24 z-[70] flex max-w-[90vw] -translate-x-1/2 items-center gap-3 rounded-full border border-red-200 bg-raise px-5 py-3 text-sm text-red-700 shadow-[var(--shadow-lift)]"
             role="alert"
+            aria-live="assertive"
           >
             <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
