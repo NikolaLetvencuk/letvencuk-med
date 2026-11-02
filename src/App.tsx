@@ -213,10 +213,9 @@ const products: Product[] = [
     id: 12,
     name: "Mix: Limun-đumbir-med",
     description: "Osvežavajući mix protiv prehlade i virusa.",
-    longDescription: "Kombinacija limuna, đumbira, meda, polena i propolisa. Ljuti đumbir i kiselkasti limun u medu stvaraju moćan eliksir za grlo i disajne puteve.",
+    longDescription: "Samo tri sastojka: naš med, limun i đumbir. Ljuti đumbir i kiselkasti limun u medu stvaraju moćan eliksir za grlo i disajne puteve.",
     prices: [
-      { size: "400g", price: "700 RSD" },
-      { size: "1kg", price: "1500 RSD" }
+      { size: "400g", price: "700 RSD" }
     ],    
     image: "images/med_limun_djumbir_miks.webp"
   },
@@ -427,7 +426,14 @@ const newsPosts: NewsPost[] = [
   {
     title: "Miksevi za zdraviji život",
     date: "2026-01-10",
-    text: "Predstavljamo vam naše mikseve - savršenu kombinaciju meda, oraha i sušenog voća za svakodnevno uživanje.",
+    text: `Predstavljamo vam naše mikseve. Svaki kreće od našeg meda, a onda dobija ono što mu daje namenu.
+
+• Med, polen i propolis. Klasičan imuno-miks za svaki dan.
+• Med i kopriva. Za krvnu sliku i gvožđe.
+• Med, polen, propolis i golica. Mleveno seme bundeve, za mušku snagu.
+• Med, limun i đumbir. Za grlo i disajne puteve.
+
+Jedna kašika ujutru je dovoljna. Nema dodatog šećera ni konzervansa.`,
     images: ["images/sva_tri_miksa_mali_veliki.jpg"]
   },
   {
