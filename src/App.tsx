@@ -145,7 +145,8 @@ const products: Product[] = [
     longDescription: "Polen sakupljen od strane naših pčela je izvor svih esencijalnih amino-kiselina. Preporučuje se sportistima, đacima i svima koji su pod pojačanim fizičkim i mentalnim naporom.",
     prices: [
       { size: "100g", price: "200 RSD" },
-      { size: "200g", price: "400 RSD" }
+      { size: "200g", price: "400 RSD" },
+      { size: "500g", price: "800 RSD" }
     ],
     image: "images/v2/polen-960.webp",
     imgSlug: "polen"
