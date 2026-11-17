@@ -20,23 +20,9 @@ import { productCategories, type Product } from './data/products';
 import { newsPosts, type NewsPost } from './data/news';
 import { familyMembers, type FamilyIcon } from './data/family';
 import { contact } from './data/contact';
+import { BeeIcon } from './components/icons/BeeIcon';
+import { ChatWidget } from './components/chat/ChatWidget';
 
-const BeeIcon = ({ className = "w-6 h-6" }) => (
-  <svg 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
-    className={className}
-  >
-    <path d="M12 3L20 7.5V16.5L12 21L4 16.5V7.5L12 3Z" />
-    <path d="M12 3V21" />
-    <path d="M4 7.5L20 16.5" />
-    <path d="M20 7.5L4 16.5" />
-  </svg>
-);
 
 const familyIcons: Record<FamilyIcon, React.ReactNode> = {
   bee: <BeeIcon className="w-6 h-6" />,
@@ -1706,6 +1692,7 @@ export const App = () => {
         )}
       </AnimatePresence>
 
+      <ChatWidget hidden={selectedProduct !== null || selectedPost !== null} />
       <Analytics />
       <SpeedInsights />
     </div>
