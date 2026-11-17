@@ -16,6 +16,10 @@ import {
   ChevronRight,
   Truck  
 } from 'lucide-react';
+import { productCategories, type Product } from './data/products';
+import { newsPosts, type NewsPost } from './data/news';
+import { familyMembers, type FamilyIcon } from './data/family';
+import { contact } from './data/contact';
 
 const BeeIcon = ({ className = "w-6 h-6" }) => (
   <svg 
@@ -34,509 +38,13 @@ const BeeIcon = ({ className = "w-6 h-6" }) => (
   </svg>
 );
 
-interface PriceOption {
-  size: string;      
-  price: string;     
-}
-
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  longDescription: string;
-  prices: PriceOption[];  
-  image: string;
-  /** Slug nove serije u images/v2 (daje srcset). Bez njega se koristi `image`. */
-  imgSlug?: string;
-  /** Opciono: dodatne slike za galeriju u modalu (prva je obicno `image`). */
-  images?: string[];
-  /** Opciono: prikazuje "NOVO" oznaku na kartici. */
-  isNew?: boolean;
-}
-
-
-const familyMembers = [
-  {
-    name: "Mihajlo",
-    role: "Otac & Glavni Pčelar",
-    description: "Stub našeg gazdinstva. Mihajlo je zadužen za sve na pčelinjaku - od brige o zdravlju pčela do vrcanja meda. Njegovo znanje i iskustvo su temelj svega što radimo.",
-    icon: <BeeIcon className="w-6 h-6" />
-  },
-  {
-    name: "Tanja",
-    role: "Majka & Kreativni Centar",
-    description: "Tanja pretvara naše pčelinje darove u prelepe aranžmane. Zadužena je za planiranje festivala, prodaju, dostavu i osmeh koji dočekuje svakog kupca.",
-    icon: <ShoppingBasket className="w-6 h-6" />
-  },
-  {
-    name: "Ivan",
-    role: "Deda & Desna ruka",
-    description: "Iskustvo koje se ne kupuje. Ivan pomaže Mihajlu na pčelinjaku, uvek je tu kada je potrebna dodatna ruka i mudrost u radu sa košnicama.",
-    icon: <Users className="w-6 h-6" />
-  },
-  {
-    name: "Nađa",
-    role: "Ćerka & Mlada nada",
-    description: "Nađa je mamin glavni asistent na festivalima. Svojom energijom i ljubaznošću pomaže u prezentaciji proizvoda i komunikaciji sa našim dragim kupcima.",
-    icon: <CheckCircle2 className="w-6 h-6" />
-  },
-  {
-    name: "Nikola",
-    role: "Sin & Dostava",
-    description: "Nikola je naš pouzdani glasnik. Uvek spreman da pomogne - bilo da je u pitanju dostava meda na kućnu adresu ili pakovanje porudžbina.",
-    icon: <Truck className="w-6 h-6" />
-  }
-];
-
-const products: Product[] = [
-  {
-    id: 1,
-    name: "Livadski med",
-    description: "Bogat ukus prolećnih i letnjih livada. Sadrži nektar raznovrsnog lekovitog bilja.",
-    longDescription: "Naš livadski med je prava riznica zdravlja. Sakupljan na čistim pašnjacima, on predstavlja mešavinu nektara desetina različitih cvetova, što mu daje jedinstvenu aromu i visoku nutritivnu vrednost. Idealan je za jačanje imuniteta i svakodnevnu upotrebu.",
-    prices: [
-      { size: "400g", price: "400 RSD" },
-      { size: "1kg", price: "800 RSD" }
-    ],    
-    image: "images/v2/livadski-960.webp",
-    imgSlug: "livadski"
-  },
-  {
-    id: 2,
-    name: "Bagremov med",
-    description: "Svetla boja i blag, prijatan ukus. Najtraženiji med zbog svoje nežne arome.",
-    longDescription: "Bagremov med je poznat po svojoj prozirnosti i činjenici da ostaje u tečnom stanju veoma dugo. Zbog svog blagog ukusa, omiljen je deci. Deluje umirujuće na organizam i preporučuje se kod nesanice i stresa.",
-    prices: [
-      { size: "400g", price: "750 RSD" },
-      { size: "1kg", price: "1500 RSD" }
-    ],    
-    image: "images/v2/bagremov-960.webp",
-    imgSlug: "bagremov"
-  },
-  {
-    id: 4,
-    name: "Med od uljane repice",
-    description: "Kremast med bele boje, izuzetno bogat polenom.",
-    longDescription: "Med od uljane repice je prvi prolećni med. Zbog svoje sitnozrnaste kristalizacije, tekstura mu je poput putera. Izuzetno je blagotvoran za čišćenje jetre i regulisanje holesterola.",
-    prices: [
-      { size: "400g", price: "400 RSD" },
-      { size: "1kg", price: "800 RSD" }
-    ],
-    image: "images/v2/uljana-repica-960.webp",
-    imgSlug: "uljana-repica"
-  },
-  {
-    id: 5,
-    name: "Propolis kapi",
-    description: "Prirodni antibiotik iz pčelinje košnice. Jaka zaštita za vaš organizam.",
-    longDescription: "Naš propolis je 30% rastvor čistog pčelinjeg propolisa u alkoholu. Deluje protiv virusa, bakterija i gljivica. Nezaobilazan u kućnoj apoteci za dezinfekciju grla i jačanje odbrambene moći organizma.",
-    prices: [
-      { size: "kapi 10ml", price: "250 RSD" },
-      { size: "kapi 20ml", price: "400 RSD" },
-      { size: "sprej 20ml", price: "450 RSD" }
-    ],
-    image: "images/v2/propolis-960.webp",
-    imgSlug: "propolis"
-  },
-  {
-    id: 6,
-    name: "Pčelinji Polen",
-    description: "Super-hrana direktno iz cveta. Bomba vitamina i minerala.",
-    longDescription: "Polen sakupljen od strane naših pčela je izvor svih esencijalnih amino-kiselina. Preporučuje se sportistima, đacima i svima koji su pod pojačanim fizičkim i mentalnim naporom.",
-    prices: [
-      { size: "100g", price: "200 RSD" },
-      { size: "200g", price: "400 RSD" },
-      { size: "500g", price: "800 RSD" }
-    ],
-    image: "images/v2/polen-960.webp",
-    imgSlug: "polen"
-  },
-  {
-    id: 7,
-    name: "Pčelinji Vosak",
-    description: "Potpuno prirodan vosak za izradu sveća ili kozmetike.",
-    longDescription: "Čist pčelinji vosak iz naših košnica. Bez ikakvih dodataka, miriše na med i pčele. Idealan za izradu prirodnih melema ili mirisnih sveća.",
-    prices: [
-      { size: "komad", price: "200 RSD" }
-    ],    
-    image: "images/v2/vosak-960.webp",
-    imgSlug: "vosak"
-  },
-  {
-    id: 8,
-    name: "Medovača",
-    description: "Domaća rakija oplemenjena našim najboljim medom.",
-    longDescription: "Naša medovača se pravi po starom porodičnom receptu. Spoj vrhunske voćne rakije i meda daje piće koje klizi niz grlo i ostavlja topao trag zdravlja.",
-    prices: [
-      { size: "0.2l", price: "400 RSD" },
-      { size: "0.5l", price: "800 RSD" }
-    ],    
-    image: "images/v2/medovaca-960.webp",
-    imgSlug: "medovaca"
-  },
-  {
-    id: 9,
-    name: "Mix: Polen-propolis-med",
-    description: "Klasičan imuno-mix za svakodnevnu upotrebu.",
-    longDescription: "Savršeno izbalansiran odnos meda, polena i propolisa. Jedna kašika ujutru je sve što vam treba za energičan početak dana i jak imunitet.",
-    prices: [
-      { size: "400g", price: "700 RSD" },
-      { size: "1kg", price: "1500 RSD" }
-    ],    
-    image: "images/v2/mix-polen-propolis-960.webp",
-    imgSlug: "mix-polen-propolis"
-  },
-  {
-    id: 10,
-    name: "Mix: Med-kopriva",
-    description: "Idealan za krvnu sliku i gvožđe.",
-    longDescription: "Ovaj miks smo obogatili semenom koprive, što ga čini izuzetnim saveznikom u borbi protiv anemije. Pomaže kod umora i vraća vitalnost organizmu.",
-    prices: [
-      { size: "400g", price: "700 RSD" },
-      { size: "1kg", price: "1500 RSD" }
-    ],    
-    image: "images/v2/mix-kopriva-960.webp",
-    imgSlug: "mix-kopriva"
-  },
-  {
-    id: 11,
-    name: "Mix: Med-polen-propolis-golica",
-    description: "Podrška za prostatu i muško zdravlje.",
-    longDescription: "Dodatak mlevenog semena golice (bundevino seme) čini ovaj miks specifičnim. Bogat je cinkom i mineralima važnim za zdravlje prostate i opšte muško zdravlje.",
-    prices: [
-      { size: "400g", price: "700 RSD" },
-      { size: "1kg", price: "1500 RSD" }
-    ],    
-    image: "images/v2/mix-golica-960.webp",
-    imgSlug: "mix-golica"
-  },
-  {
-    id: 12,
-    name: "Mix: Limun-đumbir-med",
-    description: "Osvežavajući mix protiv prehlade i virusa.",
-    longDescription: "Samo tri sastojka: naš med, limun i đumbir. Ljuti đumbir i kiselkasti limun u medu stvaraju moćan eliksir za grlo i disajne puteve.",
-    prices: [
-      { size: "400g", price: "700 RSD" }
-    ],    
-    image: "images/med_limun_djumbir_miks.webp"
-  },
-  {
-    id: 20,
-    name: "Krem med sa malinom",
-    description: "Voćno i puno, sa prepoznatljivom aromom prave maline.",
-    longDescription: "Pravi se od našeg meda umućenog do glatke, mazive teksture, uz pravu malinu. Najtraženiji ukus iz linije. Lepo ide na tost, uz jogurt ili prosto sa kašike.",
-    prices: [
-      { size: "teglica 120g", price: "300 RSD" },
-      { size: "teglica u poklon kutiji", price: "500 RSD" }
-    ],
-    image: "images/v2/krem-malina-960.webp",
-    imgSlug: "krem-malina",
-    images: ["images/v2/krem-malina-1440.webp", "images/v2/kat-krem-med-1280.webp"]
-  },
-  {
-    id: 21,
-    name: "Krem med sa borovnicom",
-    description: "Tamno i zrelo, sa punim ukusom borovnice.",
-    longDescription: "Borovnica meda daje duboku boju i blago kiselkast završetak koji seče slatkoću. Odličan uz palačinke i sveže voće.",
-    prices: [
-      { size: "teglica 120g", price: "300 RSD" },
-      { size: "teglica u poklon kutiji", price: "500 RSD" }
-    ],
-    isNew: true,
-    image: "images/v2/krem-borovnica-960.webp",
-    imgSlug: "krem-borovnica",
-    images: ["images/v2/krem-borovnica-1440.webp", "images/v2/kat-krem-med-1280.webp"]
-  },
-  {
-    id: 22,
-    name: "Krem med sa limunom i đumbirom",
-    description: "Osvežavajuće i blago pikantno, za jutarnji tost ili čaj.",
-    longDescription: "Limun daje svežinu, đumbir blagu toplinu u grlu. Naš izbor za hladne dane i za one koji ne vole previše slatko.",
-    prices: [
-      { size: "teglica 120g", price: "300 RSD" },
-      { size: "teglica u poklon kutiji", price: "500 RSD" }
-    ],
-    image: "images/v2/krem-limun-djumbir-960.webp",
-    imgSlug: "krem-limun-djumbir",
-    images: ["images/v2/krem-limun-djumbir-1440.webp", "images/v2/kat-krem-med-1280.webp"]
-  },
-  {
-    id: 23,
-    name: "Krem med sa mentom",
-    description: "Svež i neočekivan, odličan uz palačinke ili jogurt.",
-    longDescription: "Menta u medu iznenadi svakoga ko ga prvi put proba. Hladan je u ustima iako je med topao po ukusu. Lep poklon za nekoga ko misli da je sve već probao.",
-    prices: [
-      { size: "teglica 120g", price: "300 RSD" },
-      { size: "teglica u poklon kutiji", price: "500 RSD" }
-    ],
-    image: "images/v2/krem-menta-960.webp",
-    imgSlug: "krem-menta",
-    images: ["images/v2/krem-menta-1440.webp", "images/v2/kat-krem-med-1280.webp"]
-  },
-  {
-    id: 24,
-    name: "Krem med sa čokoladom i lešnikom",
-    description: "Med, čokolada i lešnik. Namaz za decu i odrasle.",
-    longDescription: "Spoj našeg meda, tamne čokolade i mlevenog lešnika. Gust, mazivi namaz koji stoji rame uz rame sa kupovnim, samo bez palminog ulja.",
-    prices: [
-      { size: "teglica 120g", price: "300 RSD" },
-      { size: "teglica u poklon kutiji", price: "500 RSD" }
-    ],
-    isNew: true,
-    image: "images/v2/krem-cokolada-lesnik-960.webp",
-    imgSlug: "krem-cokolada-lesnik",
-    images: ["images/v2/krem-cokolada-lesnik-1440.webp", "images/v2/kat-krem-med-1280.webp"]
-  },
-  {
-    id: 25,
-    name: "Krem med sa belom čokoladom",
-    description: "Blag i kremast, najslađi iz linije.",
-    longDescription: "Bela čokolada medu daje mlečnu zaokruženost i svetlu boju. Najblaži ukus iz linije, obično prvi koji nestane kod dece.",
-    prices: [
-      { size: "teglica 120g", price: "300 RSD" },
-      { size: "teglica u poklon kutiji", price: "500 RSD" }
-    ],
-    isNew: true,
-    image: "images/v2/krem-bela-cokolada-960.webp",
-    imgSlug: "krem-bela-cokolada",
-    images: ["images/v2/krem-bela-cokolada-1440.webp", "images/v2/kat-krem-med-1280.webp"]
-  },
-  {
-    id: 26,
-    name: "Tri krem meda po izboru u kutijici",
-    description: "Tri krem meda po izboru u kutijici.",
-    longDescription: "Tri krem meda po izboru u kutijici, u drvenoj kutiji sa ugraviranim imenom gazdinstva. Birate koja tri ukusa idu unutra. Najčešći poklon koji pravimo za slave, rođendane i praznike.",
-    prices: [
-      { size: "3 x 120g u kutijici", price: "1400 RSD" }
-    ],
-    image: "images/v2/krem-kutija-960.webp",
-    imgSlug: "krem-kutija",
-    images: ["images/v2/krem-kutija-1440.webp", "images/v2/krem-linija-1440.webp"]
-  },
-  {
-    id: 15,
-    name: "Perga",
-    description: "Pčelinji hleb. Polen koji su pčele fermentisale u saću.",
-    longDescription: "Perga nastaje kada pčele polen utisnu u ćelije saća i prekriju ga medom. Tokom fermentacije polen postaje svarljiviji i bogatiji od sirovog. Uzima se po kašičica dnevno, obično ujutru.",
-    prices: [
-      { size: "10g", price: "1000 RSD" }
-    ],
-    image: "images/v2/perga-960.webp",
-    imgSlug: "perga"
-  },
-  {
-    id: 16,
-    name: "Med u kesicama",
-    description: "Jedna kašika meda u kesici. Za put, kancelariju i čaj.",
-    longDescription: "Isti med kao iz tegle, samo u kesici od 15g. Stane u džep i u tašnu, ne kaplje i ne traži kašiku. Zgodno za posao, put ili da se ponudi gostima uz čaj.",
-    prices: [
-      { size: "15g", price: "30 RSD" }
-    ],
-    image: "images/v2/kesice-960.webp",
-    imgSlug: "kesice"
-  },
-  {
-    id: 17,
-    name: "Medeni mečići",
-    description: "Med u flašici u obliku mede. Deca ga biraju sama.",
-    longDescription: "Providna flašica u obliku meda, puni se livadskim ili bagremovim medom. Med se cedi bez kašike, pa je najlakši način da dete samo uzme med. Čest poklon za rođendane.",
-    prices: [
-      { size: "livadski 400g", price: "400 RSD" },
-      { size: "bagremov 400g", price: "750 RSD" }
-    ],
-    image: "images/v2/medeni-mecici-960.webp",
-    imgSlug: "medeni-mecici"
-  },
-  {
-    id: 18,
-    name: "Mala medovača sa plutom",
-    description: "Flašica od 40ml sa plutenim čepom i drvenom etiketom.",
-    longDescription: "Naša medovača u maloj staklenoj flašici sa plutenim čepom i drvenom pločicom sa natpisom. Pravimo je za svadbe, slave i poslovne poklone, kada treba nešto malo ali domaće.",
-    prices: [
-      { size: "40ml", price: "200 RSD" }
-    ],
-    image: "images/v2/medovaca-mala-960.webp",
-    imgSlug: "medovaca-mala"
-  },
-  {
-    id: 19,
-    name: "Medovača u flaši violini",
-    description: "Staklena flaša u obliku violine, sa klik čepom.",
-    longDescription: "Ista medovača, u staklenoj flaši oblikovanoj kao violina, sa klik čepom koji drži. Poklon koji se ne baca posle, flaša ostaje na polici.",
-    prices: [
-      { size: "40ml", price: "400 RSD" }
-    ],
-    image: "images/v2/violina-960.webp",
-    imgSlug: "violina"
-  },
-  {
-    id: 13,
-    name: "Poklon aranžmani",
-    description: "Personalizovane korpice za sve prilike.",
-    longDescription: "Pravimo aranžmane po vašoj želji! Bilo da je u pitanju slava, rođendan, Božić ili Uskrs, mi spajamo naše proizvode u prelepe dekorisane korpice sa natpisima po vašoj želji.",
-    prices: [
-      { size: "", price: "cena po dogovoru" }
-    ],    
-    image: "images/aranzman.jpg"
-  }
-];
-
-const productCategories = {
-  med: {
-    label: "Med",
-    items: products.filter(p => [1, 2, 4, 17, 16].includes(p.id))
-  },
-  kremMed: {
-    label: "Krem med",
-    items: products.filter(p => [20, 21, 22, 23, 24, 25, 26].includes(p.id))
-  },
-  miks: {
-    label: "Miksevi",
-    items: products.filter(p => [9, 10, 11, 12].includes(p.id))
-  },
-  aranzman: {
-    label: "Aranžmani",
-    items: products.filter(p => [13].includes(p.id))
-  },
-  ostalo: {
-    label: "Ostalo",
-    items: products.filter(p => [5, 6, 7, 8, 15, 18, 19].includes(p.id))
-  }
+const familyIcons: Record<FamilyIcon, React.ReactNode> = {
+  bee: <BeeIcon className="w-6 h-6" />,
+  basket: <ShoppingBasket className="w-6 h-6" />,
+  users: <Users className="w-6 h-6" />,
+  check: <CheckCircle2 className="w-6 h-6" />,
+  truck: <Truck className="w-6 h-6" />,
 };
-
-interface NewsPost {
-  title: string;
-  date: string;
-  text: string;
-  images: string[];
-}
-
-const newsPosts: NewsPost[] = [
-  {
-    title: "Naša tezga na festivalu",
-    date: "2026-03-15",
-    text: "Učestvovali smo na festivalu meda gde smo predstavili naše najnovije proizvode. Bilo je divno videti koliko ljudi uživa u našem medu!",
-    images: ["images/tezga_med.webp"]
-  },
-  {
-    title: "Vredne pčele na paši",
-    date: "2025-05-20",
-    text: "Naše pčele su na paši i rade punom parom. Ove sezone očekujemo odličan prinos meda.",
-    images: ["images/kontejner2.webp"]
-  },
-  {
-    title: "Miksevi za zdraviji život",
-    date: "2026-01-10",
-    text: `Predstavljamo vam naše mikseve. Svaki kreće od našeg meda, a onda dobija ono što mu daje namenu.
-
-• Med, polen i propolis. Klasičan imuno-miks za svaki dan.
-• Med i kopriva. Za krvnu sliku i gvožđe.
-• Med, polen, propolis i golica. Mleveno seme bundeve, za mušku snagu.
-• Med, limun i đumbir. Za grlo i disajne puteve.
-
-Jedna kašika ujutru je dovoljna. Nema dodatog šećera ni konzervansa.`,
-    images: ["images/sva_tri_miksa_mali_veliki.jpg"]
-  },
-  {
-    title: "Naš med putuje svetom!",
-    date: "2025-12-05",
-    text: "Pogled sa terase u Dubaiju - naš med je stigao i do Bliskog istoka. Ponosni smo što naš ukus prelazi granice.",
-    images: ["images/med_u_dubaiju.jpg"]
-  },
-  {
-    title: "Nađa i Ivana u akciji",
-    date: "2025-11-18",
-    text: "Naše devojke su uvek spremne da dočekaju kupce sa osmehom i pomognu im da izaberu pravi proizvod.",
-    images: ["images/nadja_ivana_za_tezgom.webp"]
-  },
-  {
-    title: "Gajbice spremne za isporuku",
-    date: "2025-10-30",
-    text: "Nova tura pakovanja je spremna za naše verne kupce. Svaka gajbica je pažljivo pripremljena sa ljubavlju.",
-    images: ["images/gajbice_lepa_slika.jpg", "images/gajbice1.jpg", "images/gajbice2.jpg", "images/gajbice3.jpg", "images/gajbice4.jpg", "images/gajbice5.jpg"]
-  },
-  {
-    title: "Pčele obišle voćnjake Čelareva i Tornjoša",
-    date: "2026-04-05",
-    text: "Naše pčele su ove sezone obišle voćnjak u Čelarevu, a zatim i voćnjak jabuka u Tornjošu. Među rascvetanim stablima marljivo su skupljale nektar za novu sezonu meda.",
-    images: [
-      "images/pcele_na_vocnjaku.jpeg",
-      "images/pcele_na_vocnjaku2.jpeg",
-      "images/pcele_na_vocnjaku3.jpeg",
-      "images/kontejner_na_pasi.jpeg",
-      "images/kontejner_na_pasi2.jpeg",
-      "images/kontejner_na_pasi3.jpeg"
-    ]
-  },
-  {
-    title: "Naš novi prepoznatljivi kombi",
-    date: "2026-03-27",
-    text: "Imamo nov kombi sa novom nalepnicom Letvenčuk Med koja ga čini lako prepoznatljivim i olakšava nam i ubrzava isporuku do naših vernih kupaca.",
-    images: ["images/kombi_sa_nalepnicom_letvencukmed.jpeg"]
-  },
-  {
-    title: "Pčele stigle u Bačku Topolu",
-    date: "2026-04-16",
-    text: "Naše pčele su stigle u Bačku Topolu. Kontejner sa košnicama je postavljen i pčele kreću da istražuju nove pašnjake.",
-    images: ["images/video_backa_topola_kontejner_sa_kosnicama.mp4"]
-  },
-  {
-    title: "Krem med sada ima šest ukusa",
-    date: "2026-11-01",
-    text: `Krem med je kod nas počeo sa tri ukusa: malina, limun i đumbir, i menta. Od danas ih ima šest.
-
-Pridružila su im se tri nova:
-
-• Borovnica, tamna i zrela, sa blago kiselkastim završetkom koji seče slatkoću.
-• Čokolada i lešnik, gust namaz za decu i odrasle, bez palminog ulja.
-• Bela čokolada, najblaži i najslađi iz linije. Obično prvi nestane kod dece.
-
-Svi se prave isto, od našeg meda umućenog do glatke, mazive teksture. Teglica od 120g košta 300 dinara, a tri ukusa po izboru u drvenoj kutijici 1400 dinara.`,
-    images: [
-      "images/v2/krem-kutija-1440.webp",
-      "images/v2/krem-borovnica-1440.webp",
-      "images/v2/krem-cokolada-lesnik-1440.webp",
-      "images/v2/krem-bela-cokolada-1440.webp",
-      "images/v2/kat-krem-med-1280.webp"
-    ]
-  },
-  {
-    title: "Novo u ponudi: krem med u tri ukusa",
-    date: "2026-09-12",
-    text: `Predstavljamo vam nešto novo iz našeg pčelinjaka — krem med u tri ukusa. Nastao je od našeg meda, umućenog do glatke, mazive teksture, uz prirodne dodatke koji mu daju karakter.
-
-• Krem med sa limunom i đumbirom — osvežavajuće i blago pikantno, savršeno za jutarnji tost ili čaj.
-• Krem med sa malinom — voćno i puno, sa prepoznatljivom aromom prave maline.
-• Krem med sa mentom — svež i neočekivan, odličan uz palačinke, jogurt ili sam sa kašikom.
-
-Gde da probate?
-Danas nas možete pronaći na festivalima u Vrbasu i na Paliću — svratite i probajte sva tri ukusa.
-
-Kako do njega?
-Od sutra vas čeka i kod nas kući, a možete ga poručiti i direktno preko sajta. Donosimo na vašu adresu.`,
-    images: [
-      "images/krem_med5.jpeg",
-      "images/krem_med2.jpeg",
-      "images/krem_med3.jpeg",
-      "images/krem_med6.jpeg",
-      "images/krem_med7.jpeg",
-      "images/krem_med1.jpeg",
-      "images/krem_med4.jpeg"
-    ]
-  },
-  {
-    title: "Prolećni festival cveća",
-    date: "2026-04-18",
-    text: "Izašli smo na Prolećni festival cveća i lepo se družili sa našim starim i novim prijateljima. Na slikama možete videti naše tezge i atmosferu sa festivala.",
-    images: [
-      "images/prolecni_festiva_cveca1.jpeg",
-      "images/prolecni_festiva_cveca2.jpeg",
-      "images/prolecni_festiva_cveca3.jpeg",
-      "images/prolecni_festiva_cveca4.jpeg",
-      "images/prolecni_festiva_cveca5.jpeg"
-    ]
-  }
-];
 
 const isVideo = (src: string) => /\.(mp4|webm|mov)$/i.test(src);
 
@@ -763,7 +271,7 @@ useEffect(() => {
                 className="group flex h-full min-h-[21rem] flex-col rounded-[var(--radius-card)] border border-line bg-raise p-7 shadow-[var(--shadow-soft)] transition-[transform,box-shadow,border-color] duration-500 ease-[var(--ease-out-expo)] hover:-translate-y-1 hover:border-honey/40 hover:shadow-[var(--shadow-lift)]"
               >
                 <div className="mb-6 flex h-14 w-14 shrink-0 items-center justify-center rounded-[var(--radius-inner)] bg-honey-tint text-honey-deep transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-105">
-                  {member.icon}
+                  {familyIcons[member.icon]}
                 </div>
                 <h3 className="font-display text-xl font-semibold text-ink">{member.name}</h3>
                 <p className="mt-1 text-sm font-semibold text-honey-deep">{member.role}</p>
@@ -991,7 +499,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-2">
           <a
-            href="tel:+381600726253"
+            href={contact.phones.mihajlo.href}
             className="hidden shrink-0 items-center gap-2 rounded-full bg-honey px-5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-soft)] transition-[background-color,transform] duration-300 ease-[var(--ease-out-expo)] hover:bg-honey-deep active:scale-[0.98] md:inline-flex"
           >
             <Phone className="h-4 w-4" strokeWidth={2} />
@@ -1053,11 +561,11 @@ const Navbar = () => {
               </motion.button>
             ))}
             <a
-              href="tel:+381600726253"
+              href={contact.phones.mihajlo.href}
               className="mt-2 flex items-center justify-center gap-2 rounded-[var(--radius-inner)] bg-honey px-4 py-3.5 font-semibold text-white"
             >
               <Phone className="h-4 w-4" strokeWidth={2} />
-              060 0726 253
+              {contact.phones.mihajlo.display}
             </a>
           </motion.div>
         )}
@@ -1274,7 +782,7 @@ const ProductModal = ({ product, onClose, onInquiry }: ProductModalProps) => (
 
             <div className="mt-7 flex flex-col gap-3">
               <a
-                href={`https://wa.me/381607262539?text=${encodeURIComponent(`Zdravo, zainteresovan/a sam za ${product.name}`)}`}
+                href={`${contact.whatsapp.url}?text=${encodeURIComponent(`Zdravo, zainteresovan/a sam za ${product.name}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center justify-center gap-3 rounded-full bg-honey py-3.5 font-semibold text-white shadow-[var(--shadow-soft)] transition-[background-color,transform] duration-300 ease-[var(--ease-out-expo)] hover:bg-honey-deep active:scale-[0.98]"
@@ -1865,7 +1373,7 @@ export const App = () => {
                     <h3 className="font-display text-2xl font-semibold text-ink">Pošaljite nam poruku</h3>
                     <p className="mb-8 mt-1 text-sm text-ink-mute">Odgovaramo u najkraćem roku na vaš email.</p>
                     <form
-                      action="https://formspree.io/f/xykdqznv"
+                      action={contact.contactFormAction}
                       method="POST"
                       noValidate
                       className="space-y-5"
@@ -1954,7 +1462,7 @@ export const App = () => {
                     <p className="mb-6 mt-1 text-sm text-ink-mute">Kliknite na mapu da otvorite pravac u Google Maps.</p>
 
                     <a
-                      href="https://www.google.com/maps/search/?api=1&query=Kulska+9%2F1%2C+Kula%2C+Vojvodina%2C+Srbija"
+                      href={contact.address.mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group mb-6 flex items-center gap-4 rounded-[var(--radius-card)] border border-line bg-sunken/50 p-4 transition-[border-color,box-shadow] duration-300 ease-[var(--ease-out-expo)] hover:border-honey/50 hover:shadow-[var(--shadow-soft)]"
@@ -1964,14 +1472,14 @@ export const App = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-semibold text-ink-mute">Adresa</p>
-                        <p className="font-display text-lg font-semibold text-ink">Kulska 9/1, Kula</p>
+                        <p className="font-display text-lg font-semibold text-ink">{contact.address.short}</p>
                         <p className="text-sm text-honey-deep">Vojvodina, Srbija</p>
                       </div>
                       <ArrowRight className="h-5 w-5 shrink-0 text-honey-deep transition-transform duration-300 ease-[var(--ease-out-expo)] group-hover:translate-x-1" strokeWidth={2} />
                     </a>
 
                     <a
-                      href="https://www.google.com/maps/search/?api=1&query=Kulska+9%2F1%2C+Kula%2C+Vojvodina%2C+Srbija"
+                      href={contact.address.mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block overflow-hidden rounded-[var(--radius-card)] ring-1 ring-line transition-[box-shadow] duration-300 hover:shadow-[var(--shadow-soft)]"
@@ -1979,7 +1487,7 @@ export const App = () => {
                     >
                       <iframe
                         title="Letvenčuk Med — lokacija"
-                        src="https://www.google.com/maps?q=Kulska%209%2F1%2C%20Kula%2C%20Srbija&output=embed"
+                        src={contact.address.mapsEmbedUrl}
                         className="w-full h-64 sm:h-80 border-0 pointer-events-none"
                         loading="lazy"
                         referrerPolicy="no-referrer-when-downgrade"
@@ -2002,21 +1510,21 @@ export const App = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {[
                         {
-                          href: 'tel:+381600726253',
+                          href: contact.phones.mihajlo.href,
                           icon: Phone,
                           label: 'Mihajlo',
-                          value: '060 0726 253',
+                          value: contact.phones.mihajlo.display,
                           sub: 'Pozovite direktno',
                         },
                         {
-                          href: 'tel:+381607262530',
+                          href: contact.phones.tanja.href,
                           icon: Phone,
                           label: 'Tanja',
-                          value: '060 726 2530',
+                          value: contact.phones.tanja.display,
                           sub: 'Pozovite direktno',
                         },
                         {
-                          href: 'https://wa.me/381607262539',
+                          href: contact.whatsapp.url,
                           icon: Send,
                           label: 'WhatsApp',
                           value: 'Chat online',
@@ -2024,10 +1532,10 @@ export const App = () => {
                           external: true,
                         },
                         {
-                          href: 'https://www.instagram.com/med.letvencuk/',
+                          href: contact.instagram.url,
                           icon: Instagram,
                           label: 'Instagram',
-                          value: '@med.letvencuk',
+                          value: contact.instagram.handle,
                           sub: 'Pišite nam DM',
                           external: true,
                         },
@@ -2100,21 +1608,21 @@ export const App = () => {
               <h2 className="font-display text-sm font-semibold text-ink">Kontakt</h2>
               <ul className="mt-4 space-y-2.5 text-sm">
                 <li>
-                  <a href="tel:+381600726253" className="tnum text-ink-soft transition-colors duration-200 hover:text-honey-deep">
-                    060 0726 253
+                  <a href={contact.phones.mihajlo.href} className="tnum text-ink-soft transition-colors duration-200 hover:text-honey-deep">
+                    {contact.phones.mihajlo.display}
                   </a>
                 </li>
                 <li>
-                  <a href="tel:+381607262530" className="tnum text-ink-soft transition-colors duration-200 hover:text-honey-deep">
-                    060 726 2530
+                  <a href={contact.phones.tanja.href} className="tnum text-ink-soft transition-colors duration-200 hover:text-honey-deep">
+                    {contact.phones.tanja.display}
                   </a>
                 </li>
-                <li className="text-ink-soft">Kulska 9/1, Kula</li>
+                <li className="text-ink-soft">{contact.address.short}</li>
               </ul>
 
               <div className="mt-5 flex gap-2.5">
                 <a
-                  href="https://www.instagram.com/med.letvencuk/"
+                  href={contact.instagram.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-raise text-ink-soft transition-colors duration-300 hover:border-honey/50 hover:text-honey-deep"
@@ -2123,7 +1631,7 @@ export const App = () => {
                   <Instagram size={18} strokeWidth={2} />
                 </a>
                 <a
-                  href="https://wa.me/381607262539"
+                  href={contact.whatsapp.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-raise text-ink-soft transition-colors duration-300 hover:border-honey/50 hover:text-honey-deep"
@@ -2134,7 +1642,7 @@ export const App = () => {
                   </svg>
                 </a>
                 <a
-                  href="tel:+381600726253"
+                  href={contact.phones.mihajlo.href}
                   className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-raise text-ink-soft transition-colors duration-300 hover:border-honey/50 hover:text-honey-deep"
                   aria-label="Pozovite nas"
                 >
