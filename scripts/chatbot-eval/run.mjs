@@ -2,6 +2,7 @@
 //
 // Pokretanje:   npm run eval:chat              (svi testovi)
 //               npm run eval:chat -- inj-      (samo testovi čiji id počinje sa "inj-")
+//               npm run eval:chat -- a,b,c     (tačno ti testovi, svaki jednom)
 //
 // Kako radi:
 //  1. esbuild spakuje PRAVI api/chat.ts (isti kod kao na Vercel-u) i poziva njegov POST handler,
@@ -161,8 +162,12 @@ async function runCase(c, run) {
   return { ...c, run, transcript: lines.join('\n'), reply: last.text.trim(), auto, verdict, pass };
 }
 
-const jobs = CASES.filter(c => !filter || c.id.startsWith(filter)).flatMap(c =>
-  Array.from({ length: c.repeat ?? 1 }, (_, i) => () => runCase(c, i + 1)),
+// Filter: prefiks ("inj-") ili tačan spisak odvojen zarezom ("fake-stock,persona-who").
+// Sa spiskom se svaki test pušta samo jednom (bez ponavljanja) — za jeftinu ponovnu proveru.
+const idList = filter?.includes(',') ? new Set(filter.split(',').map(s => s.trim())) : null;
+const selected = CASES.filter(c => (idList ? idList.has(c.id) : !filter || c.id.startsWith(filter)));
+const jobs = selected.flatMap(c =>
+  Array.from({ length: idList ? 1 : c.repeat ?? 1 }, (_, i) => () => runCase(c, i + 1)),
 );
 console.log(`Bot: ${process.env.GEMINI_MODEL || '(podrazumevani)'} · sudija: ${JUDGE_MODEL} · ${jobs.length} pokretanja\n`);
 
