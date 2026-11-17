@@ -5,8 +5,7 @@ import { ChatLauncher } from './ChatLauncher';
 import { ChatPanel } from './ChatPanel';
 import { ChatError, streamChat, type ChatMessage } from './chatApi';
 import { loadMessages, saveMessages } from './chatStorage';
-
-const GREETING = 'Zdravo! Ja sam Pčelica 🐝 Pitajte me o našim vrstama meda, cenama ili kako da naručite.';
+import { GREETING } from './chatConfig';
 
 interface ChatWidgetProps {
   /** Sakriva ceo widget (npr. dok je otvoren modal proizvoda ili vesti). Stanje razgovora ostaje. */
@@ -14,7 +13,7 @@ interface ChatWidgetProps {
 }
 
 /**
- * Plutajući chatbot "Pčelica". Fiksni overlay u donjem desnom uglu — ne utiče na
+ * Plutajući chatbot "Lola". Fiksni overlay u donjem desnom uglu — ne utiče na
  * raspored ni skrolovanje stranice. Pozdravna poruka je samo prikaz i ne šalje se serveru.
  */
 export const ChatWidget = ({ hidden = false }: ChatWidgetProps) => {

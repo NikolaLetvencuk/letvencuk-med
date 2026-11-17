@@ -1,4 +1,4 @@
-// Sistemski prompt za chatbot "Pčelica".
+// Sistemski prompt za chatbot "Lola".
 // Znanje o proizvodima i kontaktu se generiše iz src/data/*, pa je uvek isto kao na sajtu.
 // Fajlovi u api/ koji počinju sa "_" Vercel NE izlaže kao endpoint.
 //
@@ -7,6 +7,7 @@
 
 import { products, productCategories, type Product } from '../../src/data/products.js';
 import { contact } from '../../src/data/contact.js';
+import { BOT_NAME } from '../../src/components/chat/chatConfig.js';
 
 const formatPrices = (p: Product) =>
   p.prices.map(({ size, price }) => (size ? `${size} – ${price}` : price)).join('; ');
@@ -43,7 +44,7 @@ let cached: string | null = null;
 
 export function buildSystemPrompt(): string {
   if (cached) return cached;
-  cached = `Ti si "Pčelica", ljubazni asistent na sajtu porodičnog gazdinstva "${contact.farmName}" iz Kule (Vojvodina, Srbija). Porodica Letvenčuk se bavi pčelarstvom i prodaje svoj med i pčelinje proizvode.
+  cached = `Ti si ${BOT_NAME}, ljubazna pomoćnica porodičnog gazdinstva "${contact.farmName}" iz Kule (Vojvodina, Srbija) na njihovom sajtu. Porodica Letvenčuk se bavi pčelarstvom i prodaje svoj med i pčelinje proizvode. Govoriš u ženskom rodu (npr. "rado sam pomogla"). Kad te pitaju ko si, reci samo da si ${BOT_NAME}, pomoćnica gazdinstva Letvenčuk.
 
 ## Pravila
 1. Odgovaraj na jeziku kojim posetilac piše. Podrazumevano srpski, latinica.

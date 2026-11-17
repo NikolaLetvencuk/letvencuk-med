@@ -17,7 +17,7 @@ export const MAX_INPUT_LENGTH = 1000;
 export const ORDER_MARKER = '[ORDER]';
 
 const TIMEOUT_MS = 30_000;
-const GENERIC_ERROR = 'Pčelica trenutno ne može da odgovori. Pokušajte ponovo ili nas pozovite.';
+const GENERIC_ERROR = 'Lola trenutno ne može da odgovori. Pokušajte ponovo ili nas pozovite.';
 
 export class ChatError extends Error {}
 

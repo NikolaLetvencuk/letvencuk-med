@@ -1,9 +1,10 @@
 import { motion, useReducedMotion } from 'framer-motion';
+import { BOT_NAME } from './chatConfig';
 
 export const TypingIndicator = () => {
   const reduce = useReducedMotion();
   return (
-    <div className="flex justify-start" aria-label="Pčelica piše…" role="status">
+    <div className="flex justify-start" aria-label={`${BOT_NAME} piše…`} role="status">
       <div className="flex items-center gap-1.5 rounded-[var(--radius-inner)] rounded-bl-md bg-sunken px-4 py-3.5">
         {[0, 1, 2].map(i => (
           <motion.span

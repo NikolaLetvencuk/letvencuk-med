@@ -1,7 +1,7 @@
 // Čuvanje razgovora u sessionStorage — briše se kad se zatvori tab (dobar podrazumevani izbor za privatnost).
 import type { ChatMessage } from './chatApi';
 
-const KEY = 'pcelica-chat-v1';
+const KEY = 'lola-chat-v1';
 
 export function loadMessages(): ChatMessage[] {
   try {

@@ -1,4 +1,4 @@
-// POST /api/chat — backend za chatbot "Pčelica".
+// POST /api/chat — backend za chatbot "Lola".
 //
 // Ugovor:
 //   zahtev:  { messages: { role: 'user' | 'model'; text: string }[] }   (cela istorija, poslednja je 'user')
@@ -42,7 +42,7 @@ const RATE_LIMIT_ERROR = 'Previše poruka, sačekajte malo ili nas pozovite.';
 /** Kad Gemini vrati prazan odgovor (npr. blokiran sigurnosnim filterom). */
 const EMPTY_REPLY =
   `Izvinite, na to ne mogu da odgovorim. Mogu da vam pomognem oko našeg meda, cena i poručivanja — ili nas pozovite na ${contact.phones.mihajlo.display}.`;
-const FALLBACK_ERROR = 'Pčelica trenutno ne može da odgovori, pokušajte ponovo ili nas pozovite.';
+const FALLBACK_ERROR = 'Lola trenutno ne može da odgovori, pokušajte ponovo ili nas pozovite.';
 const MID_STREAM_ERROR = 'Odgovor je prekinut — pokušajte ponovo ili nas pozovite.';
 
 const thinkingLevel = (): ThinkingLevel | undefined => {

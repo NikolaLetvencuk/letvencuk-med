@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
-import { BeeIcon } from '../icons/BeeIcon';
+import { ChatAvatar } from './ChatAvatar';
+import { BOT_NAME } from './chatConfig';
 import { cn } from '../../utils/cn';
 
 interface ChatLauncherProps {
@@ -14,9 +15,9 @@ export const ChatLauncher = ({ open, onToggle, className }: ChatLauncherProps) =
   <button
     type="button"
     onClick={onToggle}
-    aria-label={open ? 'Zatvori chat' : 'Otvori chat sa Pčelicom'}
+    aria-label={open ? 'Zatvori chat' : `Otvori chat — ${BOT_NAME}`}
     aria-expanded={open}
-    aria-controls="pcelica-chat"
+    aria-controls="lola-chat"
     className={cn(
       'flex h-14 w-14 items-center justify-center rounded-full bg-honey-deep text-white shadow-[var(--shadow-lift)]',
       'transition-[background-color,transform] duration-300 ease-[var(--ease-out-expo)] hover:bg-honey active:scale-95',
@@ -33,7 +34,7 @@ export const ChatLauncher = ({ open, onToggle, className }: ChatLauncherProps) =
         transition={{ duration: 0.18 }}
         className="flex"
       >
-        {open ? <X className="h-6 w-6" strokeWidth={2} /> : <BeeIcon className="h-6 w-6" />}
+        {open ? <X className="h-6 w-6" strokeWidth={2} /> : <ChatAvatar className="h-6 w-6" />}
       </motion.span>
     </AnimatePresence>
   </button>

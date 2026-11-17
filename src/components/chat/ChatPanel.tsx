@@ -1,7 +1,8 @@
 import { forwardRef, useEffect, useRef, type KeyboardEvent } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { MessageSquarePlus, RotateCcw, Send, X } from 'lucide-react';
-import { BeeIcon } from '../icons/BeeIcon';
+import { ChatAvatar } from './ChatAvatar';
+import { BOT_NAME, BOT_SUBTITLE } from './chatConfig';
 import { ChatMessage } from './ChatMessage';
 import { TypingIndicator } from './TypingIndicator';
 import { ChatOrderActions } from './ChatOrderActions';
@@ -49,10 +50,10 @@ export const ChatPanel = forwardRef<HTMLTextAreaElement, ChatPanelProps>(
 
     return (
       <motion.div
-        id="pcelica-chat"
+        id="lola-chat"
         role="dialog"
         aria-modal="false"
-        aria-labelledby="pcelica-chat-title"
+        aria-labelledby="lola-chat-title"
         initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.92, y: 16 }}
         animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
         exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.92, y: 16 }}
@@ -63,13 +64,13 @@ export const ChatPanel = forwardRef<HTMLTextAreaElement, ChatPanelProps>(
         {/* Zaglavlje */}
         <div className="flex items-center gap-3 border-b border-line bg-honey-tint px-4 py-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-honey text-white">
-            <BeeIcon className="h-5 w-5" />
+            <ChatAvatar />
           </span>
           <div className="min-w-0 flex-1">
-            <h2 id="pcelica-chat-title" className="font-display text-md font-semibold leading-tight text-ink">
-              Pčelica
+            <h2 id="lola-chat-title" className="font-display text-md font-semibold leading-tight text-ink">
+              {BOT_NAME}
             </h2>
-            <p className="text-2xs text-ink-mute">Pitajte nas o medu</p>
+            <p className="text-2xs text-ink-mute">{BOT_SUBTITLE}</p>
           </div>
           {messages.length > 0 && (
             <button
@@ -148,12 +149,12 @@ export const ChatPanel = forwardRef<HTMLTextAreaElement, ChatPanelProps>(
           }}
           className="flex items-end gap-2 border-t border-line bg-raise p-3"
         >
-          <label htmlFor="pcelica-input" className="sr-only">
+          <label htmlFor="lola-input" className="sr-only">
             Vaša poruka
           </label>
           <textarea
             ref={inputRef}
-            id="pcelica-input"
+            id="lola-input"
             rows={1}
             value={input}
             maxLength={MAX_INPUT_LENGTH}
