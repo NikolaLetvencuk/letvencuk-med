@@ -7,11 +7,12 @@
 //
 // API ključ (GEMINI_API_KEY) postoji SAMO ovde, na serveru. Nikad ga ne stavljati u src/ niti u VITE_* promenljivu.
 
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, ThinkingLevel, type GenerateContentConfig } from '@google/genai';
 import { buildSystemPrompt } from './_lib/systemPrompt.js';
 import { checkRateLimit, getClientIp } from './_lib/rateLimit.js';
 import { isAllowedOrigin } from './_lib/origin.js';
 import { contact } from '../src/data/contact.js';
+import { splitAtLastSentence, trimToLastSentence } from './_lib/sentences.js';
 
 /** Podrazumevani model ako GEMINI_MODEL nije postavljen u okruženju. */
 const DEFAULT_MODEL = 'gemini-3.8-flash';
@@ -19,18 +20,32 @@ const DEFAULT_MODEL = 'gemini-3.8-flash';
 const MAX_MESSAGES = 20;
 const MAX_TEXT_LENGTH = 1000;
 const MAX_BODY_BYTES = 30_000;
-const GEMINI_TIMEOUT_MS = 20_000;
+const GEMINI_TIMEOUT_MS = 25_000;
 /**
  * Gornja granica tokena po odgovoru. Gemini 3 modeli "razmišljaju" pre odgovora i to troši
- * isti limit — sa 500 su odgovori bili odsečeni. Dužinu odgovora drži sistemski prompt (2–5 rečenica).
+ * ISTI limit (merili smo i do ~1500 tokena razmišljanja), pa limit mora biti velik.
+ * Dužinu samog odgovora drži sistemski prompt (2–5 rečenica).
  */
-const MAX_OUTPUT_TOKENS = 2048;
+const MAX_OUTPUT_TOKENS = 4096;
 const RATE_LIMIT_ERROR = 'Previše poruka, sačekajte malo ili nas pozovite.';
 /** Kad Gemini vrati prazan odgovor (npr. blokiran sigurnosnim filterom). */
 const EMPTY_REPLY =
   `Izvinite, na to ne mogu da odgovorim. Mogu da vam pomognem oko našeg meda, cena i poručivanja — ili nas pozovite na ${contact.phones.mihajlo.display}.`;
 const FALLBACK_ERROR = 'Pčelica trenutno ne može da odgovori, pokušajte ponovo ili nas pozovite.';
 const MID_STREAM_ERROR = 'Odgovor je prekinut — pokušajte ponovo ili nas pozovite.';
+
+/**
+ * Zajednička podešavanja generisanja. Za Gemini 3 modele smanjujemo razmišljanje na LOW:
+ * ~2x manje tokena razmišljanja, brži odgovori, a za pitanja o medu je sasvim dovoljno.
+ * (Stariji modeli, npr. 2.5, ne podržavaju thinkingLevel, pa im ga ne šaljemo.)
+ */
+const generationConfig = (model: string): GenerateContentConfig => ({
+  systemInstruction: buildSystemPrompt(),
+  temperature: 0.4,
+  maxOutputTokens: MAX_OUTPUT_TOKENS,
+  abortSignal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
+  ...(/^gemini-3/.test(model) ? { thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } } : {}),
+});
 
 type Role = 'user' | 'model';
 interface ChatMessage {
@@ -107,18 +122,10 @@ export async function POST(request: Request): Promise<Response> {
 
   // Streaming: greške pre prvog dela odgovora vraćamo kao JSON sa statusom,
   // a posle toga tekst stiže u delovima (text/plain).
-  let iterator: AsyncIterator<{ text?: string }>;
+  type Chunk = { text?: string; candidates?: { finishReason?: string }[] };
+  let iterator: AsyncIterator<Chunk>;
   try {
-    const stream = await ai.models.generateContentStream({
-      model,
-      contents,
-      config: {
-        systemInstruction: buildSystemPrompt(),
-        temperature: 0.4,
-        maxOutputTokens: MAX_OUTPUT_TOKENS,
-        abortSignal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
-      },
-    });
+    const stream = await ai.models.generateContentStream({ model, contents, config: generationConfig(model) });
     iterator = stream[Symbol.asyncIterator]();
   } catch (err) {
     console.error('[chat] Gemini greška:', err);
@@ -128,24 +135,40 @@ export async function POST(request: Request): Promise<Response> {
   const encoder = new TextEncoder();
   const streamBody = new ReadableStream<Uint8Array>({
     async start(controller) {
+      // Šaljemo samo cele rečenice; nedovršeni deo čeka u `pending` (vidi _lib/sentences.ts).
+      let pending = '';
       let sentAny = false;
+      let finishReason: string | undefined;
+      const send = (text: string) => {
+        if (!text) return;
+        sentAny = true;
+        controller.enqueue(encoder.encode(text));
+      };
       try {
         for (;;) {
           const { value, done } = await iterator.next();
           if (done) break;
-          const text = value?.text;
-          if (text) {
-            sentAny = true;
-            controller.enqueue(encoder.encode(text));
-          }
+          finishReason = value?.candidates?.[0]?.finishReason ?? finishReason;
+          if (!value?.text) continue;
+          const [complete, rest] = splitAtLastSentence(pending + value.text);
+          send(complete);
+          pending = rest;
+        }
+        if (finishReason === 'MAX_TOKENS') {
+          // Odsečeno limitom: nedovršenu rečenicu odbacujemo (osim ako nismo poslali ništa).
+          console.warn('[chat] odgovor odsečen limitom tokena');
+          if (!sentAny) send(trimToLastSentence(pending));
+        } else {
+          send(pending);
         }
         if (!sentAny) {
-          console.warn('[chat] prazan odgovor (stream)');
-          controller.enqueue(encoder.encode(EMPTY_REPLY));
+          console.warn('[chat] prazan odgovor (stream)', finishReason);
+          send(EMPTY_REPLY);
         }
       } catch (err) {
         console.error('[chat] Gemini greška usred odgovora:', err);
-        controller.enqueue(encoder.encode(sentAny ? `\n\n(${MID_STREAM_ERROR})` : FALLBACK_ERROR));
+        // Nedovršenu rečenicu ne prikazujemo; kratka napomena umesto nje.
+        send(sentAny ? `\n\n(${MID_STREAM_ERROR})` : FALLBACK_ERROR);
       } finally {
         controller.close();
       }
@@ -166,17 +189,10 @@ type Contents = { role: Role; parts: { text: string }[] }[];
 
 async function replyOnce(ai: GoogleGenAI, model: string, contents: Contents): Promise<Response> {
   try {
-    const response = await ai.models.generateContent({
-      model,
-      contents,
-      config: {
-        systemInstruction: buildSystemPrompt(),
-        temperature: 0.4,
-        maxOutputTokens: MAX_OUTPUT_TOKENS,
-        abortSignal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
-      },
-    });
-    const reply = response.text?.trim();
+    const response = await ai.models.generateContent({ model, contents, config: generationConfig(model) });
+    const finishReason = response.candidates?.[0]?.finishReason;
+    let reply = response.text?.trim();
+    if (reply && finishReason === 'MAX_TOKENS') reply = trimToLastSentence(reply);
     if (!reply) {
       console.warn('[chat] prazan odgovor', response.candidates?.[0]?.finishReason, response.promptFeedback?.blockReason);
     }
