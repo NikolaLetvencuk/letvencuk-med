@@ -20,6 +20,11 @@ const MAX_MESSAGES = 20;
 const MAX_TEXT_LENGTH = 1000;
 const MAX_BODY_BYTES = 30_000;
 const GEMINI_TIMEOUT_MS = 20_000;
+/**
+ * Gornja granica tokena po odgovoru. Gemini 3 modeli "razmišljaju" pre odgovora i to troši
+ * isti limit — sa 500 su odgovori bili odsečeni. Dužinu odgovora drži sistemski prompt (2–5 rečenica).
+ */
+const MAX_OUTPUT_TOKENS = 2048;
 const RATE_LIMIT_ERROR = 'Previše poruka, sačekajte malo ili nas pozovite.';
 /** Kad Gemini vrati prazan odgovor (npr. blokiran sigurnosnim filterom). */
 const EMPTY_REPLY =
@@ -90,7 +95,8 @@ export async function POST(request: Request): Promise<Response> {
     return json({ error: FALLBACK_ERROR }, 500);
   }
 
-  const ai = new GoogleGenAI({ apiKey });
+  // v1beta: tu su dostupni i preview modeli (v1 ima samo stabilne).
+  const ai = new GoogleGenAI({ apiKey, apiVersion: 'v1beta' });
   const contents = messages.map(m => ({ role: m.role, parts: [{ text: m.text }] }));
   const model = process.env.GEMINI_MODEL || DEFAULT_MODEL;
 
@@ -109,7 +115,7 @@ export async function POST(request: Request): Promise<Response> {
       config: {
         systemInstruction: buildSystemPrompt(),
         temperature: 0.4,
-        maxOutputTokens: 500,
+        maxOutputTokens: MAX_OUTPUT_TOKENS,
         abortSignal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
       },
     });
@@ -166,7 +172,7 @@ async function replyOnce(ai: GoogleGenAI, model: string, contents: Contents): Pr
       config: {
         systemInstruction: buildSystemPrompt(),
         temperature: 0.4,
-        maxOutputTokens: 500,
+        maxOutputTokens: MAX_OUTPUT_TOKENS,
         abortSignal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
       },
     });
