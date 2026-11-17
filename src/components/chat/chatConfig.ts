@@ -3,4 +3,4 @@
 
 export const BOT_NAME = 'Lola';
 export const BOT_SUBTITLE = 'Naša pomoćnica';
-export const GREETING = `Zdravo! Ja sam ${BOT_NAME}, pomoćnica gazdinstva Letvenčuk. Pitajte me o našim vrstama meda, cenama ili kako da naručite.`;
+export const GREETING = `Zdravo! Ja sam ${BOT_NAME} i tu sam da vam pomognem. Pitajte me o našim vrstama meda, cenama ili kako da naručite.`;
