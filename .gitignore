@@ -16,3 +16,6 @@ skills-lock.json
 
 # Vercel CLI (vercel link / vercel dev)
 .vercel
+
+# Izveštaj testiranja chatbota (npm run eval:chat)
+scripts/chatbot-eval/report.md
