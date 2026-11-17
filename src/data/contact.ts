@@ -33,5 +33,7 @@ export const contact = {
   },
   /** Kontakt forma na sajtu (Formspree) — odgovor stize na email. */
   contactFormAction: 'https://formspree.io/f/xykdqznv',
-  delivery: 'Dostavljamo na kućnu adresu; porudžbine se dogovaraju telefonom, WhatsApp-om, Instagram porukom ili preko kontakt forme na sajtu. Možete nas naći i na festivalima meda.',
+  delivery: 'Dostavljamo na kućnu adresu. Dostava je BESPLATNA na teritoriji opštine Kula i u Novom Sadu. Za dostavu u ostala mesta uslovi i cena se dogovaraju — kupac treba da nas kontaktira telefonom ili WhatsApp-om. Porudžbine se dogovaraju telefonom, WhatsApp-om, Instagram porukom ili preko kontakt forme na sajtu. Možete nas naći i na festivalima meda.',
+  /** Poreklo meda — ide u Lolino znanje (api/_lib/systemPrompt.ts). */
+  honeyOrigin: 'Svaku vrstu našeg meda sakupljaju naše pčele na teritoriji i u okolini opštine Kula.',
 } as const;

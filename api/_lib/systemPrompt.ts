@@ -37,6 +37,7 @@ const buildContact = () => {
     `- Adresa: ${address.full}`,
     `- Kontakt forma na sajtu (sekcija "Kontakt") — odgovaramo na email`,
     `- Dostava i poručivanje: ${contact.delivery}`,
+    `- Poreklo meda: ${contact.honeyOrigin}`,
   ].join('\n');
 };
 
