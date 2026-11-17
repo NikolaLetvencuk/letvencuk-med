@@ -80,6 +80,44 @@ async function withThinkingFallback<T>(call: (config: GenerateContentConfig) => 
   }
 }
 
+/**
+ * Rezervni model kad glavni ne radi (GEMINI_FALLBACK_MODEL u okruženju; prazno = gemini-3.8-flash).
+ * Preview modeli (npr. gemini-3-flash-preview) povremeno vraćaju 503 "high demand" —
+ * testiranje je pokazalo ~15% takvih grešaka u špicu. Stabilan model ih ima mnogo manje.
+ */
+const FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL || 'gemini-3.8-flash';
+
+/** Privremene greške Google-a koje vredi ponoviti (preopterećenje, kvota, interna greška). */
+const isRetryableError = (err: unknown) => {
+  const status = (err as { status?: number })?.status;
+  if (status && [429, 500, 502, 503, 504].includes(status)) return true;
+  return /UNAVAILABLE|RESOURCE_EXHAUSTED|high demand|overloaded|INTERNAL/i.test(String((err as Error)?.message ?? err));
+};
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+/**
+ * Poziva Gemini otporno na privremene greške: glavni model 2 pokušaja (pauza 0,7 s),
+ * pa rezervni model 2 pokušaja. Ostale greške (npr. pogrešan ključ) se odmah prosleđuju.
+ */
+async function callGemini<T>(primary: string, call: (model: string, config: GenerateContentConfig) => Promise<T>): Promise<T> {
+  const models = [primary, FALLBACK_MODEL].filter((m, i, all) => m && all.indexOf(m) === i);
+  let lastError: unknown;
+  for (const model of models) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        return await withThinkingFallback(config => call(model, config));
+      } catch (err) {
+        lastError = err;
+        if (!isRetryableError(err)) throw err;
+        console.warn(`[chat] ${model} privremeno ne radi (pokušaj ${attempt + 1}):`, (err as { status?: number })?.status ?? err);
+        if (attempt === 0) await sleep(700);
+      }
+    }
+  }
+  throw lastError;
+}
+
 type Role = 'user' | 'model';
 interface ChatMessage {
   role: Role;
@@ -158,7 +196,7 @@ export async function POST(request: Request): Promise<Response> {
   type Chunk = { text?: string; candidates?: { finishReason?: string }[] };
   let iterator: AsyncIterator<Chunk>;
   try {
-    const stream = await withThinkingFallback(config => ai.models.generateContentStream({ model, contents, config }));
+    const stream = await callGemini(model, (m, config) => ai.models.generateContentStream({ model: m, contents, config }));
     iterator = stream[Symbol.asyncIterator]();
   } catch (err) {
     console.error('[chat] Gemini greška:', err);
@@ -222,7 +260,7 @@ type Contents = { role: Role; parts: { text: string }[] }[];
 
 async function replyOnce(ai: GoogleGenAI, model: string, contents: Contents): Promise<Response> {
   try {
-    const response = await withThinkingFallback(config => ai.models.generateContent({ model, contents, config }));
+    const response = await callGemini(model, (m, config) => ai.models.generateContent({ model: m, contents, config }));
     const finishReason = response.candidates?.[0]?.finishReason;
     let reply = response.text?.trim();
     if (reply && finishReason === 'MAX_TOKENS') reply = trimToLastSentence(reply);
