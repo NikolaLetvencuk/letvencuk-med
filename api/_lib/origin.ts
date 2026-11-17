@@ -24,9 +24,14 @@ export function isAllowedOrigin(request: Request): boolean {
     if (host) allowed.push(`https://${host}`);
   }
 
-  // Isti host kao zahtev (sajt i API su uvek na istom domenu).
-  const host = request.headers.get('host');
-  if (host) allowed.push(`https://${host}`);
+  if (allowed.includes(origin)) return true;
 
-  return allowed.includes(origin);
+  // Isti host kao zahtev (sajt i API su uvek na istom domenu) — pokriva i lokalnu
+  // mrežu u razvoju (npr. http://192.168.1.5:5174 sa telefona).
+  const host = request.headers.get('host');
+  try {
+    return !!host && new URL(origin).host === host;
+  } catch {
+    return false;
+  }
 }
