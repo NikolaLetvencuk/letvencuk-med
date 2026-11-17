@@ -1,27 +1,33 @@
 import { forwardRef, useEffect, useRef, type KeyboardEvent } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { RotateCcw, Send, X } from 'lucide-react';
+import { MessageSquarePlus, RotateCcw, Send, X } from 'lucide-react';
 import { BeeIcon } from '../icons/BeeIcon';
 import { ChatMessage } from './ChatMessage';
 import { TypingIndicator } from './TypingIndicator';
-import { MAX_INPUT_LENGTH, type ChatMessage as Message } from './chatApi';
+import { ChatOrderActions } from './ChatOrderActions';
+import { MAX_INPUT_LENGTH, hasOrderMarker, visibleText, type ChatMessage as Message } from './chatApi';
 
 export const SUGGESTIONS = ['Koji med preporučujete?', 'Kako da naručim?', 'Cene i pakovanja'];
 
 interface ChatPanelProps {
   greeting: string;
   messages: Message[];
-  loading: boolean;
+  /** Čeka se ili stiže odgovor. */
+  busy: boolean;
+  /** Tekst odgovora koji upravo stiže (null = još ništa). */
+  streamingText: string | null;
   error: string | null;
   input: string;
   onInputChange: (value: string) => void;
   onSend: (text: string) => void;
   onRetry: () => void;
+  /** Briše razgovor i počinje novi. */
+  onReset: () => void;
   onClose: () => void;
 }
 
 export const ChatPanel = forwardRef<HTMLTextAreaElement, ChatPanelProps>(
-  ({ greeting, messages, loading, error, input, onInputChange, onSend, onRetry, onClose }, inputRef) => {
+  ({ greeting, messages, busy, streamingText, error, input, onInputChange, onSend, onRetry, onReset, onClose }, inputRef) => {
     const reduce = useReducedMotion();
     const listRef = useRef<HTMLDivElement>(null);
 
@@ -29,9 +35,10 @@ export const ChatPanel = forwardRef<HTMLTextAreaElement, ChatPanelProps>(
     useEffect(() => {
       const el = listRef.current;
       if (el) el.scrollTo({ top: el.scrollHeight, behavior: reduce ? 'auto' : 'smooth' });
-    }, [messages, loading, error, reduce]);
+    }, [messages, busy, streamingText, error, reduce]);
 
-    const canSend = input.trim().length > 0 && !loading;
+    const canSend = input.trim().length > 0 && !busy;
+    const waitingForFirstChunk = busy && !streamingText;
 
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
@@ -64,6 +71,18 @@ export const ChatPanel = forwardRef<HTMLTextAreaElement, ChatPanelProps>(
             </h2>
             <p className="text-2xs text-ink-mute">Pitajte nas o medu</p>
           </div>
+          {messages.length > 0 && (
+            <button
+              type="button"
+              onClick={onReset}
+              disabled={busy}
+              aria-label="Nova poruka — obriši razgovor"
+              title="Obriši razgovor"
+              className="flex h-10 w-10 items-center justify-center rounded-full text-ink-soft transition-colors duration-200 hover:bg-raise hover:text-ink disabled:opacity-40"
+            >
+              <MessageSquarePlus className="h-5 w-5" strokeWidth={2} />
+            </button>
+          )}
           <button
             type="button"
             onClick={onClose}
@@ -82,11 +101,18 @@ export const ChatPanel = forwardRef<HTMLTextAreaElement, ChatPanelProps>(
           className="flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-4"
         >
           <ChatMessage role="model" text={greeting} />
-          {messages.map((m, i) => (
-            <ChatMessage key={i} role={m.role} text={m.text} />
-          ))}
-          {loading && <TypingIndicator />}
-          {error && !loading && (
+          {messages.map((m, i) =>
+            m.role === 'model' ? (
+              <ChatMessage key={i} role="model" text={visibleText(m.text)}>
+                {hasOrderMarker(m.text) && <ChatOrderActions />}
+              </ChatMessage>
+            ) : (
+              <ChatMessage key={i} role="user" text={m.text} />
+            ),
+          )}
+          {streamingText && <ChatMessage role="model" text={visibleText(streamingText, true)} />}
+          {waitingForFirstChunk && <TypingIndicator />}
+          {error && !busy && (
             <ChatMessage role="model" text={error} isError>
               <button
                 type="button"
@@ -98,7 +124,7 @@ export const ChatPanel = forwardRef<HTMLTextAreaElement, ChatPanelProps>(
               </button>
             </ChatMessage>
           )}
-          {messages.length === 0 && !loading && (
+          {messages.length === 0 && !busy && (
             <div className="flex flex-wrap gap-2 pt-1">
               {SUGGESTIONS.map(s => (
                 <button

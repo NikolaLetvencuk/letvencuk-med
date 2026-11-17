@@ -2,7 +2,8 @@
 //
 // Ugovor:
 //   zahtev:  { messages: { role: 'user' | 'model'; text: string }[] }   (cela istorija, poslednja je 'user')
-//   odgovor: 200 { reply: string }  |  4xx/5xx { error: string }
+//   odgovor: 200 text/plain stream (tekst stiže u delovima)  |  4xx/5xx JSON { error: string }
+//            sa ?stream=0: 200 JSON { reply: string }
 //
 // API ključ (GEMINI_API_KEY) postoji SAMO ovde, na serveru. Nikad ga ne stavljati u src/ niti u VITE_* promenljivu.
 
@@ -24,6 +25,7 @@ const RATE_LIMIT_ERROR = 'Previše poruka, sačekajte malo ili nas pozovite.';
 const EMPTY_REPLY =
   `Izvinite, na to ne mogu da odgovorim. Mogu da vam pomognem oko našeg meda, cena i poručivanja — ili nas pozovite na ${contact.phones.mihajlo.display}.`;
 const FALLBACK_ERROR = 'Pčelica trenutno ne može da odgovori, pokušajte ponovo ili nas pozovite.';
+const MID_STREAM_ERROR = 'Odgovor je prekinut — pokušajte ponovo ili nas pozovite.';
 
 type Role = 'user' | 'model';
 interface ChatMessage {
@@ -88,11 +90,79 @@ export async function POST(request: Request): Promise<Response> {
     return json({ error: FALLBACK_ERROR }, 500);
   }
 
+  const ai = new GoogleGenAI({ apiKey });
+  const contents = messages.map(m => ({ role: m.role, parts: [{ text: m.text }] }));
+  const model = process.env.GEMINI_MODEL || DEFAULT_MODEL;
+
+  // Ne-streaming varijanta (?stream=0) — zgodna za testiranje curl-om i kao rezervna opcija.
+  if (new URL(request.url, 'http://localhost').searchParams.get('stream') === '0') {
+    return replyOnce(ai, model, contents);
+  }
+
+  // Streaming: greške pre prvog dela odgovora vraćamo kao JSON sa statusom,
+  // a posle toga tekst stiže u delovima (text/plain).
+  let iterator: AsyncIterator<{ text?: string }>;
   try {
-    const ai = new GoogleGenAI({ apiKey });
+    const stream = await ai.models.generateContentStream({
+      model,
+      contents,
+      config: {
+        systemInstruction: buildSystemPrompt(),
+        temperature: 0.4,
+        maxOutputTokens: 500,
+        abortSignal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
+      },
+    });
+    iterator = stream[Symbol.asyncIterator]();
+  } catch (err) {
+    console.error('[chat] Gemini greška:', err);
+    return json({ error: FALLBACK_ERROR }, 502);
+  }
+
+  const encoder = new TextEncoder();
+  const streamBody = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      let sentAny = false;
+      try {
+        for (;;) {
+          const { value, done } = await iterator.next();
+          if (done) break;
+          const text = value?.text;
+          if (text) {
+            sentAny = true;
+            controller.enqueue(encoder.encode(text));
+          }
+        }
+        if (!sentAny) {
+          console.warn('[chat] prazan odgovor (stream)');
+          controller.enqueue(encoder.encode(EMPTY_REPLY));
+        }
+      } catch (err) {
+        console.error('[chat] Gemini greška usred odgovora:', err);
+        controller.enqueue(encoder.encode(sentAny ? `\n\n(${MID_STREAM_ERROR})` : FALLBACK_ERROR));
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(streamBody, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      'X-Content-Type-Options': 'nosniff',
+    },
+  });
+}
+
+type Contents = { role: Role; parts: { text: string }[] }[];
+
+async function replyOnce(ai: GoogleGenAI, model: string, contents: Contents): Promise<Response> {
+  try {
     const response = await ai.models.generateContent({
-      model: process.env.GEMINI_MODEL || DEFAULT_MODEL,
-      contents: messages.map(m => ({ role: m.role, parts: [{ text: m.text }] })),
+      model,
+      contents,
       config: {
         systemInstruction: buildSystemPrompt(),
         temperature: 0.4,
