@@ -13,3 +13,6 @@ public/new_images/
 .agents/
 .claude/
 skills-lock.json
+
+# Vercel CLI (vercel link / vercel dev)
+.vercel
