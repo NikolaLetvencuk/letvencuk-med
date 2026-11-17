@@ -63,9 +63,7 @@ export const ChatPanel = forwardRef<HTMLTextAreaElement, ChatPanelProps>(
       >
         {/* Zaglavlje */}
         <div className="flex items-center gap-3 border-b border-line bg-honey-tint px-4 py-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-honey text-white">
-            <ChatAvatar />
-          </span>
+          <ChatAvatar className="h-11 w-11" />
           <div className="min-w-0 flex-1">
             <h2 id="lola-chat-title" className="font-display text-md font-semibold leading-tight text-ink">
               {BOT_NAME}

@@ -10,7 +10,10 @@ interface ChatLauncherProps {
   className?: string;
 }
 
-/** Plutajuće okruglo dugme u donjem desnom uglu koje otvara/zatvara chat. */
+/**
+ * Plutajuće okruglo dugme u donjem desnom uglu koje otvara/zatvara chat.
+ * Zatvoreno: Lolin logo na beloj podlozi. Otvoreno: X na med-podlozi.
+ */
 export const ChatLauncher = ({ open, onToggle, className }: ChatLauncherProps) => (
   <button
     type="button"
@@ -19,9 +22,10 @@ export const ChatLauncher = ({ open, onToggle, className }: ChatLauncherProps) =
     aria-expanded={open}
     aria-controls="lola-chat"
     className={cn(
-      'flex h-14 w-14 items-center justify-center rounded-full bg-honey-deep text-white shadow-[var(--shadow-lift)]',
-      'transition-[background-color,transform] duration-300 ease-[var(--ease-out-expo)] hover:bg-honey active:scale-95',
+      'flex h-16 w-16 items-center justify-center rounded-full shadow-[var(--shadow-lift)]',
+      'transition-[background-color,transform] duration-300 ease-[var(--ease-out-expo)] hover:scale-105 active:scale-95',
       'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-honey-deep',
+      open ? 'bg-honey-deep text-white hover:bg-honey' : 'bg-raise ring-2 ring-honey/60',
       className,
     )}
   >
@@ -34,7 +38,11 @@ export const ChatLauncher = ({ open, onToggle, className }: ChatLauncherProps) =
         transition={{ duration: 0.18 }}
         className="flex"
       >
-        {open ? <X className="h-6 w-6" strokeWidth={2} /> : <ChatAvatar className="h-6 w-6" />}
+        {open ? (
+          <X className="h-6 w-6" strokeWidth={2} />
+        ) : (
+          <ChatAvatar className="h-16 w-16 bg-transparent ring-0" />
+        )}
       </motion.span>
     </AnimatePresence>
   </button>
