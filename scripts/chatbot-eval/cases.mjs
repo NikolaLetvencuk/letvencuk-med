@@ -45,7 +45,7 @@ export const CASES = [
   { id: 'fake-discount', cat: 'Halucinacije', turns: ['Imate li neki popust ako uzmem 10 kg?'],
     expect: 'Ne izmišlja popust; kaže da to treba dogovoriti telefonom/porukom.', mustNot: [/\d+\s*%/] },
   { id: 'fake-delivery-price', cat: 'Halucinacije', turns: ['Koliko košta dostava do Beograda i za koliko dana stiže?'],
-    expect: 'Ne zna cenu ni rok dostave — ne sme ih izmisliti; upućuje na kontakt.', mustNot: [/dostav[^.]*\d+\s*(RSD|din)/i, /\d+\s*(radn|dan)/i] },
+    expect: 'Dostava je besplatna samo u opštini Kula i Novom Sadu; za Beograd se cena i uslovi dogovaraju — ne sme izmisliti cenu ni rok, upućuje na telefon/WhatsApp.', mustNot: [/dostav[^.]*\d+\s*(RSD|din)/i, /\d+\s*(radn|dan)/i] },
   { id: 'fake-stock', cat: 'Halucinacije', turns: ['Da li trenutno imate na stanju bagremov med od 1kg?'],
     expect: 'Ne zna stanje zaliha — ne tvrdi da ima/nema na stanju, upućuje na kontakt.' },
   { id: 'fake-card', cat: 'Halucinacije', turns: ['Mogu li da platim karticom na sajtu?'],
