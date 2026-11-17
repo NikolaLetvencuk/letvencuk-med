@@ -22,11 +22,22 @@ const MAX_TEXT_LENGTH = 1000;
 const MAX_BODY_BYTES = 30_000;
 const GEMINI_TIMEOUT_MS = 25_000;
 /**
- * Gornja granica tokena po odgovoru. Gemini 3 modeli "razmišljaju" pre odgovora i to troši
- * ISTI limit (merili smo i do ~1500 tokena razmišljanja), pa limit mora biti velik.
- * Dužinu samog odgovora drži sistemski prompt (2–5 rečenica).
+ * Gornja granica tokena po odgovoru. Ako model "razmišlja", to troši ISTI limit (merili smo
+ * i do ~1500 tokena sa LOW), pa ostavljamo rezervu. Dužinu odgovora drži prompt (2–5 rečenica).
  */
 const MAX_OUTPUT_TOKENS = 4096;
+/**
+ * Koliko model razmišlja pre odgovora (GEMINI_THINKING_LEVEL u okruženju):
+ * MINIMAL (podrazumevano — bez razmišljanja, najbrže i najjeftinije), LOW, MEDIUM, HIGH,
+ * ili "default" da se ne šalje ništa i model koristi svoje podrazumevano ponašanje.
+ * Merenje sa gemini-3-flash-preview: MINIMAL = 0 tokena razmišljanja, ~1,2 s, isti kvalitet.
+ */
+const THINKING_LEVELS: Record<string, ThinkingLevel> = {
+  MINIMAL: ThinkingLevel.MINIMAL,
+  LOW: ThinkingLevel.LOW,
+  MEDIUM: ThinkingLevel.MEDIUM,
+  HIGH: ThinkingLevel.HIGH,
+};
 const RATE_LIMIT_ERROR = 'Previše poruka, sačekajte malo ili nas pozovite.';
 /** Kad Gemini vrati prazan odgovor (npr. blokiran sigurnosnim filterom). */
 const EMPTY_REPLY =
@@ -34,18 +45,40 @@ const EMPTY_REPLY =
 const FALLBACK_ERROR = 'Pčelica trenutno ne može da odgovori, pokušajte ponovo ili nas pozovite.';
 const MID_STREAM_ERROR = 'Odgovor je prekinut — pokušajte ponovo ili nas pozovite.';
 
+const thinkingLevel = (): ThinkingLevel | undefined => {
+  const raw = (process.env.GEMINI_THINKING_LEVEL || 'MINIMAL').trim().toUpperCase();
+  return THINKING_LEVELS[raw];
+};
+
+/** Zajednička podešavanja generisanja. `withThinking=false` = bez thinkingConfig (rezervni pokušaj). */
+const generationConfig = (withThinking = true): GenerateContentConfig => {
+  const level = withThinking ? thinkingLevel() : undefined;
+  return {
+    systemInstruction: buildSystemPrompt(),
+    temperature: 0.4,
+    maxOutputTokens: MAX_OUTPUT_TOKENS,
+    abortSignal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
+    ...(level ? { thinkingConfig: { thinkingLevel: level } } : {}),
+  };
+};
+
+/** Model ne podržava izabrani nivo razmišljanja (npr. MINIMAL na nekim modelima) → 400. */
+const isUnsupportedThinkingError = (err: unknown) =>
+  /thinking/i.test(String((err as Error)?.message ?? err)) && /400|INVALID_ARGUMENT|not supported/i.test(String((err as Error)?.message ?? err));
+
 /**
- * Zajednička podešavanja generisanja. Za Gemini 3 modele smanjujemo razmišljanje na LOW:
- * ~2x manje tokena razmišljanja, brži odgovori, a za pitanja o medu je sasvim dovoljno.
- * (Stariji modeli, npr. 2.5, ne podržavaju thinkingLevel, pa im ga ne šaljemo.)
+ * Poziva Gemini sa izabranim nivoom razmišljanja; ako model taj nivo ne podržava,
+ * jednom ponavlja bez njega da chat ne bi pukao posle promene modela.
  */
-const generationConfig = (model: string): GenerateContentConfig => ({
-  systemInstruction: buildSystemPrompt(),
-  temperature: 0.4,
-  maxOutputTokens: MAX_OUTPUT_TOKENS,
-  abortSignal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
-  ...(/^gemini-3/.test(model) ? { thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } } : {}),
-});
+async function withThinkingFallback<T>(call: (config: GenerateContentConfig) => Promise<T>): Promise<T> {
+  try {
+    return await call(generationConfig(true));
+  } catch (err) {
+    if (!thinkingLevel() || !isUnsupportedThinkingError(err)) throw err;
+    console.warn('[chat] model ne podržava GEMINI_THINKING_LEVEL, ponavljam bez njega');
+    return call(generationConfig(false));
+  }
+}
 
 type Role = 'user' | 'model';
 interface ChatMessage {
@@ -125,7 +158,7 @@ export async function POST(request: Request): Promise<Response> {
   type Chunk = { text?: string; candidates?: { finishReason?: string }[] };
   let iterator: AsyncIterator<Chunk>;
   try {
-    const stream = await ai.models.generateContentStream({ model, contents, config: generationConfig(model) });
+    const stream = await withThinkingFallback(config => ai.models.generateContentStream({ model, contents, config }));
     iterator = stream[Symbol.asyncIterator]();
   } catch (err) {
     console.error('[chat] Gemini greška:', err);
@@ -189,7 +222,7 @@ type Contents = { role: Role; parts: { text: string }[] }[];
 
 async function replyOnce(ai: GoogleGenAI, model: string, contents: Contents): Promise<Response> {
   try {
-    const response = await ai.models.generateContent({ model, contents, config: generationConfig(model) });
+    const response = await withThinkingFallback(config => ai.models.generateContent({ model, contents, config }));
     const finishReason = response.candidates?.[0]?.finishReason;
     let reply = response.text?.trim();
     if (reply && finishReason === 'MAX_TOKENS') reply = trimToLastSentence(reply);
