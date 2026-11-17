@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useRef, type KeyboardEvent } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { MessageSquarePlus, RotateCcw, Send, X } from 'lucide-react';
 import { ChatAvatar } from './ChatAvatar';
-import { BOT_NAME, BOT_SUBTITLE } from './chatConfig';
+import { AI_NOTICE, BOT_NAME, BOT_SUBTITLE } from './chatConfig';
 import { ChatMessage } from './ChatMessage';
 import { TypingIndicator } from './TypingIndicator';
 import { ChatOrderActions } from './ChatOrderActions';
@@ -140,36 +140,39 @@ export const ChatPanel = forwardRef<HTMLTextAreaElement, ChatPanelProps>(
         </div>
 
         {/* Unos */}
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            if (canSend) onSend(input);
-          }}
-          className="flex items-end gap-2 border-t border-line bg-raise p-3"
-        >
-          <label htmlFor="lola-input" className="sr-only">
-            Vaša poruka
-          </label>
-          <textarea
-            ref={inputRef}
-            id="lola-input"
-            rows={1}
-            value={input}
-            maxLength={MAX_INPUT_LENGTH}
-            onChange={e => onInputChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Napišite pitanje…"
-            className="max-h-28 min-h-11 flex-1 resize-none rounded-[var(--radius-field)] border border-line bg-sunken/50 px-3 py-2.5 text-xs text-ink placeholder:text-ink-mute focus:border-honey focus:outline-none focus:ring-2 focus:ring-honey/30 [field-sizing:content]"
-          />
-          <button
-            type="submit"
-            disabled={!canSend}
-            aria-label="Pošalji poruku"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-honey-deep text-white transition-[background-color,opacity] duration-200 hover:bg-honey disabled:cursor-not-allowed disabled:opacity-40"
+        <div className="border-t border-line bg-raise px-3 pb-2 pt-3">
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              if (canSend) onSend(input);
+            }}
+            className="flex items-end gap-2"
           >
-            <Send className="h-4.5 w-4.5" strokeWidth={2} />
-          </button>
-        </form>
+            <label htmlFor="lola-input" className="sr-only">
+              Vaša poruka
+            </label>
+            <textarea
+              ref={inputRef}
+              id="lola-input"
+              rows={1}
+              value={input}
+              maxLength={MAX_INPUT_LENGTH}
+              onChange={e => onInputChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Napišite pitanje…"
+              className="max-h-28 min-h-11 flex-1 resize-none rounded-[var(--radius-field)] border border-line bg-sunken/50 px-3 py-2.5 text-xs text-ink placeholder:text-ink-mute focus:border-honey focus:outline-none focus:ring-2 focus:ring-honey/30 [field-sizing:content]"
+            />
+            <button
+              type="submit"
+              disabled={!canSend}
+              aria-label="Pošalji poruku"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-honey-deep text-white transition-[background-color,opacity] duration-200 hover:bg-honey disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <Send className="h-4.5 w-4.5" strokeWidth={2} />
+            </button>
+          </form>
+          <p className="mt-2 text-center text-[0.6875rem] leading-snug text-ink-mute">{AI_NOTICE}</p>
+        </div>
       </motion.div>
     );
   },
