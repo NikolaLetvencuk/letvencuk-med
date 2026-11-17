@@ -8,12 +8,21 @@
 
 import { GoogleGenAI } from '@google/genai';
 import { buildSystemPrompt } from './_lib/systemPrompt.js';
+import { checkRateLimit, getClientIp } from './_lib/rateLimit.js';
+import { isAllowedOrigin } from './_lib/origin.js';
+import { contact } from '../src/data/contact.js';
 
 /** Podrazumevani model ako GEMINI_MODEL nije postavljen u okruženju. */
 const DEFAULT_MODEL = 'gemini-3.8-flash';
 
 const MAX_MESSAGES = 20;
 const MAX_TEXT_LENGTH = 1000;
+const MAX_BODY_BYTES = 30_000;
+const GEMINI_TIMEOUT_MS = 20_000;
+const RATE_LIMIT_ERROR = 'Previše poruka, sačekajte malo ili nas pozovite.';
+/** Kad Gemini vrati prazan odgovor (npr. blokiran sigurnosnim filterom). */
+const EMPTY_REPLY =
+  `Izvinite, na to ne mogu da odgovorim. Mogu da vam pomognem oko našeg meda, cena i poručivanja — ili nas pozovite na ${contact.phones.mihajlo.display}.`;
 const FALLBACK_ERROR = 'Pčelica trenutno ne može da odgovori, pokušajte ponovo ili nas pozovite.';
 
 type Role = 'user' | 'model';
@@ -54,9 +63,18 @@ function parseMessages(body: unknown): ChatMessage[] | string {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  if (!isAllowedOrigin(request)) return json({ error: 'Zabranjen pristup.' }, 403);
+
+  if (!checkRateLimit(getClientIp(request))) return json({ error: RATE_LIMIT_ERROR }, 429);
+
+  const declaredLength = Number(request.headers.get('content-length') ?? 0);
+  if (declaredLength > MAX_BODY_BYTES) return json({ error: 'Zahtev je prevelik.' }, 413);
+
   let body: unknown;
   try {
-    body = await request.json();
+    const raw = await request.text();
+    if (raw.length > MAX_BODY_BYTES) return json({ error: 'Zahtev je prevelik.' }, 413);
+    body = JSON.parse(raw);
   } catch {
     return json({ error: 'Neispravan zahtev.' }, 400);
   }
@@ -79,9 +97,14 @@ export async function POST(request: Request): Promise<Response> {
         systemInstruction: buildSystemPrompt(),
         temperature: 0.4,
         maxOutputTokens: 500,
+        abortSignal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
       },
     });
-    return json({ reply: response.text?.trim() ?? '' });
+    const reply = response.text?.trim();
+    if (!reply) {
+      console.warn('[chat] prazan odgovor', response.candidates?.[0]?.finishReason, response.promptFeedback?.blockReason);
+    }
+    return json({ reply: reply || EMPTY_REPLY });
   } catch (err) {
     console.error('[chat] Gemini greška:', err);
     return json({ error: FALLBACK_ERROR }, 502);
