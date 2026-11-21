@@ -19,3 +19,6 @@ skills-lock.json
 
 # Izveštaj testiranja chatbota (npm run eval:chat)
 scripts/chatbot-eval/report.md
+
+# Sirove fotografije aranžmana. Obrađene verzije su u public/images/v2 i public/images/aranzmani.
+public/aranzmani/

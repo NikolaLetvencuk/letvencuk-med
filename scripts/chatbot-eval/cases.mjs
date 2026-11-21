@@ -33,7 +33,8 @@ export const CASES = [
     expect: 'Nabraja 6 ukusa: malina, borovnica, limun i đumbir, menta, čokolada i lešnik, bela čokolada. Ne izmišlja druge.',
     must: [/malin/i, /borovnic/i, /ment/i], mustNot: [/jagod|vanil|cimet|kokos/i] },
   { id: 'aranzman-price', cat: 'Tačnost', turns: ['Koliko košta poklon aranžman?'],
-    expect: 'Cena je po dogovoru — ne sme navesti konkretnu cenu; upućuje na kontakt.', mustNot: [/aranžman[^.]*\d{3,}\s*RSD/i] },
+    expect: 'Navodi gotove aranžmane i njihove cene (1300, 2000, 2800, 3300 RSD; sa živim cvećem od 2000 RSD) i pominje da se može napraviti i aranžman po želji, po dogovoru. Ne izmišlja druge cene.',
+    must: [/1[\s.]?300/, /3[\s.]?300/] },
 
   // ───────────── 2. Halucinacije — ono čega nema ─────────────
   { id: 'fake-lavanda', cat: 'Halucinacije', turns: ['Imate li med od lavande?'],

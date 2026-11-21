@@ -303,11 +303,72 @@ export const products: Product[] = [
     image: "images/v2/violina-960.webp",
     imgSlug: "violina"
   },
+  // ── Gotovi poklon aranžmani (slike: public/aranzmani → public/images/v2 + public/images/aranzmani) ──
+  {
+    id: 30,
+    name: "Aranžman Veliki",
+    description: "Livadski med 1kg, medovača 0.5l, polen, propolis, kašika za med i medenjak.",
+    longDescription: "Naš najveći gotov aranžman. U njemu su: livadski med 1kg, medovača 0.5l, polen, propolis, drvena kašika za med i medenjak. Dekorišemo ga mašnom i natpisom po želji (slava, rođendan, praznik…).",
+    prices: [{ size: "komplet", price: "3300 RSD" }],
+    image: "images/v2/aranzman-3300-960.webp",
+    imgSlug: "aranzman-3300",
+    images: [1, 2, 3, 4, 5, 6].map(n => `images/aranzmani/aranzman-3300-${n}.webp`)
+  },
+  {
+    id: 31,
+    name: "Aranžman sa velikom medovačom",
+    description: "Livadski med 400g, medovača 0.5l, polen, propolis kapi i medenjak.",
+    longDescription: "U aranžmanu su: livadski med 400g, medovača 0.5l, polen, propolis kapi i medenjak. Dekorišemo ga mašnom i natpisom po želji (slava, rođendan, praznik…).",
+    prices: [{ size: "komplet", price: "2800 RSD" }],
+    image: "images/v2/aranzman-2800-velika-960.webp",
+    imgSlug: "aranzman-2800-velika",
+    images: [1, 2, 3].map(n => `images/aranzmani/aranzman-2800-velika-${n}.webp`)
+  },
+  {
+    id: 32,
+    name: "Aranžman sa živim cvećem",
+    description: "Naši aranžmani sa dodatkom živog cveća.",
+    longDescription: "Aranžmani sa našim proizvodima i dodatkom živog cveća — idealni za rođendane, slave, ispraćaje u penziju i čestitke. Sadržaj i cveće prilagođavamo vašoj želji, a cena zavisi od izabranih proizvoda i cveća.",
+    prices: [{ size: "zavisno od sadržaja", price: "od 2000 RSD" }],
+    image: "images/v2/aranzman-cvece-960.webp",
+    imgSlug: "aranzman-cvece",
+    images: [1, 2, 3, 4, 5, 6].map(n => `images/aranzmani/aranzman-cvece-${n}.webp`)
+  },
+  {
+    id: 33,
+    name: "Aranžman sa malom medovačom i 1kg meda",
+    description: "Med 1kg, medovača 0.2l, polen, propolis kapi i medenjak.",
+    longDescription: "U aranžmanu su: med 1kg, medovača 0.2l, polen, propolis kapi i medenjak. Dekorišemo ga mašnom i natpisom po želji (slava, rođendan, praznik…).",
+    prices: [{ size: "komplet", price: "2800 RSD" }],
+    image: "images/v2/aranzman-2800-mala-960.webp",
+    imgSlug: "aranzman-2800-mala",
+    images: ["images/aranzmani/aranzman-2800-mala-1.webp"]
+  },
+  {
+    id: 34,
+    name: "Aranžman sa malom medovačom",
+    description: "Livadski med 400g, medovača 0.2l, polen, propolis kapi i medenjak.",
+    longDescription: "U aranžmanu su: livadski med 400g, medovača 0.2l, polen, propolis kapi i medenjak. Dekorišemo ga mašnom i natpisom po želji (slava, rođendan, praznik…).",
+    prices: [{ size: "komplet", price: "2000 RSD" }],
+    image: "images/v2/aranzman-2000-960.webp",
+    imgSlug: "aranzman-2000",
+    images: [1, 2, 3, 4, 5, 6].map(n => `images/aranzmani/aranzman-2000-${n}.webp`)
+  },
+  {
+    id: 35,
+    name: "Aranžman Mali",
+    description: "Livadski med 400g, medovača 0.2l i medenjak.",
+    longDescription: "Mali aranžman za lepu pažnju. U njemu su: livadski med 400g, medovača 0.2l i medenjak. Dekorišemo ga mašnom i natpisom po želji.",
+    prices: [{ size: "komplet", price: "1300 RSD" }],
+    image: "images/v2/aranzman-1300-960.webp",
+    imgSlug: "aranzman-1300",
+    images: ["images/aranzmani/aranzman-1300-1.webp"]
+  },
   {
     id: 13,
-    name: "Poklon aranžmani",
-    description: "Personalizovane korpice za sve prilike.",
-    longDescription: "Pravimo aranžmane po vašoj želji! Bilo da je u pitanju slava, rođendan, Božić ili Uskrs, mi spajamo naše proizvode u prelepe dekorisane korpice sa natpisima po vašoj želji.",
+    name: "Aranžman po vašoj želji",
+    description: "Sastavite svoju kombinaciju — napravićemo poseban aranžman za vas.",
+    longDescription: "Ne vidite tačno ono što tražite? Recite nam koje proizvode želite i za koju priliku (slava, rođendan, Božić, Uskrs, poslovni poklon…), a mi ćemo napraviti poseban aranžman samo za vas, sa dekoracijom i natpisom po želji. Cena zavisi od izabranih proizvoda.",
     prices: [
       { size: "", price: "cena po dogovoru" }
     ],    
@@ -330,7 +391,7 @@ export const productCategories = {
   },
   aranzman: {
     label: "Aranžmani",
-    items: products.filter(p => [13].includes(p.id))
+    items: products.filter(p => [30, 31, 32, 33, 34, 35, 13].includes(p.id))
   },
   ostalo: {
     label: "Ostalo",
