@@ -151,6 +151,7 @@ export const ChatPanel = forwardRef<HTMLTextAreaElement, ChatPanelProps>(
             <label htmlFor="lola-input" className="sr-only">
               Vaša poruka
             </label>
+            {/* text-sm = 16px: iPhone (Safari) automatski zumira polja sa slovima manjim od 16px. */}
             <textarea
               ref={inputRef}
               id="lola-input"
@@ -160,7 +161,7 @@ export const ChatPanel = forwardRef<HTMLTextAreaElement, ChatPanelProps>(
               onChange={e => onInputChange(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Napišite pitanje…"
-              className="max-h-28 min-h-11 flex-1 resize-none rounded-[var(--radius-field)] border border-line bg-sunken/50 px-3 py-2.5 text-xs text-ink placeholder:text-ink-mute focus:border-honey focus:outline-none focus:ring-2 focus:ring-honey/30 [field-sizing:content]"
+              className="max-h-28 min-h-11 flex-1 resize-none rounded-[var(--radius-field)] border border-line bg-sunken/50 px-3 py-2.5 text-sm text-ink placeholder:text-ink-mute focus:border-honey focus:outline-none focus:ring-2 focus:ring-honey/30 [field-sizing:content]"
             />
             <button
               type="submit"
