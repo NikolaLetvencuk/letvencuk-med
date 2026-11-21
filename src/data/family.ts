@@ -39,3 +39,15 @@ export const familyMembers: FamilyMember[] = [
     icon: 'truck'
   }
 ];
+
+/**
+ * Kratke, činjenične informacije o porodici za chatbota (api/_lib/systemPrompt.ts).
+ * Namerno jednostavnije od opisa na sajtu — bez preuveličavanja zasluga.
+ */
+export const familyFactsForChatbot: string[] = [
+  'Mihajlo — otac porodice i GLAVNI pčelar; on danas vodi pčelinjak.',
+  'Tanja — majka porodice (Mihajlova supruga); pravi poklon aranžmane.',
+  'Ivan — Mihajlov otac, deda Nađe i Nikole. On je započeo pčelarstvo u porodici; danas POMAŽE Mihajlu oko pčela (Mihajlo je glavni, Ivan pomaže).',
+  'Nađa — ćerka Mihajla i Tanje; pomaže roditeljima.',
+  'Nikola — sin Mihajla i Tanje; pomaže roditeljima.',
+];
